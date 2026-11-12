@@ -11,6 +11,9 @@ Web application for planning, executing, and verifying software delivery against
 | Stack decision (ADR-001) | PROPOSED — awaiting owner approval |
 | Product docs ACT-01..06 | DRAFT — awaiting owner approval (ACT-02 has no interviews yet) |
 | First feature (status + evidence + progress) | Implemented, tested locally |
+| Canvas Multiview `/canvas` (ADR-002/003) | Implemented locally: 5 views × 2 datasets (Governance live, Clean Sea **não validado**) |
+| Design system audit (ADR-004) | G1–G4 done; showcase at `/showcase`; G5 partially verified |
+| Data-viz quality audit (33 criteria) | 0 MUST failing — `docs/quality/dv-audit_v0.1.md` |
 | Remote Cloudflare resources / deploy | Not created (requires approval) |
 
 No workbook activity is marked DONE. See `docs/plan/implementation-plan_A-G.md` for the roadmap and `docs/governance/13_decision-log.md` for decisions.
@@ -43,6 +46,13 @@ flowchart TD
 - `workers/app.ts` is the Worker entry: Hono serves `/api/v1/*`, React Router serves everything else.
 - `src/domain/governance` has no framework imports. ESLint enforces this.
 - The workbook is the **initial reference dataset**. After import, D1 is the operational source of truth. The import never writes the workbook.
+
+## Canvas Multiview and design system
+
+- `/canvas` — one graph (`src/domain/diagram`), five views: Infográfico, Tutorial, BPMN, Organograma, Diagrama complexo. Collapsible/resizable sidebars, Inspector with metanotes, state in the URL (`?dataset=&view=&node=`). Read-only: edit on `/activities/:id`.
+- `/showcase` — catalogue generated from `docs/design-system/COMPONENT_REGISTRY.json`.
+- Design system docs: `docs/design-system/` (inventory, taxonomy, tokens, registry, architecture). Diagramming rules: `docs/design/diagramming-system.md`.
+- Source material from `Archive.zip` is kept unchanged in `reference/loop-design/`.
 
 ## Core governance rules
 
@@ -87,6 +97,8 @@ Reset local data: `npm run db:reset:local`.
 | `test` | Vitest unit + integration (local in-memory D1) |
 | `test:e2e` | Playwright on an isolated local D1 (`.wrangler/e2e`) |
 | `import:workbook` | Re-generate `data/seed/activities.v1.json` from the workbook |
+| `extract:cleansea` | Re-generate `data/reference/cleansea.v1.json` from the Clean Sea prototype |
+| `import:dv-criteria` | Re-generate `data/quality/dv-criteria.v1.json` from the CSV |
 | `db:generate` | Generate a SQL migration from `src/server/db/schema.ts` |
 | `db:migrate:local` / `seed:local` / `db:reset:local` | Local D1 lifecycle |
 
@@ -110,8 +122,11 @@ Actor: `X-Actor` header, default `local-dev`. Authentication is an open decision
 app/                     # React Router routes, root layout, tokens (app.css)
 workers/app.ts           # Worker entry (Hono + React Router)
 src/domain/governance/   # Pure business rules and fixture schema
+src/domain/diagram/      # Universal graph, adapters, 5 view projectors (pure)
+src/design-system/       # Registry schema + loader
 src/server/              # API, use cases, Drizzle schema and seed builder
-src/components/          # UI primitives (shadcn style) and governance badges
+src/components/          # UI primitives (shadcn), governance badges, patterns (ChoiceCard)
+app/components/canvas/   # Canvas layouts and diagram components
 migrations/              # D1 SQL migrations (drizzle-kit)
 data/source/             # Original workbook (read-only input)
 data/seed/               # Versioned fixture generated from the workbook
@@ -119,6 +134,9 @@ scripts/                 # Import and seed generators
 tests/                   # unit, integration, e2e
 docs/                    # Charter, discovery, requirements, UX, ADRs, plan, decisions
 reference/xls-pwa/       # Legacy PWA + Apps Script sync (reference only)
+reference/loop-design/   # ADR-002/003/004, prototypes, shadcn package, DV criteria (reference only)
+data/reference/          # Clean Sea fixture (not validated)
+data/quality/            # Data-viz criteria fixture
 ```
 
 ## Security and quality

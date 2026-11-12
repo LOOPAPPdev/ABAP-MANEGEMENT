@@ -7,21 +7,37 @@
     "workers/**/*",
     "tests/unit/**/*",
     "tests/integration/**/*",
-    "worker-configuration.d.ts"
+    "worker-configuration.d.ts",
+    "docs/design-system/*.json",
+    "data/reference/*.json"
   ],
   "compilerOptions": {
     "composite": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,
-    "lib": ["DOM", "DOM.Iterable", "ES2023"],
-    "types": ["vite/client", "node"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2023"
+    ],
+    "types": [
+      "vite/client",
+      "node"
+    ],
     "target": "ES2023",
     "module": "ES2022",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "rootDirs": [".", "./.react-router/types"],
-    "paths": { "~/*": ["./src/*"] },
+    "rootDirs": [
+      ".",
+      "./.react-router/types"
+    ],
+    "paths": {
+      "~/*": [
+        "./src/*"
+      ]
+    },
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,

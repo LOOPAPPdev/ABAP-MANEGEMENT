@@ -1,16 +1,20 @@
-import { isRouteErrorResponse, Links, Meta, NavLink, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { isRouteErrorResponse, Links, Meta, NavLink, Outlet, Scripts, ScrollRestoration, useMatches } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
 
 const NAV = [
   ["/dashboard", "Dashboard"],
   ["/activities", "Activities"],
+  ["/canvas", "Canvas"],
   ["/evidence", "Evidence"],
   ["/projects", "Projects"],
+  ["/showcase", "Design system"],
   ["/settings", "Settings"],
 ] as const;
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  // Routes that export handle = { fullBleed: true } (the canvas) use the full viewport width.
+  const fullBleed = useMatches().some((m) => (m.handle as { fullBleed?: boolean } | undefined)?.fullBleed);
   return (
     <html lang="en">
       <head>
@@ -44,7 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </nav>
           </div>
         </header>
-        <main id="main" className="mx-auto max-w-6xl px-4 py-6">
+        <main id="main" className={fullBleed ? "" : "mx-auto max-w-6xl px-4 py-6"}>
           {children}
         </main>
         <ScrollRestoration />

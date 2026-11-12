@@ -16,6 +16,10 @@ export default tseslint.config(
     },
   },
   {
+    files: ["scripts/**/*.mjs"],
+    languageOptions: { globals: { process: "readonly", console: "readonly" } },
+  },
+  {
     // Architecture guard: the domain layer stays framework-free (CLAUDE.md).
     files: ["src/domain/**/*.ts"],
     rules: {
