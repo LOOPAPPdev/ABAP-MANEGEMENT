@@ -1,5 +1,5 @@
 {
- "version": "1.0.0",
+ "version": "1.1.0",
  "components": [
   {
    "id": "tokens-color",
@@ -1663,6 +1663,149 @@
    "usage": [],
    "status": "available",
    "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "sync-mode-toggle",
+   "family": "Composites",
+   "name": "Sync mode toggle",
+   "function": "Switches spreadsheet sync between automatic (on open) and preview + apply.",
+   "variants": [
+    "auto",
+    "preview"
+   ],
+   "props": [
+    "mode"
+   ],
+   "states": [
+    "auto",
+    "preview",
+    "focus"
+   ],
+   "dependencies": [
+    "ds:button"
+   ],
+   "usage": [
+    "/sheets",
+    "/settings"
+   ],
+   "status": "adopted",
+   "source": "app/routes/sheets.tsx",
+   "metanote": {
+    "name": "Sync mode toggle",
+    "function": "Escolhe como a planilha chega ao app.",
+    "whenToUse": "Quando o usuário quer revisar antes de gravar (Prévia) ou confiar na leitura automática.",
+    "data": "Modo atual (app_settings).",
+    "interaction": "Dois botões; o ativo tem aria-pressed=true.",
+    "state": "auto (padrão), prévia.",
+    "uxRule": "O modo ativo é indicado por texto e marca ✓, não só por cor."
+   }
+  },
+  {
+   "id": "sync-banner",
+   "family": "Composites",
+   "name": "Sync banner",
+   "function": "One-line result of the last spreadsheet read on the dashboard.",
+   "variants": [
+    "applied",
+    "conflicts",
+    "error",
+    "idle"
+   ],
+   "props": [
+    "result"
+   ],
+   "states": [
+    "applied",
+    "conflicts",
+    "error"
+   ],
+   "dependencies": [],
+   "usage": [
+    "/dashboard"
+   ],
+   "status": "adopted",
+   "source": "app/routes/dashboard.tsx",
+   "metanote": {
+    "name": "Sync banner",
+    "function": "Informa o resultado da leitura da planilha.",
+    "whenToUse": "No topo do dashboard após a sincronização automática.",
+    "data": "SyncResult ou erro.",
+    "interaction": "Link para a página Planilha.",
+    "state": "aplicado, conflito, erro.",
+    "uxRule": "Mensagem curta com número e unidade; erro sempre com ação sugerida."
+   }
+  },
+  {
+   "id": "pattern-sheet-sync",
+   "family": "Patterns",
+   "name": "Spreadsheet sync",
+   "function": "Read Google Sheets, show the three-way plan, apply with audit.",
+   "variants": [
+    "auto",
+    "preview"
+   ],
+   "props": [],
+   "states": [
+    "not-connected",
+    "read",
+    "applied",
+    "conflicts",
+    "invalid"
+   ],
+   "dependencies": [
+    "ds:sync-mode-toggle",
+    "ds:card"
+   ],
+   "usage": [
+    "/sheets"
+   ],
+   "status": "adopted",
+   "source": "app/routes/sheets.tsx",
+   "metanote": {
+    "name": "Spreadsheet sync",
+    "function": "Traz as edições da planilha para o app.",
+    "whenToUse": "Sempre que a planilha for editada.",
+    "data": "Valores de DATA_Activities (M:R), snapshot, valores do app.",
+    "interaction": "Recarregar, escolher conflitos, Aplicar.",
+    "state": "não conectado, lido, aplicado, conflitos, células inválidas.",
+    "uxRule": "Nenhuma escrita sem regra: automático só aplica o que mudou na planilha; conflitos exigem decisão."
+   }
+  },
+  {
+   "id": "login-panel",
+   "family": "Layouts",
+   "name": "Login panel",
+   "function": "Google sign-in entry point with error messages.",
+   "variants": [
+    "default"
+   ],
+   "props": [
+    "error",
+    "returnTo"
+   ],
+   "states": [
+    "idle",
+    "error",
+    "not-configured",
+    "dev-bypass"
+   ],
+   "dependencies": [
+    "ds:button"
+   ],
+   "usage": [
+    "/login"
+   ],
+   "status": "adopted",
+   "source": "app/routes/login.tsx",
+   "metanote": {
+    "name": "Login panel",
+    "function": "Entrada do sistema.",
+    "whenToUse": "Quando não há sessão.",
+    "data": "Erro de login (código) e destino após entrar.",
+    "interaction": "Botão Entrar com Google.",
+    "state": "normal, erro, não configurado, modo local.",
+    "uxRule": "Mensagens de erro dizem o que fazer, sem detalhes internos."
+   }
   }
  ]
 }

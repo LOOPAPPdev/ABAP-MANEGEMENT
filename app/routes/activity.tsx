@@ -6,7 +6,7 @@ import { Input, Label, Select } from "~/components/ui/input";
 import { EVIDENCE_KINDS, STATUSES } from "~/domain/governance";
 import { activityIdSchema, evidenceInputSchema, statusChangeSchema } from "~/server/api/schemas";
 import { NotFoundError } from "~/server/governance-service";
-import { serviceFrom, UI_ACTOR } from "../lib/service.server";
+import { actorFrom, serviceFrom } from "../lib/service.server";
 import type { Route } from "./+types/activity";
 
 export function meta({ data }: Route.MetaArgs) {
@@ -36,13 +36,13 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   if (form.intent === "status") {
     const parsed = statusChangeSchema.safeParse(form);
     if (!parsed.success) return data({ intent: "status", errors: parsed.error.issues.map((i) => i.message) }, { status: 400 });
-    const result = await service.changeStatus(activity.id, parsed.data.status, UI_ACTOR);
+    const result = await service.changeStatus(activity.id, parsed.data.status, actorFrom(context));
     return { intent: "status", warnings: result.warnings, errors: [] as string[] };
   }
   if (form.intent === "evidence") {
     const parsed = evidenceInputSchema.safeParse({ ...form, note: form.note || undefined });
     if (!parsed.success) return data({ intent: "evidence", errors: parsed.error.issues.map((i) => i.message) }, { status: 400 });
-    await service.addEvidence(activity.id, parsed.data, UI_ACTOR);
+    await service.addEvidence(activity.id, parsed.data, actorFrom(context));
     return { intent: "evidence", warnings: [], errors: [] as string[] };
   }
   return data({ intent: "unknown", errors: ["Unknown action"] }, { status: 400 });

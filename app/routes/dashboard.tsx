@@ -2,22 +2,53 @@ import { Link } from "react-router";
 import { FlagBadge, ProgressBar } from "~/components/governance/badges";
 import { Card, CardTitle } from "~/components/ui/card";
 import { pct } from "~/lib/utils";
-import { serviceFrom } from "../lib/service.server";
+import { actorFrom, serviceFrom, syncFrom } from "../lib/service.server";
 import type { Route } from "./+types/dashboard";
 
 export function meta() {
   return [{ title: "Dashboard · Governance System" }];
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
-  return { dashboard: await serviceFrom(context).dashboard() };
+export async function loader({ context, request }: Route.LoaderArgs) {
+  // Automatic mode: read the spreadsheet when the dashboard opens (at most every 30 s; ?sync=1 forces it).
+  const sync = await syncFrom(context).autoSyncIfDue(actorFrom(context), new URL(request.url).searchParams.has("sync"));
+  const banner = sync && {
+    applied: sync.result ? sync.result.applied.changes + sync.result.applied.evidence : 0,
+    conflicts: sync.result?.skippedConflicts.length ?? 0,
+    invalid: sync.result ? sync.result.plan.issues.length + sync.result.invalidEvidence.length : 0,
+    error: sync.error ?? null,
+    notConnected: Boolean(sync.notConnected),
+  };
+  return { dashboard: await serviceFrom(context).dashboard(), banner };
+}
+
+function SyncBanner({ b }: { b: NonNullable<Route.ComponentProps["loaderData"]["banner"]> }) {
+  const text = b.notConnected
+    ? "Planilha ainda não conectada: os dados mostrados são os do app."
+    : b.error
+      ? `Não foi possível ler a planilha: ${b.error}`
+      : `Planilha lida agora: ${b.applied} alteração(ões) aplicada(s)` +
+        (b.conflicts ? `, ${b.conflicts} conflito(s) aguardando decisão` : "") +
+        (b.invalid ? `, ${b.invalid} célula(s) inválida(s)` : "") +
+        ".";
+  return (
+    <p role="status" data-component-id="sync-banner" data-testid="sync-banner" className={`rounded border p-2 text-sm ${b.error && !b.notConnected ? "border-destructive text-destructive" : "border-border bg-card"}`}>
+      {text} <Link className="text-primary underline" to="/sheets">Ver planilha</Link>
+    </p>
+  );
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const { overall, byArea, flags, nextGate } = loaderData.dashboard;
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <Link to="/dashboard?sync=1" className="rounded-md border border-border bg-card px-3 py-1.5 text-sm hover:bg-accent" preventScrollReset>
+          Recarregar dados
+        </Link>
+      </div>
+      {loaderData.banner && <SyncBanner b={loaderData.banner} />}
       <p className="text-sm text-muted-foreground">
         Calculated on the server. An activity counts as done only when status is DONE and evidence exists.
       </p>

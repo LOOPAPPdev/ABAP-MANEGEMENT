@@ -63,3 +63,51 @@ export const activityEvents = sqliteTable(
   },
   (t) => [index("events_activity_idx").on(t.projectId, t.activityId)],
 );
+
+/** Key/value application settings (e.g. sheets.syncMode). */
+export const appSettings = sqliteTable("app_settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: text("updated_at").notNull(),
+  updatedBy: text("updated_by").notNull(),
+});
+
+/**
+ * Google OAuth refresh token used by the server to read the spreadsheet.
+ * Stored encrypted (AES-GCM, key in the TOKEN_ENCRYPTION_KEY secret). Never sent to the browser.
+ */
+export const googleCredentials = sqliteTable("google_credentials", {
+  id: text("id").primaryKey(), // "sheets"
+  email: text("email").notNull(),
+  scope: text("scope").notNull(),
+  ciphertext: text("ciphertext").notNull(),
+  iv: text("iv").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+/** Last spreadsheet values seen per activity: the base of the three-way sync. */
+export const sheetSnapshots = sqliteTable(
+  "sheet_snapshots",
+  {
+    projectId: text("project_id").notNull(),
+    activityId: text("activity_id").notNull(),
+    valuesJson: text("values_json").notNull(),
+    syncedAt: text("synced_at").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.projectId, t.activityId] })],
+);
+
+/** One row per spreadsheet read (auto or manual), for traceability. */
+export const syncRuns = sqliteTable("sync_runs", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  projectId: text("project_id").notNull(),
+  mode: text("mode").notNull(), // auto | manual
+  actor: text("actor").notNull(),
+  source: text("source").notNull(), // google | fixture
+  readAt: text("read_at").notNull(),
+  applied: integer("applied").notNull(),
+  conflicts: integer("conflicts").notNull(),
+  invalid: integer("invalid").notNull(),
+  status: text("status").notNull(), // ok | error
+  message: text("message").notNull().default(""),
+});

@@ -1,4 +1,4 @@
-import { isRouteErrorResponse, Links, Meta, NavLink, Outlet, Scripts, ScrollRestoration, useMatches } from "react-router";
+import { isRouteErrorResponse, Links, Meta, NavLink, Outlet, Scripts, ScrollRestoration, useMatches, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
 
@@ -7,12 +7,18 @@ const NAV = [
   ["/activities", "Activities"],
   ["/canvas", "Canvas"],
   ["/evidence", "Evidence"],
+  ["/sheets", "Planilha"],
   ["/projects", "Projects"],
   ["/showcase", "Design system"],
   ["/settings", "Settings"],
 ] as const;
 
+export function loader({ context }: Route.LoaderArgs) {
+  return { user: context.user, auth: context.cfg.auth };
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const root = useRouteLoaderData<typeof loader>("root");
   // Routes that export handle = { fullBleed: true } (the canvas) use the full viewport width.
   const fullBleed = useMatches().some((m) => (m.handle as { fullBleed?: boolean } | undefined)?.fullBleed);
   return (
@@ -30,6 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <header className="border-b border-border bg-card">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
             <span className="font-bold">Governance System</span>
+            {root?.user && (
             <nav aria-label="Main">
               <ul className="flex flex-wrap gap-1">
                 {NAV.map(([to, label]) => (
@@ -46,6 +53,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 ))}
               </ul>
             </nav>
+            )}
+            {root?.user && (
+              <div className="ml-auto flex items-center gap-2 text-sm">
+                <span className="text-muted-foreground" data-testid="current-user">
+                  {root.user.mode === "dev" ? "modo local (sem login)" : root.user.email}
+                </span>
+                {root.user.mode === "google" && (
+                  <form method="post" action="/auth/logout">
+                    <button type="submit" className="rounded px-2 py-1 text-primary underline hover:bg-accent">Sair</button>
+                  </form>
+                )}
+              </div>
+            )}
           </div>
         </header>
         <main id="main" className={fullBleed ? "" : "mx-auto max-w-6xl px-4 py-6"}>
