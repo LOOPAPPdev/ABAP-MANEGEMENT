@@ -1,0 +1,329 @@
+{
+  "version": 1,
+  "status": "não validado",
+  "note": "Extraído do protótipo HTML. Os ADR-002/003 citam 23 atividades e 7 fases; o protótipo contém 17 etapas em 6 fases. Não completar sem a fonte 'Clean Sea Pipeline Completo.md'.",
+  "source": {
+    "file": "reference/loop-design/cleansea-operacao-integrada.html",
+    "sha256": "9bb690a790f3659d726890ca6a3af6f1152a9a0ed32355ed620c500e291dd087",
+    "upstream": [
+      "Organograma Inicial (imagem)",
+      "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(2).md"
+    ]
+  },
+  "metadata": {
+    "name": "CleanSea — Studio LOOP",
+    "version": "1.1",
+    "source": [
+      "Organograma Inicial (imagem)",
+      "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(2).md"
+    ],
+    "status": "Protótipo local não validado com a equipe"
+  },
+  "context": {
+    "mainPort": "Santos",
+    "otherPorts": "Administração/comercial internos; execução terceirizada",
+    "monthlyOperationsApprox": 8,
+    "leadTimeDays": [
+      4,
+      7
+    ],
+    "channels": [
+      "Web",
+      "Planilha central",
+      "WhatsApp",
+      "Email",
+      "Forms"
+    ]
+  },
+  "people": {
+    "founders": [
+      {
+        "name": "Felipe",
+        "roles": [
+          "Gestão",
+          "Administração",
+          "Financeiro",
+          "Logística",
+          "Abertura",
+          "Fechamento"
+        ]
+      },
+      {
+        "name": "Cecília",
+        "roles": [
+          "Sócia fundadora",
+          "Gestão comercial",
+          "Comunicação"
+        ]
+      }
+    ],
+    "sales": [
+      "Ana",
+      "Renan",
+      "José"
+    ],
+    "operations": [
+      {
+        "name": "João",
+        "role": "Visitador de bordo"
+      },
+      {
+        "name": "Marcos",
+        "role": "Administração operacional"
+      }
+    ],
+    "drivers": [
+      "Paulo",
+      "Hélio"
+    ]
+  },
+  "phases": [
+    {
+      "id": "A",
+      "title": "Contato e venda",
+      "short": "Comercial",
+      "range": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "B",
+      "title": "Registro e acionamento",
+      "short": "Comunicação",
+      "range": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "C",
+      "title": "Preparação e sobreaviso",
+      "short": "Preparação",
+      "range": [
+        5,
+        6
+      ]
+    },
+    {
+      "id": "D",
+      "title": "Monitoramento e confirmação",
+      "short": "Controle",
+      "range": [
+        7,
+        10
+      ]
+    },
+    {
+      "id": "E",
+      "title": "Mobilização e execução",
+      "short": "Execução",
+      "range": [
+        11,
+        14
+      ]
+    },
+    {
+      "id": "F",
+      "title": "Documentação e encerramento",
+      "short": "Fechamento",
+      "range": [
+        15,
+        17
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": 1,
+      "phase": "A",
+      "task": "Cliente entra em contato",
+      "owner": "Cliente / comercial",
+      "channel": "Não especificado",
+      "control": "Início do fluxo",
+      "lane": "Cliente"
+    },
+    {
+      "id": 2,
+      "phase": "A",
+      "task": "Comercial fecha a venda; Felipe inicia a logística",
+      "owner": "Comercial / Felipe",
+      "channel": "Não especificado",
+      "control": "Venda e planejamento",
+      "lane": "Comercial"
+    },
+    {
+      "id": 3,
+      "phase": "B",
+      "task": "Registrar a informação da venda",
+      "owner": "Cecília (a confirmar)",
+      "channel": "Sistema X (não definido)",
+      "control": "Definir fonte primária",
+      "lane": "Comercial",
+      "gap": true
+    },
+    {
+      "id": 4,
+      "phase": "B",
+      "task": "Comunicar venda à equipe operacional",
+      "owner": "Cecília",
+      "channel": "WhatsApp",
+      "control": "Acionamento",
+      "lane": "Comercial"
+    },
+    {
+      "id": 5,
+      "phase": "C",
+      "task": "Preparar documentos X e colocar João de sobreaviso",
+      "owner": "Marcos / João",
+      "channel": "Documento X (não definido)",
+      "control": "Definir documentos",
+      "lane": "Operação",
+      "gap": true
+    },
+    {
+      "id": 6,
+      "phase": "C",
+      "task": "Colocar a equipe operacional de sobreaviso",
+      "owner": "Equipe operacional",
+      "channel": "Canal a confirmar",
+      "control": "Disponibilidade",
+      "lane": "Operação"
+    },
+    {
+      "id": 7,
+      "phase": "D",
+      "task": "Consultar as fontes de monitoramento do navio",
+      "owner": "Controle (a confirmar)",
+      "channel": "MarineTraffic · Praticagem SP · Semafórico",
+      "control": "Posição / previsão",
+      "lane": "Monitoramento"
+    },
+    {
+      "id": 8,
+      "phase": "D",
+      "task": "Acompanhar as variáveis de controle",
+      "owner": "Controle (a confirmar)",
+      "channel": "V1 · V2 · V3",
+      "control": "Variáveis não definidas",
+      "lane": "Monitoramento",
+      "gap": true
+    },
+    {
+      "id": 9,
+      "phase": "D",
+      "task": "Estimar chegada do cliente e horário de recepção",
+      "owner": "Controle / operação",
+      "channel": "V1–V3 · geolocalização",
+      "control": "ETA e gatilho de chegada",
+      "lane": "Monitoramento",
+      "gap": true
+    },
+    {
+      "id": 10,
+      "phase": "D",
+      "task": "Confirmar V1, V2 e V3 antes da mobilização",
+      "owner": "Controle (a confirmar)",
+      "channel": "Confirmação operacional",
+      "control": "Gateway de liberação",
+      "lane": "Monitoramento",
+      "gap": true
+    },
+    {
+      "id": 11,
+      "phase": "E",
+      "task": "Acionar motoristas e coordenar a logística",
+      "owner": "Felipe / transporte",
+      "channel": "Contato direto (canal a confirmar)",
+      "control": "Disponibilidade",
+      "lane": "Logística"
+    },
+    {
+      "id": 12,
+      "phase": "E",
+      "task": "Marcos se desloca e executa atividade X",
+      "owner": "Marcos",
+      "channel": "Presencial",
+      "control": "Atividade X a definir",
+      "lane": "Operação",
+      "gap": true
+    },
+    {
+      "id": 13,
+      "phase": "E",
+      "task": "João imprime e prepara D1, D2, D3 e D4",
+      "owner": "João",
+      "channel": "D1 impresso; D2–D4 manuscritos",
+      "control": "Integridade documental",
+      "lane": "Operação"
+    },
+    {
+      "id": 14,
+      "phase": "E",
+      "task": "Executar e concluir a operação",
+      "owner": "Equipe operacional / transporte",
+      "channel": "Presencial",
+      "control": "Evidência de execução",
+      "lane": "Operação"
+    },
+    {
+      "id": 15,
+      "phase": "F",
+      "task": "Coletar e enviar documentos de João e Marcos a Felipe",
+      "owner": "João / Marcos → Felipe",
+      "channel": "WhatsApp",
+      "control": "Conferência e rastreabilidade",
+      "lane": "Operação"
+    },
+    {
+      "id": 16,
+      "phase": "F",
+      "task": "Despachar entidades e submeter certificados/controles",
+      "owner": "Felipe",
+      "channel": "Plataformas de controle · balança",
+      "control": "Registro e submissão",
+      "lane": "Logística"
+    },
+    {
+      "id": 17,
+      "phase": "F",
+      "task": "Encerrar a operação",
+      "owner": "Felipe (a confirmar)",
+      "channel": "Não especificado",
+      "control": "Critério formal pendente",
+      "lane": "Logística",
+      "gap": true
+    }
+  ],
+  "documents": [
+    {
+      "id": "D1",
+      "title": "CETESB — Manifesto de Transporte de Resíduos",
+      "method": "Impresso 100%"
+    },
+    {
+      "id": "D2",
+      "title": "Terrestre Ambiental — Manifesto de Carga",
+      "method": "Formulário manuscrito"
+    },
+    {
+      "id": "D3",
+      "title": "Premium Ambiental — Certificado MARPOL de retirada de resíduos de embarcação",
+      "method": "Formulário manuscrito"
+    },
+    {
+      "id": "D4",
+      "title": "Premium Ambiental — CETESB / IBAMA / ANVISA: certificado de coleta de resíduos",
+      "method": "Formulário manuscrito"
+    }
+  ],
+  "unresolved": [
+    "Sistema X das etapas 3 e 5",
+    "Atividade X de Marcos na etapa 12",
+    "Definição técnica de V1, V2 e V3",
+    "Gatilhos de liberação e decisão",
+    "Integrações e acesso por API não confirmados",
+    "Validação e versionamento de D2–D4",
+    "Critério de encerramento e venda posterior do material coletado"
+  ]
+}
