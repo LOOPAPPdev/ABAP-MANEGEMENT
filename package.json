@@ -17,16 +17,26 @@
     "db:seed-sql": "tsx scripts/seed-sql.ts",
     "db:migrate:local": "wrangler d1 migrations apply governance --local",
     "seed:local": "npm run db:seed-sql && wrangler d1 execute governance --local --file=data/seed/seed.sql",
-    "db:reset:local": "rm -rf .wrangler/state && npm run db:migrate:local && npm run seed:local"
+    "db:reset:local": "rm -rf .wrangler/state && npm run db:migrate:local && npm run seed:local",
+    "import:dv-criteria": "python3 -I scripts/import_dv_criteria.py reference/loop-design/CRITERIOS_QUALIDADE_VISUALIZACAO_DADOS.csv data/quality/dv-criteria.v1.json",
+    "extract:cleansea": "node scripts/extract_cleansea.mjs reference/loop-design/cleansea-operacao-integrada.html data/reference/cleansea.v1.json"
   },
   "dependencies": {
+    "@radix-ui/react-separator": "^1.2.0",
+    "@radix-ui/react-slot": "^1.5.0",
+    "@radix-ui/react-tabs": "^1.2.1",
+    "@radix-ui/react-toggle": "^1.2.1",
+    "@radix-ui/react-toggle-group": "^1.2.1",
+    "@radix-ui/react-tooltip": "^1.4.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.4",
     "hono": "^4.13.18",
     "isbot": "^5.2.3",
+    "lucide-react": "^1.72.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "react-resizable-panels": "^2.1.9",
     "react-router": "^7.18.5",
     "tailwind-merge": "^3.7.0",
     "zod": "^4.6.7"

@@ -24,6 +24,10 @@
   --destructive: #b10e1c;       /* color.alert */
   --destructive-foreground: #ffffff;
   --ring: #0f6cbd;
+  --accent-foreground: #242424;
+  --secondary: #f0f0f0;
+  --popover: #ffffff;
+  --popover-foreground: #242424;
   --radius: 0.375rem;
 }
 
@@ -36,6 +40,10 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-secondary: var(--secondary);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

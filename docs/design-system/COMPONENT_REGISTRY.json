@@ -1,0 +1,1668 @@
+{
+ "version": "1.0.0",
+ "components": [
+  {
+   "id": "tokens-color",
+   "family": "Foundations",
+   "name": "Color tokens",
+   "function": "Monochrome surfaces, brand blue for action, one alert colour.",
+   "variants": [
+    "bg",
+    "fg",
+    "brand",
+    "alert",
+    "status"
+   ],
+   "props": [],
+   "states": [
+    "light"
+   ],
+   "dependencies": [],
+   "usage": [
+    "all"
+   ],
+   "status": "adopted",
+   "source": "docs/design-system/DESIGN_TOKENS.json",
+   "metanote": {
+    "name": "Color tokens",
+    "function": "Define todas as cores da interface.",
+    "whenToUse": "Sempre que uma cor for necessária; nunca usar HEX solto.",
+    "data": "DESIGN_TOKENS.json → app/app.css.",
+    "interaction": "Nenhuma.",
+    "state": "Somente tema claro (escuro: decisão pendente).",
+    "uxRule": "Cor nunca é o único sinal; vermelho só para bloqueio/crítico."
+   }
+  },
+  {
+   "id": "tokens-type",
+   "family": "Foundations",
+   "name": "Typography",
+   "function": "One family (Segoe UI/Arial) and three sizes.",
+   "variants": [
+    "title",
+    "body",
+    "small"
+   ],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [
+    "all"
+   ],
+   "status": "adopted",
+   "source": "docs/design-system/DESIGN_TOKENS.json",
+   "metanote": {
+    "name": "Typography",
+    "function": "Define família e tamanhos.",
+    "whenToUse": "Em todo texto.",
+    "data": "type.* tokens.",
+    "interaction": "Nenhuma.",
+    "state": "—",
+    "uxRule": "Hierarquia por tamanho e peso, não por cor."
+   }
+  },
+  {
+   "id": "tokens-space",
+   "family": "Foundations",
+   "name": "Spacing and radius",
+   "function": "4px unit, 16px gutter, 4px node radius.",
+   "variants": [
+    "unit",
+    "gutter",
+    "radius"
+   ],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [
+    "all"
+   ],
+   "status": "adopted",
+   "source": "docs/design-system/DESIGN_TOKENS.json",
+   "metanote": {
+    "name": "Spacing and radius",
+    "function": "Ritmo de espaçamento e cantos.",
+    "whenToUse": "Em layout e componentes.",
+    "data": "space.*, radius.*.",
+    "interaction": "Nenhuma.",
+    "state": "—",
+    "uxRule": "Espaço em branco separa grupos antes de bordas (DV-QC-018)."
+   }
+  },
+  {
+   "id": "icons",
+   "family": "Foundations",
+   "name": "Icons (lucide)",
+   "function": "Line icons that name the function of a control or node type.",
+   "variants": [
+    "16px"
+   ],
+   "props": [
+    "aria-hidden"
+   ],
+   "states": [],
+   "dependencies": [
+    "lucide-react"
+   ],
+   "usage": [
+    "canvas",
+    "showcase"
+   ],
+   "status": "adopted",
+   "source": "lucide-react",
+   "metanote": {
+    "name": "Icons (lucide)",
+    "function": "Ícone funcional.",
+    "whenToUse": "Para reforçar um rótulo de texto.",
+    "data": "Nome do ícone.",
+    "interaction": "Nenhuma.",
+    "state": "—",
+    "uxRule": "Ícone sempre acompanhado de texto ou aria-label."
+   }
+  },
+  {
+   "id": "button",
+   "family": "Primitives",
+   "name": "Button",
+   "function": "Triggers an action.",
+   "variants": [
+    "default",
+    "outline",
+    "ghost",
+    "secondary",
+    "destructive",
+    "link"
+   ],
+   "props": [
+    "variant",
+    "size",
+    "asChild",
+    "disabled"
+   ],
+   "states": [
+    "default",
+    "hover",
+    "focus",
+    "disabled"
+   ],
+   "dependencies": [
+    "@radix-ui/react-slot",
+    "class-variance-authority"
+   ],
+   "usage": [
+    "activity",
+    "activities",
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "src/components/ui/button.tsx (shadcn, consolidated)",
+   "metanote": {
+    "name": "Button",
+    "function": "Executa uma ação.",
+    "whenToUse": "Para salvar, filtrar, navegar entre passos.",
+    "data": "Rótulo do verbo.",
+    "interaction": "Clique, Enter, Espaço.",
+    "state": "default, hover, focus, disabled.",
+    "uxRule": "Um botão primário por região; rótulo com verbo."
+   }
+  },
+  {
+   "id": "badge",
+   "family": "Primitives",
+   "name": "Badge",
+   "function": "Short label for a state.",
+   "variants": [
+    "status",
+    "flag"
+   ],
+   "props": [
+    "className"
+   ],
+   "states": [
+    "default"
+   ],
+   "dependencies": [],
+   "usage": [
+    "activities",
+    "activity",
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "src/components/ui/badge.tsx",
+   "metanote": {
+    "name": "Badge",
+    "function": "Rótulo curto de estado.",
+    "whenToUse": "Para status e flags.",
+    "data": "Texto do estado.",
+    "interaction": "Nenhuma.",
+    "state": "default.",
+    "uxRule": "Sempre com texto; cor só reforça."
+   }
+  },
+  {
+   "id": "status-badge",
+   "family": "Primitives",
+   "name": "StatusBadge",
+   "function": "Shows one of the 8 workbook statuses with the status.* tokens.",
+   "variants": [
+    "8 statuses"
+   ],
+   "props": [
+    "status"
+   ],
+   "states": [
+    "default"
+   ],
+   "dependencies": [
+    "ds:badge"
+   ],
+   "usage": [
+    "activities",
+    "activity",
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "src/components/governance/badges.tsx",
+   "metanote": {
+    "name": "StatusBadge",
+    "function": "Exibe o status da atividade.",
+    "whenToUse": "Onde houver status de atividade.",
+    "data": "Status (1 de 8).",
+    "interaction": "Nenhuma.",
+    "state": "8 estados do workbook.",
+    "uxRule": "DONE preto sólido = concluída com evidência."
+   }
+  },
+  {
+   "id": "flag-badge",
+   "family": "Primitives",
+   "name": "FlagBadge",
+   "function": "Shows BLOCKED, NO EVIDENCE, DEP PENDING or OVERDUE.",
+   "variants": [
+    "4 flags"
+   ],
+   "props": [
+    "flag"
+   ],
+   "states": [
+    "default",
+    "hidden"
+   ],
+   "dependencies": [
+    "ds:badge"
+   ],
+   "usage": [
+    "dashboard",
+    "activities",
+    "activity",
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "src/components/governance/badges.tsx",
+   "metanote": {
+    "name": "FlagBadge",
+    "function": "Sinaliza um problema de governança.",
+    "whenToUse": "Quando computeFlag retornar uma flag.",
+    "data": "Flag calculada no servidor.",
+    "interaction": "Nenhuma.",
+    "state": "Oculto quando não há flag.",
+    "uxRule": "Ícone ⚑ + texto; vermelho reservado a alerta."
+   }
+  },
+  {
+   "id": "progress-bar",
+   "family": "Primitives",
+   "name": "ProgressBar",
+   "function": "Accessible ratio bar.",
+   "variants": [
+    "default"
+   ],
+   "props": [
+    "ratio",
+    "label"
+   ],
+   "states": [
+    "0–100%"
+   ],
+   "dependencies": [],
+   "usage": [
+    "dashboard"
+   ],
+   "status": "adopted",
+   "source": "src/components/governance/badges.tsx",
+   "metanote": {
+    "name": "ProgressBar",
+    "function": "Mostra progresso.",
+    "whenToUse": "Para razões 0–100%.",
+    "data": "ratio (0..1) + rótulo.",
+    "interaction": "Nenhuma.",
+    "state": "valor.",
+    "uxRule": "Número sempre visível ao lado da barra (DV-QC-019)."
+   }
+  },
+  {
+   "id": "input",
+   "family": "Primitives",
+   "name": "Input / Select / Label",
+   "function": "Form fields with the state.input token (white + brand border).",
+   "variants": [
+    "text",
+    "select"
+   ],
+   "props": [
+    "id",
+    "name",
+    "required",
+    "aria-invalid"
+   ],
+   "states": [
+    "default",
+    "focus",
+    "invalid",
+    "disabled"
+   ],
+   "dependencies": [],
+   "usage": [
+    "activity",
+    "activities"
+   ],
+   "status": "adopted",
+   "source": "src/components/ui/input.tsx",
+   "metanote": {
+    "name": "Input / Select / Label",
+    "function": "Campo de entrada.",
+    "whenToUse": "Para dados que o usuário edita.",
+    "data": "Valor do campo.",
+    "interaction": "Digitação, teclado.",
+    "state": "default, focus, invalid, disabled.",
+    "uxRule": "Rótulo visível sempre ligado por htmlFor."
+   }
+  },
+  {
+   "id": "toggle",
+   "family": "Primitives",
+   "name": "Toggle",
+   "function": "Two-state button.",
+   "variants": [
+    "default",
+    "outline"
+   ],
+   "props": [
+    "pressed",
+    "size"
+   ],
+   "states": [
+    "default",
+    "hover",
+    "focus",
+    "disabled",
+    "on"
+   ],
+   "dependencies": [
+    "@radix-ui/react-toggle"
+   ],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "src/components/ui/toggle.tsx (shadcn)",
+   "metanote": {
+    "name": "Toggle",
+    "function": "Liga/desliga uma opção.",
+    "whenToUse": "Para alternâncias simples.",
+    "data": "Estado on/off.",
+    "interaction": "Clique, Espaço.",
+    "state": "on usa brand-tint + negrito.",
+    "uxRule": "Estado ligado visível sem depender só da cor."
+   }
+  },
+  {
+   "id": "tooltip",
+   "family": "Primitives",
+   "name": "Tooltip",
+   "function": "Short help on hover or focus.",
+   "variants": [
+    "default"
+   ],
+   "props": [
+    "content"
+   ],
+   "states": [
+    "closed",
+    "open"
+   ],
+   "dependencies": [
+    "@radix-ui/react-tooltip"
+   ],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "src/components/ui/tooltip.tsx (shadcn)",
+   "metanote": {
+    "name": "Tooltip",
+    "function": "Ajuda curta.",
+    "whenToUse": "Para explicar um ícone ou controle compacto.",
+    "data": "Texto curto.",
+    "interaction": "Hover e foco.",
+    "state": "aberto/fechado.",
+    "uxRule": "Nunca esconder informação essencial só no tooltip."
+   }
+  },
+  {
+   "id": "separator",
+   "family": "Primitives",
+   "name": "Separator",
+   "function": "Visual divider between groups.",
+   "variants": [
+    "horizontal",
+    "vertical"
+   ],
+   "props": [
+    "orientation",
+    "decorative"
+   ],
+   "states": [
+    "default"
+   ],
+   "dependencies": [
+    "@radix-ui/react-separator"
+   ],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "src/components/ui/separator.tsx (shadcn)",
+   "metanote": {
+    "name": "Separator",
+    "function": "Divide grupos.",
+    "whenToUse": "Quando espaço em branco não basta.",
+    "data": "Nenhum.",
+    "interaction": "Nenhuma.",
+    "state": "—",
+    "uxRule": "Preferir espaço em branco (DV-QC-018)."
+   }
+  },
+  {
+   "id": "card",
+   "family": "Composites",
+   "name": "Card",
+   "function": "Bordered surface that groups related content.",
+   "variants": [
+    "default"
+   ],
+   "props": [
+    "className"
+   ],
+   "states": [
+    "default",
+    "hover"
+   ],
+   "dependencies": [],
+   "usage": [
+    "dashboard",
+    "activity",
+    "showcase"
+   ],
+   "status": "adopted",
+   "source": "src/components/ui/card.tsx",
+   "metanote": {
+    "name": "Card",
+    "function": "Agrupa conteúdo relacionado.",
+    "whenToUse": "Para KPIs, blocos de formulário, painéis.",
+    "data": "Título + conteúdo.",
+    "interaction": "Pode ser link inteiro.",
+    "state": "default, hover (quando link).",
+    "uxRule": "Um assunto por card."
+   }
+  },
+  {
+   "id": "tabs",
+   "family": "Composites",
+   "name": "Tabs",
+   "function": "Switches panels in the same region.",
+   "variants": [
+    "default"
+   ],
+   "props": [
+    "value",
+    "onValueChange"
+   ],
+   "states": [
+    "active",
+    "inactive",
+    "focus"
+   ],
+   "dependencies": [
+    "@radix-ui/react-tabs"
+   ],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "src/components/ui/tabs.tsx (shadcn)",
+   "metanote": {
+    "name": "Tabs",
+    "function": "Alterna painéis da mesma região.",
+    "whenToUse": "No Inspector: Dados | Metanota.",
+    "data": "Lista de painéis.",
+    "interaction": "Clique, setas do teclado.",
+    "state": "ativo/inativo.",
+    "uxRule": "Rótulos curtos; no máximo 5 abas."
+   }
+  },
+  {
+   "id": "view-toggle",
+   "family": "Composites",
+   "name": "View Toggle",
+   "function": "Universal control to switch the canvas view (ADR-003 C).",
+   "variants": [
+    "5 views"
+   ],
+   "props": [
+    "value",
+    "onValueChange"
+   ],
+   "states": [
+    "selected",
+    "focus",
+    "disabled"
+   ],
+   "dependencies": [
+    "ds:toggle",
+    "@radix-ui/react-toggle-group"
+   ],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "src/components/ui/toggle-group.tsx + app/routes/canvas.tsx",
+   "metanote": {
+    "name": "View Toggle",
+    "function": "Troca a estrutura visual do mesmo modelo.",
+    "whenToUse": "Para alternar Infográfico, Tutorial, BPMN, Organograma, Diagrama complexo.",
+    "data": "ViewId.",
+    "interaction": "Clique, setas do teclado.",
+    "state": "Uma visão selecionada.",
+    "uxRule": "Trocar de visão nunca altera dados nem seleção."
+   }
+  },
+  {
+   "id": "choice-card",
+   "family": "Composites",
+   "name": "ChoiceCard",
+   "function": "Selectable card with radio or checkbox semantics (Adaptive Card-Based Questionnaire).",
+   "variants": [
+    "single",
+    "multiple"
+   ],
+   "props": [
+    "value",
+    "label",
+    "description",
+    "checked"
+   ],
+   "states": [
+    "default",
+    "hover",
+    "focus",
+    "selected",
+    "disabled",
+    "error"
+   ],
+   "dependencies": [],
+   "usage": [
+    "showcase"
+   ],
+   "status": "adopted",
+   "source": "src/components/patterns/choice-card.tsx",
+   "metanote": {
+    "name": "ChoiceCard",
+    "function": "Opção selecionável em formato de cartão.",
+    "whenToUse": "Em questionários e onboarding com poucas opções reconhecíveis.",
+    "data": "Rótulo + descrição.",
+    "interaction": "Clique, Espaço, setas (grupo).",
+    "state": "default, hover, focus, selected, disabled, error.",
+    "uxRule": "Selecionado indicado por marca ✓ e borda, não só cor."
+   }
+  },
+  {
+   "id": "card-selection-group",
+   "family": "Composites",
+   "name": "CardSelectionGroup",
+   "function": "Fieldset that groups ChoiceCards as a radio or checkbox group.",
+   "variants": [
+    "radio",
+    "checkbox"
+   ],
+   "props": [
+    "legend",
+    "name",
+    "options",
+    "multiple"
+   ],
+   "states": [
+    "default",
+    "error"
+   ],
+   "dependencies": [
+    "ds:choice-card"
+   ],
+   "usage": [
+    "showcase"
+   ],
+   "status": "adopted",
+   "source": "src/components/patterns/choice-card.tsx",
+   "metanote": {
+    "name": "CardSelectionGroup",
+    "function": "Agrupa ChoiceCards.",
+    "whenToUse": "Para uma pergunta com opções.",
+    "data": "Pergunta + opções.",
+    "interaction": "Teclado nativo de radio/checkbox.",
+    "state": "default, error.",
+    "uxRule": "Uma pergunta por grupo, com legend."
+   }
+  },
+  {
+   "id": "stepper",
+   "family": "Composites",
+   "name": "Stepper",
+   "function": "Ordered steps with previous / next / restart.",
+   "variants": [
+    "linear"
+   ],
+   "props": [
+    "steps",
+    "current"
+   ],
+   "states": [
+    "first",
+    "middle",
+    "last"
+   ],
+   "dependencies": [
+    "ds:button"
+   ],
+   "usage": [
+    "canvas (tutorial)"
+   ],
+   "status": "adopted",
+   "source": "app/components/canvas/tutorial-view.tsx",
+   "metanote": {
+    "name": "Stepper",
+    "function": "Guia por uma sequência.",
+    "whenToUse": "Na visão Tutorial.",
+    "data": "Sequência ordenada de nós.",
+    "interaction": "Anterior, Próximo, Reiniciar, clique no passo.",
+    "state": "primeiro, intermediário, último.",
+    "uxRule": "Mostrar posição (n de N)."
+   }
+  },
+  {
+   "id": "metanote-panel",
+   "family": "Composites",
+   "name": "Metanote panel",
+   "function": "Explains a component on demand (ADR-002 D).",
+   "variants": [
+    "inline"
+   ],
+   "props": [
+    "componentId"
+   ],
+   "states": [
+    "empty",
+    "filled"
+   ],
+   "dependencies": [
+    "ds:tabs"
+   ],
+   "usage": [
+    "canvas",
+    "showcase"
+   ],
+   "status": "adopted",
+   "source": "app/components/canvas/metanote.tsx",
+   "metanote": {
+    "name": "Metanote panel",
+    "function": "Explica um componente.",
+    "whenToUse": "Sob demanda, sem obstruir o fluxo.",
+    "data": "Entrada do COMPONENT_REGISTRY.json.",
+    "interaction": "Botão ⓘ ou aba Metanota.",
+    "state": "vazio, preenchido.",
+    "uxRule": "Sete campos fixos; não cobrir o canvas."
+   }
+  },
+  {
+   "id": "app-shell",
+   "family": "Layouts",
+   "name": "App shell",
+   "function": "Top navigation, skip link and main region.",
+   "variants": [
+    "default"
+   ],
+   "props": [
+    "children"
+   ],
+   "states": [
+    "default"
+   ],
+   "dependencies": [],
+   "usage": [
+    "all routes"
+   ],
+   "status": "adopted",
+   "source": "app/root.tsx",
+   "metanote": {
+    "name": "App shell",
+    "function": "Estrutura global da página.",
+    "whenToUse": "Em todas as rotas.",
+    "data": "Itens de navegação.",
+    "interaction": "Links, skip link.",
+    "state": "rota ativa.",
+    "uxRule": "Skip link como primeiro foco."
+   }
+  },
+  {
+   "id": "canvas-workspace",
+   "family": "Layouts",
+   "name": "Canvas Workspace",
+   "function": "Topbar + left sidebar + canvas + inspector + context bar (ADR-002 B).",
+   "variants": [
+    "default"
+   ],
+   "props": [
+    "dataset",
+    "view"
+   ],
+   "states": [
+    "sidebars expanded/collapsed"
+   ],
+   "dependencies": [
+    "ds:resizable",
+    "ds:view-toggle",
+    "ds:sidebar-library",
+    "ds:inspector",
+    "ds:context-bar"
+   ],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "app/routes/canvas.tsx",
+   "metanote": {
+    "name": "Canvas Workspace",
+    "function": "Área de trabalho de modelagem.",
+    "whenToUse": "Para explorar um modelo em várias visões.",
+    "data": "Graph + projeção.",
+    "interaction": "Selecionar, recolher, redimensionar, zoom.",
+    "state": "Layout salvo localmente.",
+    "uxRule": "Canvas tem prioridade de área."
+   }
+  },
+  {
+   "id": "resizable",
+   "family": "Layouts",
+   "name": "Resizable panels",
+   "function": "Collapsible and resizable panel group.",
+   "variants": [
+    "horizontal"
+   ],
+   "props": [
+    "autoSaveId",
+    "collapsible",
+    "minSize"
+   ],
+   "states": [
+    "expanded",
+    "collapsed",
+    "dragging",
+    "focus"
+   ],
+   "dependencies": [
+    "react-resizable-panels"
+   ],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "src/components/ui/resizable.tsx (shadcn)",
+   "metanote": {
+    "name": "Resizable panels",
+    "function": "Painéis redimensionáveis.",
+    "whenToUse": "Para sidebars do workspace.",
+    "data": "Tamanhos em %.",
+    "interaction": "Arrastar ou setas na alça.",
+    "state": "expandido, recolhido.",
+    "uxRule": "Alça focável e operável por teclado."
+   }
+  },
+  {
+   "id": "sidebar-library",
+   "family": "Layouts",
+   "name": "Sidebar — library",
+   "function": "Dataset, legend of node types, filters and the outline list.",
+   "variants": [
+    "default"
+   ],
+   "props": [
+    "graph",
+    "filters"
+   ],
+   "states": [
+    "expanded",
+    "collapsed"
+   ],
+   "dependencies": [
+    "ds:diagram-node"
+   ],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "app/components/canvas/library.tsx",
+   "metanote": {
+    "name": "Sidebar — library",
+    "function": "Biblioteca e estrutura.",
+    "whenToUse": "Para escolher filtros e achar elementos.",
+    "data": "Tipos de nó, fases/raias, lista de nós.",
+    "interaction": "Clique, teclado.",
+    "state": "expandida/recolhida.",
+    "uxRule": "Lista textual é alternativa acessível ao canvas."
+   }
+  },
+  {
+   "id": "inspector",
+   "family": "Layouts",
+   "name": "Inspector",
+   "function": "Properties, relations and metanote of the selection.",
+   "variants": [
+    "data",
+    "metanote"
+   ],
+   "props": [
+    "node",
+    "graph"
+   ],
+   "states": [
+    "empty",
+    "selected",
+    "hidden-in-view"
+   ],
+   "dependencies": [
+    "ds:tabs",
+    "ds:metanote-panel"
+   ],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "app/components/canvas/inspector.tsx",
+   "metanote": {
+    "name": "Inspector",
+    "function": "Mostra propriedades da seleção.",
+    "whenToUse": "Sempre que um elemento for selecionado.",
+    "data": "DiagramNode + arestas.",
+    "interaction": "Abas Dados/Metanota, link para edição.",
+    "state": "vazio, selecionado, oculto na visão.",
+    "uxRule": "Edição acontece na página da atividade."
+   }
+  },
+  {
+   "id": "context-bar",
+   "family": "Layouts",
+   "name": "Context bar",
+   "function": "Zoom, fit and selection controls.",
+   "variants": [
+    "default"
+   ],
+   "props": [
+    "zoom"
+   ],
+   "states": [
+    "default"
+   ],
+   "dependencies": [
+    "ds:button"
+   ],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "app/components/canvas/context-bar.tsx",
+   "metanote": {
+    "name": "Context bar",
+    "function": "Controles de visualização.",
+    "whenToUse": "Para zoom e ajuste.",
+    "data": "Zoom atual.",
+    "interaction": "Botões e atalhos + − 0.",
+    "state": "zoom 50–200%.",
+    "uxRule": "Zoom não muda dados."
+   }
+  },
+  {
+   "id": "diagram-node",
+   "family": "Diagrams",
+   "name": "Diagram node",
+   "function": "Square node; type shown by label, icon and border (diagramming system).",
+   "variants": [
+    "start",
+    "end",
+    "process",
+    "decision",
+    "document",
+    "person",
+    "group"
+   ],
+   "props": [
+    "node",
+    "box",
+    "selected"
+   ],
+   "states": [
+    "default",
+    "hover",
+    "focus",
+    "selected",
+    "dimmed",
+    "unvalidated"
+   ],
+   "dependencies": [
+    "ds:icons"
+   ],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "app/components/canvas/node.tsx",
+   "metanote": {
+    "name": "Diagram node",
+    "function": "Representa uma entidade do modelo.",
+    "whenToUse": "Para atividades, decisões, documentos, pessoas, grupos.",
+    "data": "DiagramNode.",
+    "interaction": "Clique, Enter/Espaço, Tab.",
+    "state": "selecionado, tracejado (não validado).",
+    "uxRule": "Mesma geometria; tipo por rótulo+ícone, nunca só cor."
+   }
+  },
+  {
+   "id": "diagram-edge",
+   "family": "Diagrams",
+   "name": "Diagram edge",
+   "function": "Connector between nodes.",
+   "variants": [
+    "flow",
+    "dependency",
+    "hierarchy",
+    "association"
+   ],
+   "props": [
+    "edge",
+    "from",
+    "to"
+   ],
+   "states": [
+    "default",
+    "highlighted",
+    "inferred"
+   ],
+   "dependencies": [],
+   "usage": [
+    "canvas"
+   ],
+   "status": "adopted",
+   "source": "app/components/canvas/edge.tsx",
+   "metanote": {
+    "name": "Diagram edge",
+    "function": "Liga dois nós.",
+    "whenToUse": "Para sequência, dependência, hierarquia, associação.",
+    "data": "DiagramEdge.",
+    "interaction": "Destaca ao selecionar um nó.",
+    "state": "normal, destacada, inferida (tracejada).",
+    "uxRule": "Seta só para direção (flow/dependency)."
+   }
+  },
+  {
+   "id": "lane-band",
+   "family": "Diagrams",
+   "name": "Lane band",
+   "function": "BPMN responsibility lane.",
+   "variants": [
+    "default"
+   ],
+   "props": [
+    "label"
+   ],
+   "states": [
+    "default"
+   ],
+   "dependencies": [],
+   "usage": [
+    "canvas (bpmn)"
+   ],
+   "status": "adopted",
+   "source": "app/components/canvas/diagram-view.tsx",
+   "metanote": {
+    "name": "Lane band",
+    "function": "Raia de responsabilidade.",
+    "whenToUse": "No BPMN.",
+    "data": "Nome da raia.",
+    "interaction": "Nenhuma.",
+    "state": "—",
+    "uxRule": "Rótulo da raia sempre visível à esquerda."
+   }
+  },
+  {
+   "id": "phase-frame",
+   "family": "Diagrams",
+   "name": "Phase frame",
+   "function": "Groups nodes of a phase/column with a header and summary.",
+   "variants": [
+    "default"
+   ],
+   "props": [
+    "label",
+    "detail"
+   ],
+   "states": [
+    "default"
+   ],
+   "dependencies": [],
+   "usage": [
+    "canvas (infographic, complex)"
+   ],
+   "status": "adopted",
+   "source": "app/components/canvas/diagram-view.tsx",
+   "metanote": {
+    "name": "Phase frame",
+    "function": "Agrupa nós de uma fase.",
+    "whenToUse": "Infográfico e Diagrama complexo.",
+    "data": "Rótulo + resumo.",
+    "interaction": "Nenhuma.",
+    "state": "—",
+    "uxRule": "Resumo com unidade explícita (ex.: 1/3 concluídas)."
+   }
+  },
+  {
+   "id": "bpmn-event",
+   "family": "Diagrams",
+   "name": "BPMN event",
+   "function": "Start / end event as a square with label (no circles).",
+   "variants": [
+    "start",
+    "end"
+   ],
+   "props": [
+    "kind"
+   ],
+   "states": [
+    "default"
+   ],
+   "dependencies": [],
+   "usage": [
+    "canvas (bpmn)"
+   ],
+   "status": "adopted",
+   "source": "app/components/canvas/diagram-view.tsx",
+   "metanote": {
+    "name": "BPMN event",
+    "function": "Início ou fim do processo.",
+    "whenToUse": "No BPMN.",
+    "data": "Tipo do evento.",
+    "interaction": "Nenhuma.",
+    "state": "—",
+    "uxRule": "Rótulo INÍCIO/FIM; geometria quadrada."
+   }
+  },
+  {
+   "id": "pattern-dashboard",
+   "family": "Patterns",
+   "name": "Dashboard",
+   "function": "Server-computed KPIs, flags, next gate and area tiles.",
+   "variants": [
+    "default"
+   ],
+   "props": [],
+   "states": [
+    "default"
+   ],
+   "dependencies": [
+    "ds:card",
+    "ds:progress-bar",
+    "ds:flag-badge"
+   ],
+   "usage": [
+    "/dashboard"
+   ],
+   "status": "adopted",
+   "source": "app/routes/dashboard.tsx",
+   "metanote": {
+    "name": "Dashboard",
+    "function": "Visão geral do projeto.",
+    "whenToUse": "Ponto de entrada.",
+    "data": "computeDashboard().",
+    "interaction": "Links para atividades.",
+    "state": "—",
+    "uxRule": "Números calculados no servidor."
+   }
+  },
+  {
+   "id": "pattern-multiview",
+   "family": "Patterns",
+   "name": "Multiview canvas",
+   "function": "Same graph in five views with a shared selection (ADR-003).",
+   "variants": [
+    "5 views"
+   ],
+   "props": [
+    "dataset",
+    "view"
+   ],
+   "states": [
+    "per view"
+   ],
+   "dependencies": [
+    "ds:canvas-workspace"
+   ],
+   "usage": [
+    "/canvas"
+   ],
+   "status": "adopted",
+   "source": "app/routes/canvas.tsx",
+   "metanote": {
+    "name": "Multiview canvas",
+    "function": "Explora o mesmo modelo em várias estruturas.",
+    "whenToUse": "Para entender dependências, papéis e sequência.",
+    "data": "Graph + Projection.",
+    "interaction": "Trocar visão/dados, selecionar.",
+    "state": "Seleção persiste entre visões.",
+    "uxRule": "Visões incompatíveis avisam e oferecem alternativa."
+   }
+  },
+  {
+   "id": "pattern-tutorial",
+   "family": "Patterns",
+   "name": "Guided tutorial",
+   "function": "Step-by-step walk through a process.",
+   "variants": [
+    "linear"
+   ],
+   "props": [],
+   "states": [
+    "per step"
+   ],
+   "dependencies": [
+    "ds:stepper"
+   ],
+   "usage": [
+    "/canvas?view=tutorial"
+   ],
+   "status": "adopted",
+   "source": "app/components/canvas/tutorial-view.tsx",
+   "metanote": {
+    "name": "Guided tutorial",
+    "function": "Jornada guiada.",
+    "whenToUse": "Onboarding e aprendizado do processo.",
+    "data": "Sequência de etapas.",
+    "interaction": "Avançar, voltar, reiniciar.",
+    "state": "—",
+    "uxRule": "Uma etapa por vez, com contexto."
+   }
+  },
+  {
+   "id": "pattern-adaptive-questionnaire",
+   "family": "Patterns",
+   "name": "Adaptive Card-Based Questionnaire",
+   "function": "Card-based form with conditional branching (doc: docs/design/adaptive-card-questionnaire.md).",
+   "variants": [
+    "single page",
+    "stepped"
+   ],
+   "props": [],
+   "states": [
+    "per question"
+   ],
+   "dependencies": [
+    "ds:card-selection-group"
+   ],
+   "usage": [
+    "planned: ACT-02 interview capture"
+   ],
+   "status": "planned",
+   "source": "docs/design/adaptive-card-questionnaire.md"
+  },
+  {
+   "id": "shadcn-accordion",
+   "family": "Composites",
+   "name": "shadcn accordion",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-alert",
+   "family": "Composites",
+   "name": "shadcn alert",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-aspect-ratio",
+   "family": "Primitives",
+   "name": "shadcn aspect-ratio",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-avatar",
+   "family": "Primitives",
+   "name": "shadcn avatar",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-breadcrumb",
+   "family": "Composites",
+   "name": "shadcn breadcrumb",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-calendar",
+   "family": "Composites",
+   "name": "shadcn calendar",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-carousel",
+   "family": "Composites",
+   "name": "shadcn carousel",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-checkbox",
+   "family": "Primitives",
+   "name": "shadcn checkbox",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-collapsible",
+   "family": "Composites",
+   "name": "shadcn collapsible",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-command",
+   "family": "Composites",
+   "name": "shadcn command",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-context-menu",
+   "family": "Composites",
+   "name": "shadcn context-menu",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-dialog",
+   "family": "Composites",
+   "name": "shadcn dialog",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-drawer",
+   "family": "Composites",
+   "name": "shadcn drawer",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-dropdown-menu",
+   "family": "Composites",
+   "name": "shadcn dropdown-menu",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-form",
+   "family": "Composites",
+   "name": "shadcn form",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-hover-card",
+   "family": "Composites",
+   "name": "shadcn hover-card",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-label",
+   "family": "Primitives",
+   "name": "shadcn label",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-menubar",
+   "family": "Composites",
+   "name": "shadcn menubar",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-navigation-menu",
+   "family": "Composites",
+   "name": "shadcn navigation-menu",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-popover",
+   "family": "Composites",
+   "name": "shadcn popover",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-progress",
+   "family": "Primitives",
+   "name": "shadcn progress",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-radio-group",
+   "family": "Primitives",
+   "name": "shadcn radio-group",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-scroll-area",
+   "family": "Primitives",
+   "name": "shadcn scroll-area",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-select",
+   "family": "Primitives",
+   "name": "shadcn select",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-sheet",
+   "family": "Composites",
+   "name": "shadcn sheet",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-skeleton",
+   "family": "Primitives",
+   "name": "shadcn skeleton",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-slider",
+   "family": "Primitives",
+   "name": "shadcn slider",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-sonner",
+   "family": "Composites",
+   "name": "shadcn sonner",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-switch",
+   "family": "Primitives",
+   "name": "shadcn switch",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-table",
+   "family": "Composites",
+   "name": "shadcn table",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-textarea",
+   "family": "Primitives",
+   "name": "shadcn textarea",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-toast",
+   "family": "Composites",
+   "name": "shadcn toast",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-toaster",
+   "family": "Composites",
+   "name": "shadcn toaster",
+   "function": "Available in the shadcn package; no current use case (not adopted).",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-card",
+   "family": "Composites",
+   "name": "shadcn card",
+   "function": "Duplicate of ds:card; consolidated, not adopted.",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [
+    "ds:card"
+   ],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-badge",
+   "family": "Primitives",
+   "name": "shadcn badge",
+   "function": "Duplicate of ds:badge; consolidated, not adopted.",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [
+    "ds:badge"
+   ],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  },
+  {
+   "id": "shadcn-input",
+   "family": "Primitives",
+   "name": "shadcn input",
+   "function": "Duplicate of ds:input; consolidated, not adopted.",
+   "variants": [],
+   "props": [],
+   "states": [],
+   "dependencies": [
+    "ds:input"
+   ],
+   "usage": [],
+   "status": "available",
+   "source": "reference/loop-design/shadcn-components.tar.gz"
+  }
+ ]
+}
