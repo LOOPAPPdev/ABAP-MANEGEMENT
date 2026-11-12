@@ -15,6 +15,17 @@ React Router v7 + Hono on Cloudflare Workers; Tailwind + shadcn/ui; D1 + Drizzle
 - `src/server/` — Hono API (`/api/v1`), use cases, Drizzle repository.
 - `app/` — React Router routes and UI. UI reads data only through `/api/v1` or server loaders that call use cases.
 - `workers/app.ts` — Worker entry: Hono first, React Router fallback.
+- `src/domain/diagram/` — universal graph + view projectors (pure). Projectors MUST NOT change node data; placed ∪ hidden = all nodes (tested).
+
+## Design system (ADR-004)
+- Tokens: `docs/design-system/DESIGN_TOKENS.json` ↔ `app/app.css` (test enforces equality).
+- Components: register in `docs/design-system/COMPONENT_REGISTRY.json` first (with metanote if adopted), then code, then `/showcase`. Every `data-component-id` must exist in the registry.
+- Diagrams: square geometry; type by label + icon; dashed = not validated (`docs/design/diagramming-system.md`).
+- Visualizations must pass `docs/quality/dv-audit_v0.1.md` (no failing MUST).
+- Data marked "não validado" (Clean Sea) MUST stay marked; never complete it without the source.
+
+## Operating rules
+Follow `docs/governance/global-instructions.md` (controlled language, EARS/RFC 2119, Gherkin, visual-first, verified execution).
 
 ## Non-negotiable domain rules
 - Effective completion = `DONE` AND at least one evidence record.
@@ -34,7 +45,7 @@ React Router v7 + Hono on Cloudflare Workers; Tailwind + shadcn/ui; D1 + Drizzle
 - Use Conventional Commits.
 
 ## Scripts
-`npm run dev`, `lint`, `typecheck`, `test`, `test:e2e`, `build`, `db:generate`, `db:migrate:local`, `seed:local`, `import:workbook`. Check `package.json` before running.
+`npm run dev`, `lint`, `typecheck`, `test`, `test:e2e`, `build`, `db:generate`, `db:migrate:local`, `seed:local`, `import:workbook`, `extract:cleansea`, `import:dv-criteria`. Check `package.json` before running.
 
 ## Execution gates
 inspect -> plan -> implement smallest slice -> run relevant checks -> inspect diff -> report results and evidence. Never claim a command passed unless executed. Do not mark a workbook activity DONE unless acceptance criteria are verified and evidence exists.

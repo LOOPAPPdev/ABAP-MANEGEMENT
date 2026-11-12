@@ -15,3 +15,9 @@
 | D-008 | 2026-11-12 | Evidence stores references (URL, commit SHA, repo path, text); no file upload | Avoid storage decisions before need | PROPOSED — R2 candidate later | Owner |
 | D-009 | 2026-11-12 | UI labels in English; workbook content kept in Portuguese as imported | Preserve source data verbatim | OPEN — choose UI language | Owner |
 | D-010 | 2026-11-12 | Generic metadata-driven template engine (legacy ADR in `reference/xls-pwa/`) deferred | Not needed for the 14-activity MVP | DEFERRED | Owner |
+| D-011 | 2026-11-12 | Apply ADR-002/003/004 (LOOP App) to the Governance System instead of a separate LOOP app | Owner choice; reuses real data and one codebase | APPROVED (owner, session) | Owner |
+| D-012 | 2026-11-12 | Extract Clean Sea data from `cleansea-operacao-integrada.html` (17 steps, 6 phases) and mark it "não validado"; do not invent the 6 missing steps of the 23 cited in the ADRs | Source Markdown not provided | APPROVED (owner, session) | Owner |
+| D-013 | 2026-11-12 | One identity: workbook tokens; CleanSea (teal) and Workspace (purple) palettes not adopted | ADR-004 consolidation | PROPOSED | Owner |
+| D-014 | 2026-11-12 | Adopt only 7 of 43 shadcn components (button, tabs, toggle, toggle-group, tooltip, resizable, separator); others catalogued | No dependency without need | PROPOSED | Owner |
+| D-015 | 2026-11-12 | Dark mode not implemented (no dark tokens in the workbook) | Avoid inventing tokens | OPEN | Owner |
+| D-016 | 2026-11-12 | Canvas is read-only; edits stay on the activity page. Canvas state in URL; panel sizes in localStorage | One mutation path with audit; shareable state | PROPOSED | Owner |
