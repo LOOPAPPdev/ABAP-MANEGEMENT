@@ -10,7 +10,7 @@
 | D-003 | 2026-11-12 | Workbook is a one-time import into a versioned JSON fixture; D1 is the operational source of truth | Avoid two writable sources; keeps workbook unchanged | PROPOSED | Owner |
 | D-004 | 2026-11-12 | Status changes are flagged, not rejected (DONE without evidence and pending dependency are allowed but not counted) | Mirrors workbook behaviour; keeps owner in control | PROPOSED — alternative: hard reject | Owner |
 | D-005 | 2026-11-12 | Excel import recurrence: one-time (default) | Simplicity | PROPOSED | Owner |
-| D-006 | 2026-11-12 | Authentication/roles not implemented; actor from `X-Actor` header, default `local-dev` | Users and roles not yet defined | OPEN — blocks public deploy | Owner |
+| D-006 | 2026-11-12 | Authentication: Google login + allow-list of e-mails (secret), actor = signed-in e-mail (ADR-005). Local bypass only in development without Google secrets | Required before public deploy | RESOLVED (owner, session) | Owner |
 | D-007 | 2026-11-12 | Single project in MVP; schema keeps `project_id` | Smallest slice | PROPOSED | Owner |
 | D-008 | 2026-11-12 | Evidence stores references (URL, commit SHA, repo path, text); no file upload | Avoid storage decisions before need | PROPOSED — R2 candidate later | Owner |
 | D-009 | 2026-11-12 | UI labels in English; workbook content kept in Portuguese as imported | Preserve source data verbatim | OPEN — choose UI language | Owner |
@@ -21,3 +21,7 @@
 | D-014 | 2026-11-12 | Adopt only 7 of 43 shadcn components (button, tabs, toggle, toggle-group, tooltip, resizable, separator); others catalogued | No dependency without need | PROPOSED | Owner |
 | D-015 | 2026-11-12 | Dark mode not implemented (no dark tokens in the workbook) | Avoid inventing tokens | OPEN | Owner |
 | D-016 | 2026-11-12 | Canvas is read-only; edits stay on the activity page. Canvas state in URL; panel sizes in localStorage | One mutation path with audit; shareable state | PROPOSED | Owner |
+| D-017 | 2026-11-12 | Google Sheets is the editing source for Status, Priority, Owner, Due, Notes, Evidence; app reads it (read-only scope) with a three-way merge | Owner edits in Sheets; app edits must not be reverted | APPROVED (owner, session) | Owner |
+| D-018 | 2026-11-12 | Sync mode: automatic on open by default; preview + apply available as a toggle | Owner choice ("ambos") | APPROVED (owner, session) | Owner |
+| D-019 | 2026-11-12 | Integration implemented in this repository, not in a new `consultoria-platform` monorepo | Session can only write to this repository; one Worker | APPROVED (owner, session) | Owner |
+| D-020 | 2026-11-12 | All account-specific values (client ID/secret, spreadsheet ID, allowed e-mails, keys) are Cloudflare secrets, never committed | Privacy and secret hygiene | APPLIED | Claude Code |

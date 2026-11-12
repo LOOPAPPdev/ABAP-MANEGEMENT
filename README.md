@@ -4,7 +4,7 @@ Web application for planning, executing, and verifying software delivery against
 
 ## Status
 
-**Scaffold + first vertical slice (ACT-07) running locally. Not deployed.**
+**Deployed on Cloudflare Workers with Google login and Google Sheets sync.** Activities are not marked DONE automatically; governance gates still apply.
 
 | Item | State |
 | --- | --- |
@@ -14,7 +14,9 @@ Web application for planning, executing, and verifying software delivery against
 | Canvas Multiview `/canvas` (ADR-002/003) | Implemented locally: 5 views × 2 datasets (Governance live, Clean Sea **não validado**) |
 | Design system audit (ADR-004) | G1–G4 done; showcase at `/showcase`; G5 partially verified |
 | Data-viz quality audit (33 criteria) | 0 MUST failing — `docs/quality/dv-audit_v0.1.md` |
-| Remote Cloudflare resources / deploy | Not created (requires approval) |
+| Google login + allow-list (ADR-005) | Implemented; production fails closed without secrets |
+| Google Sheets → app sync (ADR-005) | Implemented: automatic on open (default) or preview + apply; read-only scope |
+| Deploy (ACT-12) | Cloudflare Worker `governance-system` + D1 `governance` (production env) |
 
 No workbook activity is marked DONE. See `docs/plan/implementation-plan_A-G.md` for the roadmap and `docs/governance/13_decision-log.md` for decisions.
 
@@ -46,6 +48,42 @@ flowchart TD
 - `workers/app.ts` is the Worker entry: Hono serves `/api/v1/*`, React Router serves everything else.
 - `src/domain/governance` has no framework imports. ESLint enforces this.
 - The workbook is the **initial reference dataset**. After import, D1 is the operational source of truth. The import never writes the workbook.
+
+## Google Sheets → app
+
+```mermaid
+flowchart LR
+  S[Google Sheets · DATA_Activities] -->|read-only, OAuth refresh token| W[Worker /api/v1/sheets]
+  W -->|three-way merge| D1[(D1)]
+  D1 --> UI[Dashboard / Activities / Canvas]
+```
+
+- Edit Status, Priority, Owner, Due, Evidence or Notes in the sheet → open the dashboard (or "Recarregar dados") → the app shows the new value. Every applied change is audited.
+- `/sheets` ("Planilha") shows the source, the plan, conflicts and invalid cells, and the mode toggle: **Automático ao abrir** (default) or **Prévia + Aplicar**.
+- A change made only in the app is never reverted by the sheet; a field changed on both sides is a conflict and is never applied automatically. Details: `docs/architecture/adr-005_google-auth-sheets-sync.md`.
+
+## Production setup (one time)
+
+1. Google Cloud Console → APIs & Services → Credentials → the OAuth client (type *Web*) → **Authorized redirect URIs**: add `https://governance-system.<your-workers-subdomain>.workers.dev/auth/google/callback` (and `http://localhost:5173/auth/google/callback` for local tests).
+2. Enable the **Google Sheets API** in the same project. On the OAuth consent screen, add the scope `.../auth/spreadsheets.readonly`; if the app is in *Testing*, add the allowed accounts as test users (refresh tokens then expire after 7 days).
+3. Cloudflare secrets (`--env production`): `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET`, `TOKEN_ENCRYPTION_KEY`, `ALLOWED_EMAILS`, `SPREADSHEET_ID` — e.g. `npx wrangler secret put ALLOWED_EMAILS --env production`.
+4. Open the app → **Entrar com Google** → Settings → **Conectar Google Sheets** (one consent with read-only access).
+
+## Deploy
+
+```bash
+npm run db:migrate:remote
+```
+
+```bash
+npm run seed:remote
+```
+
+```bash
+npm run deploy
+```
+
+`seed:remote` uses `INSERT OR IGNORE` and never overwrites existing records.
 
 ## Canvas Multiview and design system
 
@@ -113,8 +151,13 @@ Reset local data: `npm run db:reset:local`.
 | POST | `/api/v1/activities/:id/evidence` | `{ "kind": "link\|commit\|file\|text", "ref": "...", "note"?: "..." }` |
 | GET | `/api/v1/evidence` | All evidence |
 | GET | `/api/v1/dashboard` | Server-computed progress, areas, flags, gates |
+| GET | `/api/v1/me` | Signed-in user and auth mode |
+| GET | `/api/v1/sheets/status` | Sync mode, connection, last run |
+| GET | `/api/v1/sheets/preview` | Read the sheet and return the plan (no writes) |
+| POST | `/api/v1/sheets/sync` | `{ "resolve"?: ["ACT-02:status"] }` apply plan (+ chosen conflicts) |
+| PUT | `/api/v1/sheets/mode` | `{ "mode": "auto" \| "preview" }` |
 
-Actor: `X-Actor` header, default `local-dev`. Authentication is an open decision (D-006).
+Every route except `/api/v1/health`, `/login` and `/auth/*` requires a session. Actor = signed-in e-mail (`X-Actor` is accepted only in the local development bypass).
 
 ## Repository structure
 
@@ -141,7 +184,7 @@ data/quality/            # Data-viz criteria fixture
 
 ## Security and quality
 
-Never commit credentials (`.dev.vars` is git-ignored). All inputs are validated with Zod. Authorization does not exist yet: do not expose this application publicly until D-006 is decided. Do not report a task as complete without evidence.
+Never commit credentials (`.dev.vars` is git-ignored; production values are Cloudflare secrets). All inputs are validated with Zod. Access requires Google login with an allowed e-mail; the Sheets refresh token is stored encrypted (AES-GCM). Do not report a task as complete without evidence.
 
 ## Next action
 

@@ -19,7 +19,10 @@
     "seed:local": "npm run db:seed-sql && wrangler d1 execute governance --local --file=data/seed/seed.sql",
     "db:reset:local": "rm -rf .wrangler/state && npm run db:migrate:local && npm run seed:local",
     "import:dv-criteria": "python3 -I scripts/import_dv_criteria.py reference/loop-design/CRITERIOS_QUALIDADE_VISUALIZACAO_DADOS.csv data/quality/dv-criteria.v1.json",
-    "extract:cleansea": "node scripts/extract_cleansea.mjs reference/loop-design/cleansea-operacao-integrada.html data/reference/cleansea.v1.json"
+    "extract:cleansea": "node scripts/extract_cleansea.mjs reference/loop-design/cleansea-operacao-integrada.html data/reference/cleansea.v1.json",
+    "deploy": "CLOUDFLARE_ENV=production react-router build && wrangler deploy",
+    "db:migrate:remote": "wrangler d1 migrations apply governance --remote --env production",
+    "seed:remote": "npm run db:seed-sql && wrangler d1 execute governance --remote --env production --file=data/seed/seed.sql"
   },
   "dependencies": {
     "@radix-ui/react-separator": "^1.2.0",

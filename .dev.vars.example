@@ -1,2 +1,16 @@
-# Local-only variables. Copy to .dev.vars. Never commit real secrets.
-APP_ENV=development
+# Local-only variables. Copy to .dev.vars (git-ignored). Never commit real values.
+#
+# Leave every Google value empty to run in the local bypass:
+#   no login, actor "local-dev", spreadsheet = local fixture (data/seed/activities.v1.json).
+#
+# To test Google login + Sheets locally, set ALL of them and add
+#   http://localhost:5173/auth/google/callback
+# to the OAuth client's "Authorized redirect URIs" in Google Cloud Console.
+
+ENVIRONMENT=development
+# GOOGLE_CLIENT_ID=xxxxxxxx.apps.googleusercontent.com
+# GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxx
+# SESSION_SECRET=<at least 32 random characters: openssl rand -base64 48>
+# TOKEN_ENCRYPTION_KEY=<32 random bytes, base64: openssl rand -base64 32>
+# ALLOWED_EMAILS=you@example.com,partner@example.com
+# SPREADSHEET_ID=<the part of the sheet URL between /d/ and /edit>

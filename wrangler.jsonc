@@ -5,8 +5,12 @@
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
-  // Local-only binding. Create the remote database only after approval:
-  //   npx wrangler d1 create governance  -> replace database_id below.
+  // Local development. Without Google secrets in .dev.vars the app runs in the
+  // local bypass (no login, fixture spreadsheet). See README → Local setup.
+  "vars": {
+    "ENVIRONMENT": "development",
+    "SHEET_RANGE": "DATA_Activities!A1:R200"
+  },
   "d1_databases": [
     {
       "binding": "DB",
@@ -14,5 +18,27 @@
       "database_id": "00000000-0000-0000-0000-000000000000",
       "migrations_dir": "migrations"
     }
-  ]
+  ],
+  "env": {
+    // Production: deploy with `npm run deploy`. Fails closed: without every secret
+    // (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SESSION_SECRET, TOKEN_ENCRYPTION_KEY,
+    // ALLOWED_EMAILS, SPREADSHEET_ID) all pages and APIs except /api/v1/health are blocked.
+    "production": {
+      "name": "governance-system",
+      "workers_dev": true,
+      "observability": { "enabled": true },
+      "vars": {
+        "ENVIRONMENT": "production",
+        "SHEET_RANGE": "DATA_Activities!A1:R200"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "governance",
+          "database_id": "cbd88691-a6c5-4372-b14f-4986dd7c2da5",
+          "migrations_dir": "migrations"
+        }
+      ]
+    }
+  }
 }
