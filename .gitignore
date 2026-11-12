@@ -1,0 +1,14 @@
+node_modules/
+build/
+dist/
+.react-router/
+.wrangler/
+.dev.vars
+.env
+*.local
+worker-configuration.d.ts
+test-results/
+playwright-report/
+.DS_Store
+data/seed/seed.sql
+*.tsbuildinfo

@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "governance-system",
+  "main": "./workers/app.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  // Local-only binding. Create the remote database only after approval:
+  //   npx wrangler d1 create governance  -> replace database_id below.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "governance",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

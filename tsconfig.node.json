@@ -1,0 +1,29 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "vite.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "drizzle.config.ts",
+    "react-router.config.ts",
+    "eslint.config.js",
+    "scripts/**/*.ts",
+    "src/domain/**/*.ts",
+    "src/server/db/seed.ts",
+    "tests/e2e/**/*.ts"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "strict": true,
+    "types": ["node"],
+    "lib": ["ES2023"],
+    "target": "ES2023",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": { "~/*": ["./src/*"] }
+  }
+}

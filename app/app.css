@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens copied from the workbook sheet "Design Tokens"
+ * (Fluent-inspired monochrome; B10E1C is the only functional accent).
+ * Variable names follow shadcn/ui conventions so generated components work unchanged.
+ */
+:root {
+  --background: #fafafa;        /* color.bg.2 */
+  --card: #ffffff;              /* color.bg.1 */
+  --muted: #f5f5f5;             /* color.bg.3 (calculated / output) */
+  --accent: #f0f0f0;            /* color.bg.4 */
+  --border: #d1d1d1;            /* color.stroke.1 */
+  --input: #d1d1d1;
+  --foreground: #242424;        /* color.fg.1 */
+  --card-foreground: #242424;
+  --muted-foreground: #616161;  /* color.fg.3 */
+  --secondary-foreground: #424242; /* color.fg.2 */
+  --primary: #0f6cbd;           /* color.brand.default */
+  --primary-foreground: #ffffff;
+  --brand-fg: #115ea3;          /* color.brand.fg */
+  --brand-tint: #ebf3fc;        /* color.brand.tint */
+  --brand-tint-2: #cfe4fa;      /* color.brand.tint2 */
+  --destructive: #b10e1c;       /* color.alert */
+  --destructive-foreground: #ffffff;
+  --ring: #0f6cbd;
+  --radius: 0.375rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-brand-fg: var(--brand-fg);
+  --color-brand-tint: var(--brand-tint);
+  --color-brand-tint-2: var(--brand-tint-2);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --radius-md: var(--radius);
+  --font-sans: "Segoe UI", Arial, ui-sans-serif, system-ui, sans-serif; /* type.family */
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
