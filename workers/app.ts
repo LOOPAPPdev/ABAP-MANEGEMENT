@@ -4,6 +4,7 @@ import { createApi } from "~/server/api/app";
 import { authGate, type AppUser, type AuthVariables } from "~/server/auth/middleware";
 import { createAuthRoutes } from "~/server/auth/routes";
 import type { AppConfig } from "~/server/config";
+import { serveFromKv } from "~/server/static-kv";
 
 declare module "react-router" {
   export interface AppLoadContext {
@@ -23,6 +24,12 @@ const app = new Hono<{ Bindings: Env; Variables: AuthVariables }>();
 
 // 1. Authentication gate (fails closed in production), 2. OAuth routes, 3. API, 4. pages.
 app.use("*", authGate());
+// Static files from KV only when deployed without the Static Assets binding (see deploy:kv-assets).
+app.get("/assets/*", async (c, next) => {
+  const kv = (c.env as unknown as { STATIC?: KVNamespace }).STATIC;
+  if (!kv) return next();
+  return (await serveFromKv(kv, c.req.path)) ?? c.text("Not found", 404);
+});
 app.route("/", createAuthRoutes());
 app.route("/", createApi());
 app.all("/api/*", (c) => c.json({ ok: false, error: "not_found" }, 404));

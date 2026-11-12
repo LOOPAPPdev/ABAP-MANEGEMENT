@@ -22,7 +22,8 @@
     "extract:cleansea": "node scripts/extract_cleansea.mjs reference/loop-design/cleansea-operacao-integrada.html data/reference/cleansea.v1.json",
     "deploy": "CLOUDFLARE_ENV=production react-router build && wrangler deploy",
     "db:migrate:remote": "wrangler d1 migrations apply governance --remote --env production",
-    "seed:remote": "npm run db:seed-sql && wrangler d1 execute governance --remote --env production --file=data/seed/seed.sql"
+    "seed:remote": "npm run db:seed-sql && wrangler d1 execute governance --remote --env production --file=data/seed/seed.sql",
+    "deploy:kv-assets": "CLOUDFLARE_ENV=production react-router build && node scripts/deploy-kv-assets.mjs"
   },
   "dependencies": {
     "@radix-ui/react-separator": "^1.2.0",

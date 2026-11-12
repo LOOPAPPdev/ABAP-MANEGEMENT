@@ -85,6 +85,16 @@ npm run deploy
 
 `seed:remote` uses `INSERT OR IGNORE` and never overwrites existing records.
 
+Production URL: `https://governance-system.contato-adulto-tdah.workers.dev`.
+
+**Where the Static Assets upload API is blocked** (it authenticates uploads with a short-lived JWT that some proxies replace, so uploads return 401), use:
+
+```bash
+npm run deploy:kv-assets
+```
+
+It uploads `build/client/assets/*` to the `STATIC` KV namespace and deploys the Worker without the assets binding; the Worker then serves `/assets/*` from KV (`src/server/static-kv.ts`). The standard `npm run deploy` needs no code change.
+
 ## Canvas Multiview and design system
 
 - `/canvas` — one graph (`src/domain/diagram`), five views: Infográfico, Tutorial, BPMN, Organograma, Diagrama complexo. Collapsible/resizable sidebars, Inspector with metanotes, state in the URL (`?dataset=&view=&node=`). Read-only: edit on `/activities/:id`.
@@ -139,6 +149,8 @@ Reset local data: `npm run db:reset:local`.
 | `import:dv-criteria` | Re-generate `data/quality/dv-criteria.v1.json` from the CSV |
 | `db:generate` | Generate a SQL migration from `src/server/db/schema.ts` |
 | `db:migrate:local` / `seed:local` / `db:reset:local` | Local D1 lifecycle |
+| `db:migrate:remote` / `seed:remote` | Production D1 (`--env production`) |
+| `deploy` / `deploy:kv-assets` | Production deploy (standard / assets from KV) |
 
 ## API (v1)
 

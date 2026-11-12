@@ -31,6 +31,8 @@
         "ENVIRONMENT": "production",
         "SHEET_RANGE": "DATA_Activities!A1:R200"
       },
+      // Fallback store for /assets/* (used only by `npm run deploy:kv-assets`).
+      "kv_namespaces": [{ "binding": "STATIC", "id": "35685d69469e4b1cbe9e2f4e812cd438" }],
       "d1_databases": [
         {
           "binding": "DB",

@@ -25,3 +25,4 @@
 | D-018 | 2026-11-12 | Sync mode: automatic on open by default; preview + apply available as a toggle | Owner choice ("ambos") | APPROVED (owner, session) | Owner |
 | D-019 | 2026-11-12 | Integration implemented in this repository, not in a new `consultoria-platform` monorepo | Session can only write to this repository; one Worker | APPROVED (owner, session) | Owner |
 | D-020 | 2026-11-12 | All account-specific values (client ID/secret, spreadsheet ID, allowed e-mails, keys) are Cloudflare secrets, never committed | Privacy and secret hygiene | APPLIED | Claude Code |
+| D-021 | 2026-11-12 | Production deployed with static files served from KV (`deploy:kv-assets`) because the Static Assets upload API returned 401 behind the session proxy. Standard `deploy` remains supported without code changes | Unblock deploy from the agent session | APPLIED — revert to standard deploy when deploying from CI or a workstation | Claude Code |
