@@ -60,6 +60,7 @@ flowchart LR
 
 - Edit Status, Priority, Owner, Due, Evidence or Notes in the sheet → open the dashboard (or "Recarregar dados") → the app shows the new value. Every applied change is audited.
 - `/sheets` ("Planilha") shows the source, the plan, conflicts and invalid cells, and the mode toggle: **Automático ao abrir** (default) or **Prévia + Aplicar**.
+- **Team guide (plain language, PT-BR):** `docs/guia-do-time_planilha-e-integracoes.md`.
 - A change made only in the app is never reverted by the sheet; a field changed on both sides is a conflict and is never applied automatically. Details: `docs/architecture/adr-005_google-auth-sheets-sync.md`.
 
 ## Production setup (one time)
