@@ -1,10 +1,30 @@
 import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const projects = sqliteTable("projects", {
-  id: text("id").primaryKey(),
+  id: text("id").primaryKey(), // slug, e.g. "prj-01-cleansea" (same as clients/<slug> in the monorepo)
   name: text("name").notNull(),
   createdAt: text("created_at").notNull(),
+  code: text("code"), // "PRJ-01"; null for the platform's own project ("default")
+  status: text("status").notNull().default("active"),
+  // Google IDs live only here (never in Git). Null = not linked yet.
+  driveFolderId: text("drive_folder_id"),
+  spreadsheetId: text("spreadsheet_id"),
+  updatedAt: text("updated_at"),
 });
+
+/** Project-level audit log: link changes, Drive writes. Append-only. */
+export const projectEvents = sqliteTable(
+  "project_events",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    projectId: text("project_id").notNull(),
+    actor: text("actor").notNull(),
+    action: text("action").notNull(), // project.created | project.links | drive.document.created
+    detail: text("detail").notNull().default(""),
+    at: text("at").notNull(),
+  },
+  (t) => [index("project_events_idx").on(t.projectId)],
+);
 
 export const activities = sqliteTable(
   "activities",

@@ -17,7 +17,9 @@ import { DEFAULT_PROJECT_ID } from "../db/seed";
 import type { Clock } from "../governance-service";
 import { SheetsNotConnectedError, type SheetSource } from "./sources";
 
+/** Legacy global key (before multi-project); still read for the default project. */
 export const SYNC_MODE_KEY = "sheets.syncMode";
+export const syncModeKey = (projectId: string) => `${SYNC_MODE_KEY}:${projectId}`;
 export const AUTO_SYNC_MIN_INTERVAL_S = 30;
 
 const COLUMN: Record<SyncField, "status" | "priority" | "owner" | "due" | "notes"> = {
@@ -54,12 +56,16 @@ export class SheetSyncService {
   ) {}
 
   async getMode(): Promise<SyncMode> {
-    const [r] = await this.db.select().from(appSettings).where(eq(appSettings.key, SYNC_MODE_KEY));
-    return (SYNC_MODES as readonly string[]).includes(r?.value ?? "") ? (r!.value as SyncMode) : "auto";
+    const keys = this.projectId === DEFAULT_PROJECT_ID ? [syncModeKey(this.projectId), SYNC_MODE_KEY] : [syncModeKey(this.projectId)];
+    for (const key of keys) {
+      const [r] = await this.db.select().from(appSettings).where(eq(appSettings.key, key));
+      if (r && (SYNC_MODES as readonly string[]).includes(r.value)) return r.value as SyncMode;
+    }
+    return "auto";
   }
 
   async setMode(mode: SyncMode, actor: string) {
-    const row = { key: SYNC_MODE_KEY, value: mode, updatedAt: this.clock().toISOString(), updatedBy: actor };
+    const row = { key: syncModeKey(this.projectId), value: mode, updatedAt: this.clock().toISOString(), updatedBy: actor };
     await this.db.insert(appSettings).values(row).onConflictDoUpdate({ target: appSettings.key, set: row });
   }
 

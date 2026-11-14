@@ -127,7 +127,7 @@ describe("Feature: Google Sheets → app sync (criterion G)", () => {
       expect(new Headers(init?.headers).get("authorization")).toBe("Bearer ya29.token");
       return Response.json({ values: [["ID", "Status"]] });
     }) as typeof fetch;
-    const values = await new GoogleSheetSource(getDb(proxy.env.DB), cfg, f).read();
+    const values = await new GoogleSheetSource(getDb(proxy.env.DB), cfg, cfg.spreadsheetId ?? null, f).read();
     expect(values).toEqual([["ID", "Status"]]);
     expect(calls[1]).toContain(`/spreadsheets/${ENV.SPREADSHEET_ID}/values/DATA_Activities!A1%3AR200`);
   });

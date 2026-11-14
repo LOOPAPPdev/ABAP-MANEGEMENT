@@ -12,7 +12,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/componen
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { Label, Select } from "~/components/ui/input";
 import { fromCleanSea, fromGovernance, parseCleanSea, project, VIEW_LABELS, VIEWS, type Graph, type ViewId } from "~/domain/diagram";
-import { serviceFrom } from "../lib/service.server";
+import { projectFrom, serviceFrom } from "../lib/service.server";
 import type { Route } from "./+types/canvas";
 
 export const handle = { fullBleed: true };
@@ -21,9 +21,10 @@ export function meta() {
   return [{ title: "Canvas · Governance System" }];
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
-  const activities = await serviceFrom(context).listEvaluated();
-  const graphs: Graph[] = [fromGovernance(activities, "Full Stack Governance System"), fromCleanSea(parseCleanSea(cleanSeaRaw))];
+export async function loader({ context, request }: Route.LoaderArgs) {
+  const current = await projectFrom(context, request);
+  const activities = await serviceFrom(context, current).listEvaluated();
+  const graphs: Graph[] = [fromGovernance(activities, current.code ? `${current.code} · ${current.name}` : current.name), fromCleanSea(parseCleanSea(cleanSeaRaw))];
   return { graphs };
 }
 

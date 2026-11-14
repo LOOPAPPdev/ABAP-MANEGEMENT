@@ -3,7 +3,7 @@ import { FlagBadge, StatusBadge } from "~/components/governance/badges";
 import { Button } from "~/components/ui/button";
 import { Label, Select } from "~/components/ui/input";
 import { AREAS, FLAGS } from "~/domain/governance";
-import { serviceFrom } from "../lib/service.server";
+import { projectFrom, serviceFrom } from "../lib/service.server";
 import type { Route } from "./+types/activities";
 
 export function meta() {
@@ -14,7 +14,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const area = url.searchParams.get("area") ?? "";
   const flag = url.searchParams.get("flag") ?? "";
-  const all = await serviceFrom(context).listEvaluated();
+  const all = await serviceFrom(context, await projectFrom(context, request)).listEvaluated();
   const activities = all.filter((a) => (!area || a.area === area) && (!flag || a.flag === flag));
   return { activities, area, flag };
 }

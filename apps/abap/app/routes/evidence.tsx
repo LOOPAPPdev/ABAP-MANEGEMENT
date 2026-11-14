@@ -1,13 +1,13 @@
 import { Link } from "react-router";
-import { serviceFrom } from "../lib/service.server";
+import { projectFrom, serviceFrom } from "../lib/service.server";
 import type { Route } from "./+types/evidence";
 
 export function meta() {
   return [{ title: "Evidence · Governance System" }];
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
-  return { evidence: await serviceFrom(context).listEvidence() };
+export async function loader({ context, request }: Route.LoaderArgs) {
+  return { evidence: await serviceFrom(context, await projectFrom(context, request)).listEvidence() };
 }
 
 export default function Evidence({ loaderData }: Route.ComponentProps) {

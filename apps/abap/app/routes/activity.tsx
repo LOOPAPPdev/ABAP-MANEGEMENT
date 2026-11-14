@@ -6,32 +6,32 @@ import { Input, Label, Select } from "~/components/ui/input";
 import { EVIDENCE_KINDS, STATUSES } from "~/domain/governance";
 import { activityIdSchema, evidenceInputSchema, statusChangeSchema } from "~/server/api/schemas";
 import { NotFoundError } from "~/server/governance-service";
-import { actorFrom, serviceFrom } from "../lib/service.server";
+import { actorFrom, projectFrom, serviceFrom } from "../lib/service.server";
 import type { Route } from "./+types/activity";
 
 export function meta({ data }: Route.MetaArgs) {
   return [{ title: `${data?.activity.id ?? "Activity"} · Governance System` }];
 }
 
-async function load(context: Route.LoaderArgs["context"], rawId: string | undefined) {
+async function load(context: Route.LoaderArgs["context"], request: Request, rawId: string | undefined) {
   const id = activityIdSchema.safeParse(rawId);
   if (!id.success) throw data("Not found", { status: 404 });
   try {
-    return await serviceFrom(context).getActivity(id.data);
+    return await serviceFrom(context, await projectFrom(context, request)).getActivity(id.data);
   } catch (e) {
     if (e instanceof NotFoundError) throw data("Not found", { status: 404 });
     throw e;
   }
 }
 
-export async function loader({ context, params }: Route.LoaderArgs) {
-  return load(context, params.id);
+export async function loader({ context, params, request }: Route.LoaderArgs) {
+  return load(context, request, params.id);
 }
 
 export async function action({ context, params, request }: Route.ActionArgs) {
-  const { activity } = await load(context, params.id);
+  const { activity } = await load(context, request, params.id);
   const form = Object.fromEntries(await request.formData());
-  const service = serviceFrom(context);
+  const service = serviceFrom(context, await projectFrom(context, request));
 
   if (form.intent === "status") {
     const parsed = statusChangeSchema.safeParse(form);

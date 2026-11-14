@@ -5,7 +5,8 @@ import { SYNC_MODES, type FieldChange, type SyncMode } from "~/domain/governance
 import { conflictKey, type SyncPreview, type SyncResult } from "~/server/sheets/sync-service";
 import { sheetsConnection, SheetsNotConnectedError } from "~/server/sheets/sources";
 import { getDb } from "~/server/db/client";
-import { actorFrom, syncFrom } from "../lib/service.server";
+import { actorFrom, projectFrom, syncFrom } from "../lib/service.server";
+import { spreadsheetIdFor } from "~/server/sheets/factory";
 import type { Route } from "./+types/sheets";
 
 export function meta() {
@@ -16,14 +17,17 @@ const FIELD: Record<string, string> = { status: "Status", priority: "Priority", 
 const MODE_LABEL: Record<SyncMode, string> = { auto: "Automático ao abrir", preview: "Prévia + Aplicar" };
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-  const svc = syncFrom(context);
+  const current = await projectFrom(context, request);
+  const svc = syncFrom(context, current);
+  const sheetId = spreadsheetIdFor(context.cfg, current);
   const cfg = context.cfg;
   const mode = await svc.getMode();
   const base = {
     mode,
     sourceKind: cfg.auth === "dev-bypass" ? ("fixture" as const) : ("google" as const),
     canConnect: cfg.auth === "google",
-    spreadsheetUrl: cfg.spreadsheetId ? `https://docs.google.com/spreadsheets/d/${cfg.spreadsheetId}/edit` : null,
+    spreadsheetUrl: sheetId ? `https://docs.google.com/spreadsheets/d/${sheetId}/edit` : null,
+    project: { id: current.id, code: current.code, name: current.name },
     connection: await sheetsConnection(getDb(context.cloudflare.env.DB)),
     connected: new URL(request.url).searchParams.has("connected"),
   };
@@ -44,7 +48,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 export async function action({ context, request }: Route.ActionArgs) {
   const form = await request.formData();
-  const svc = syncFrom(context);
+  const svc = syncFrom(context, await projectFrom(context, request));
   const intent = form.get("intent");
   if (intent === "mode") {
     const mode = String(form.get("mode"));

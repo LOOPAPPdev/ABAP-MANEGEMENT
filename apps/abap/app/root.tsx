@@ -1,6 +1,7 @@
-import { isRouteErrorResponse, Links, Meta, NavLink, Outlet, Scripts, ScrollRestoration, useMatches, useRouteLoaderData } from "react-router";
+import { isRouteErrorResponse, Links, Meta, NavLink, Outlet, Scripts, ScrollRestoration, useLocation, useMatches, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
+import { projectFrom, projectsFrom } from "./lib/service.server";
 
 const NAV = [
   ["/dashboard", "Dashboard"],
@@ -13,8 +14,31 @@ const NAV = [
   ["/settings", "Settings"],
 ] as const;
 
-export function loader({ context }: Route.LoaderArgs) {
-  return { user: context.user, auth: context.cfg.auth };
+export async function loader({ context, request }: Route.LoaderArgs) {
+  if (!context.user) return { user: null, auth: context.cfg.auth, projects: [], current: null };
+  const svc = projectsFrom(context);
+  const [list, current] = await Promise.all([svc.list(), projectFrom(context, request)]);
+  return {
+    user: context.user,
+    auth: context.cfg.auth,
+    projects: list.map((p) => ({ id: p.id, label: p.code ? `${p.code} · ${p.name}` : p.name })),
+    current: current.id,
+  };
+}
+
+function ProjectSwitcher({ projects, current }: { projects: { id: string; label: string }[]; current: string }) {
+  const location = useLocation();
+  return (
+    <form method="post" action="/projects" className="flex items-center gap-1" data-component-id="project-switcher" aria-label="Projeto atual">
+      <input type="hidden" name="intent" value="select" />
+      <input type="hidden" name="returnTo" value={location.pathname} />
+      <label htmlFor="project-switch" className="sr-only">Projeto</label>
+      <select id="project-switch" name="project" defaultValue={current} key={current} className="h-8 rounded-md border border-primary bg-card px-2 text-sm" data-testid="project-switch">
+        {projects.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+      </select>
+      <button type="submit" className="h-8 rounded-md border border-border bg-card px-2 text-sm hover:bg-accent">Abrir</button>
+    </form>
+  );
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -35,7 +59,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </a>
         <header className="border-b border-border bg-card">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-            <span className="font-bold">Governance System</span>
+            <span className="font-bold">ABAP</span>
             {root?.user && (
             <nav aria-label="Main">
               <ul className="flex flex-wrap gap-1">
@@ -54,6 +78,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </ul>
             </nav>
             )}
+            {root?.user && root.current && <ProjectSwitcher projects={root.projects} current={root.current} />}
             {root?.user && (
               <div className="ml-auto flex items-center gap-2 text-sm">
                 <span className="text-muted-foreground" data-testid="current-user">

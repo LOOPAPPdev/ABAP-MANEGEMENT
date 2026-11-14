@@ -2,16 +2,22 @@ import type { Fixture } from "~/domain/governance";
 
 export const DEFAULT_PROJECT_ID = "default";
 
-const q = (v: string | null) => (v === null ? "NULL" : `'${v.replaceAll("'", "''")}'`);
+export const q = (v: string | null) => (v === null ? "NULL" : `'${v.replaceAll("'", "''")}'`);
 
 /**
  * Builds idempotent seed SQL from the validated fixture. Pure function, shared by
  * scripts/seed-sql.ts and the integration tests.
  */
-export function buildSeedSql(fixture: Fixture, now: string, projectName = "Full Stack Governance System"): string[] {
-  const p = DEFAULT_PROJECT_ID;
+export function buildSeedSql(
+  fixture: Fixture,
+  now: string,
+  projectName = "Full Stack Governance System",
+  projectId: string = DEFAULT_PROJECT_ID,
+  code: string | null = null,
+): string[] {
+  const p = projectId;
   const stmts = [
-    `INSERT OR IGNORE INTO projects (id, name, created_at) VALUES (${q(p)}, ${q(projectName)}, ${q(now)});`,
+    `INSERT OR IGNORE INTO projects (id, name, created_at, code, updated_at) VALUES (${q(p)}, ${q(projectName)}, ${q(now)}, ${q(code)}, ${q(now)});`,
   ];
   for (const a of fixture.activities) {
     stmts.push(

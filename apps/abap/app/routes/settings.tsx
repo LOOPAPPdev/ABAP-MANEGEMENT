@@ -2,7 +2,8 @@ import { Link } from "react-router";
 import { Card, CardTitle } from "~/components/ui/card";
 import { getDb } from "~/server/db/client";
 import { sheetsConnection } from "~/server/sheets/sources";
-import { syncFrom } from "../lib/service.server";
+import { projectFrom, syncFrom } from "../lib/service.server";
+import { spreadsheetIdFor } from "~/server/sheets/factory";
 import type { Route } from "./+types/settings";
 
 export function meta() {
@@ -15,17 +16,20 @@ const AUTH: Record<string, string> = {
   misconfigured: "Login não configurado: acesso bloqueado",
 };
 
-export async function loader({ context }: Route.LoaderArgs) {
+export async function loader({ context, request }: Route.LoaderArgs) {
+  const current = await projectFrom(context, request);
+  const sheetId = spreadsheetIdFor(context.cfg, current);
   const cfg = context.cfg;
   return {
     user: context.user,
     environment: cfg.environment,
     auth: cfg.auth,
     allowedCount: cfg.allowedEmails.length,
-    spreadsheetUrl: cfg.spreadsheetId ? `https://docs.google.com/spreadsheets/d/${cfg.spreadsheetId}/edit` : null,
+    spreadsheetUrl: sheetId ? `https://docs.google.com/spreadsheets/d/${sheetId}/edit` : null,
+    project: { id: current.id, code: current.code, name: current.name },
     range: cfg.sheetRange,
     connection: await sheetsConnection(getDb(context.cloudflare.env.DB)),
-    mode: await syncFrom(context).getMode(),
+    mode: await syncFrom(context, current).getMode(),
   };
 }
 

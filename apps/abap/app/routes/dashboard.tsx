@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { FlagBadge, ProgressBar } from "~/components/governance/badges";
 import { Card, CardTitle } from "~/components/ui/card";
 import { pct } from "~/lib/utils";
-import { actorFrom, serviceFrom, syncFrom } from "../lib/service.server";
+import { actorFrom, projectFrom, serviceFrom, syncFrom } from "../lib/service.server";
 import type { Route } from "./+types/dashboard";
 
 export function meta() {
@@ -11,7 +11,8 @@ export function meta() {
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   // Automatic mode: read the spreadsheet when the dashboard opens (at most every 30 s; ?sync=1 forces it).
-  const sync = await syncFrom(context).autoSyncIfDue(actorFrom(context), new URL(request.url).searchParams.has("sync"));
+  const current = await projectFrom(context, request);
+  const sync = await syncFrom(context, current).autoSyncIfDue(actorFrom(context), new URL(request.url).searchParams.has("sync"));
   const banner = sync && {
     applied: sync.result ? sync.result.applied.changes + sync.result.applied.evidence : 0,
     conflicts: sync.result?.skippedConflicts.length ?? 0,
@@ -19,7 +20,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     error: sync.error ?? null,
     notConnected: Boolean(sync.notConnected),
   };
-  return { dashboard: await serviceFrom(context).dashboard(), banner };
+  return { dashboard: await serviceFrom(context, current).dashboard(), banner, project: { id: current.id, code: current.code, name: current.name } };
 }
 
 function SyncBanner({ b }: { b: NonNullable<Route.ComponentProps["loaderData"]["banner"]> }) {

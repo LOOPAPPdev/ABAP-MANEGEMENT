@@ -39,13 +39,16 @@ export class GoogleSheetSource implements SheetSource {
   constructor(
     private readonly db: Db,
     private readonly cfg: AppConfig,
+    private readonly spreadsheetId: string | null,
     private readonly f: Fetch = fetch,
   ) {
     this.label = `Google Sheets · ${cfg.sheetRange}`;
   }
   async read() {
-    const { google, tokenKey, spreadsheetId, sheetRange } = this.cfg;
-    if (!google || !tokenKey || !spreadsheetId) throw new SheetsNotConnectedError("Google Sheets não configurado (client, chave ou SPREADSHEET_ID ausente).");
+    const { google, tokenKey, sheetRange } = this.cfg;
+    const spreadsheetId = this.spreadsheetId;
+    if (!google || !tokenKey) throw new SheetsNotConnectedError("Google não configurado no servidor (client ou chave ausente).");
+    if (!spreadsheetId) throw new SheetsNotConnectedError("Nenhuma planilha vinculada a este projeto: vincule em Projects.");
     const [cred] = await this.db.select().from(googleCredentials).where(eq(googleCredentials.id, SHEETS_CREDENTIAL_ID));
     if (!cred) throw new SheetsNotConnectedError("Planilha ainda não conectada: use “Conectar Google Sheets”.");
     const refreshToken = await decrypt(cred, tokenKey);

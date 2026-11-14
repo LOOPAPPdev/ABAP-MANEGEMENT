@@ -5,6 +5,8 @@ import { getDb } from "../db/client";
 import type { AuthVariables } from "../auth/middleware";
 import type { Fetch } from "../auth/google";
 import { GovernanceService, NotFoundError, systemClock, type Clock } from "../governance-service";
+import { projectOf } from "./project-context";
+import { registerProjectRoutes } from "./projects-routes";
 import { registerSheetsRoutes } from "./sheets-routes";
 import { actorOf } from "./actor";
 import { activityIdSchema, evidenceInputSchema, statusChangeSchema } from "./schemas";
@@ -18,7 +20,9 @@ const issues = (e: z.ZodError) => e.issues.map((i) => ({ path: i.path.join("."),
  */
 export function createApi(clock: Clock = systemClock, deps: { fetch?: Fetch } = {}) {
   const api = new Hono<{ Bindings: Bindings; Variables: Partial<AuthVariables> }>().basePath("/api/v1");
-  const service = (env: Bindings) => new GovernanceService(getDb(env.DB), clock);
+  // Every governance endpoint works on one project: ?project=<id>, else the current-project cookie, else "default".
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const svc = async (c: any) => new GovernanceService(getDb(c.env.DB), clock, (await projectOf(c, clock)).id);
 
   api.onError((err, c) => {
     if (err instanceof NotFoundError) return c.json({ ok: false, error: "not_found", message: err.message }, 404);
@@ -35,12 +39,12 @@ export function createApi(clock: Clock = systemClock, deps: { fetch?: Fetch } = 
     }
   });
 
-  api.get("/activities", async (c) => c.json({ ok: true, activities: await service(c.env).listEvaluated() }));
+  api.get("/activities", async (c) => c.json({ ok: true, activities: await (await svc(c)).listEvaluated() }));
 
   api.get("/activities/:id", async (c) => {
     const id = activityIdSchema.safeParse(c.req.param("id"));
     if (!id.success) return c.json({ ok: false, error: "invalid_id", issues: issues(id.error) }, 400);
-    return c.json({ ok: true, ...(await service(c.env).getActivity(id.data)) });
+    return c.json({ ok: true, ...(await (await svc(c)).getActivity(id.data)) });
   });
 
   api.patch("/activities/:id/status", async (c) => {
@@ -48,7 +52,7 @@ export function createApi(clock: Clock = systemClock, deps: { fetch?: Fetch } = 
     const body = statusChangeSchema.safeParse(await c.req.json().catch(() => null));
     if (!id.success) return c.json({ ok: false, error: "invalid_id", issues: issues(id.error) }, 400);
     if (!body.success) return c.json({ ok: false, error: "invalid_body", issues: issues(body.error) }, 400);
-    return c.json({ ok: true, ...(await service(c.env).changeStatus(id.data, body.data.status, actorOf(c))) });
+    return c.json({ ok: true, ...(await (await svc(c)).changeStatus(id.data, body.data.status, actorOf(c))) });
   });
 
   api.post("/activities/:id/evidence", async (c) => {
@@ -56,13 +60,14 @@ export function createApi(clock: Clock = systemClock, deps: { fetch?: Fetch } = 
     const body = evidenceInputSchema.safeParse(await c.req.json().catch(() => null));
     if (!id.success) return c.json({ ok: false, error: "invalid_id", issues: issues(id.error) }, 400);
     if (!body.success) return c.json({ ok: false, error: "invalid_body", issues: issues(body.error) }, 400);
-    return c.json({ ok: true, ...(await service(c.env).addEvidence(id.data, body.data, actorOf(c))) }, 201);
+    return c.json({ ok: true, ...(await (await svc(c)).addEvidence(id.data, body.data, actorOf(c))) }, 201);
   });
 
-  api.get("/evidence", async (c) => c.json({ ok: true, evidence: await service(c.env).listEvidence() }));
+  api.get("/evidence", async (c) => c.json({ ok: true, evidence: await (await svc(c)).listEvidence() }));
 
-  api.get("/dashboard", async (c) => c.json({ ok: true, dashboard: await service(c.env).dashboard() }));
+  api.get("/dashboard", async (c) => c.json({ ok: true, dashboard: await (await svc(c)).dashboard() }));
 
+  registerProjectRoutes(api, clock);
   registerSheetsRoutes(api, clock, deps.fetch);
 
   api.notFound((c) => c.json({ ok: false, error: "not_found" }, 404));

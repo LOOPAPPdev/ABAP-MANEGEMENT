@@ -15,6 +15,13 @@
       "when": 1794490089704,
       "tag": "0001_sheets_auth",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794641589394,
+      "tag": "0002_multi_project",
+      "breakpoints": true
     }
   ]
 }

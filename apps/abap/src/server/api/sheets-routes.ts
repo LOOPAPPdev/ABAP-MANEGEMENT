@@ -8,7 +8,8 @@ import { parseConfig } from "../config";
 import { getDb } from "../db/client";
 import { appSettings } from "../db/schema";
 import type { Clock } from "../governance-service";
-import { syncServiceFor } from "../sheets/factory";
+import { spreadsheetIdFor, syncServiceFor } from "../sheets/factory";
+import { projectOf } from "./project-context";
 import { DEV_SHEET_OVERRIDES, sheetsConnection, SheetsNotConnectedError } from "../sheets/sources";
 import { actorOf } from "./actor";
 
@@ -27,7 +28,7 @@ const overridesBody = z.object({
  */
 export function registerSheetsRoutes(api: Hono<Env, BlankSchema, "/api/v1">, clock: Clock, f?: Fetch) {
   const cfgOf = (c: Context<Env>) => c.get("cfg") ?? parseConfig(c.env);
-  const svc = (c: Context<Env>) => syncServiceFor(cfgOf(c), c.env.DB, clock, f);
+  const svc = async (c: Context<Env>) => syncServiceFor(cfgOf(c), c.env.DB, clock, await projectOf(c, clock), f);
   const notConnected = (c: Context<Env>, e: unknown) =>
     e instanceof SheetsNotConnectedError ? c.json({ ok: false, error: "sheets_not_connected", message: e.message }, 409) : null;
 
@@ -35,12 +36,13 @@ export function registerSheetsRoutes(api: Hono<Env, BlankSchema, "/api/v1">, clo
 
   api.get("/sheets/status", async (c) => {
     const cfg = cfgOf(c);
-    const s = svc(c);
+    const s = await svc(c);
     return c.json({
       ok: true,
       mode: await s.getMode(),
       source: cfg.auth === "dev-bypass" ? "fixture" : "google",
-      spreadsheetConfigured: Boolean(cfg.spreadsheetId),
+      project: (await projectOf(c, clock)).id,
+      spreadsheetConfigured: Boolean(spreadsheetIdFor(cfg, await projectOf(c, clock))),
       connection: await sheetsConnection(getDb(c.env.DB)),
       lastRun: await s.lastRun(),
     });
@@ -48,7 +50,7 @@ export function registerSheetsRoutes(api: Hono<Env, BlankSchema, "/api/v1">, clo
 
   api.get("/sheets/preview", async (c) => {
     try {
-      return c.json({ ok: true, preview: await svc(c).preview() });
+      return c.json({ ok: true, preview: await (await svc(c)).preview() });
     } catch (e) {
       return notConnected(c, e) ?? c.json({ ok: false, error: "sheets_read_failed", message: e instanceof Error ? e.message : String(e) }, 502);
     }
@@ -57,7 +59,7 @@ export function registerSheetsRoutes(api: Hono<Env, BlankSchema, "/api/v1">, clo
   api.post("/sheets/sync", async (c) => {
     const body = syncBody.safeParse(await c.req.json().catch(() => ({})));
     if (!body.success) return c.json({ ok: false, error: "invalid_body", issues: body.error.issues }, 400);
-    const s = svc(c);
+    const s = await svc(c);
     try {
       return c.json({ ok: true, result: await s.sync({ mode: "manual", actor: actorOf(c), resolve: body.data.resolve }) });
     } catch (e) {
@@ -70,7 +72,7 @@ export function registerSheetsRoutes(api: Hono<Env, BlankSchema, "/api/v1">, clo
   api.put("/sheets/mode", async (c) => {
     const body = modeBody.safeParse(await c.req.json().catch(() => null));
     if (!body.success) return c.json({ ok: false, error: "invalid_body", issues: body.error.issues }, 400);
-    await svc(c).setMode(body.data.mode, actorOf(c));
+    await (await svc(c)).setMode(body.data.mode, actorOf(c));
     return c.json({ ok: true, mode: body.data.mode });
   });
 

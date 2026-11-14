@@ -1,5 +1,5 @@
 {
- "version": "1.1.0",
+ "version": "1.2.0",
  "components": [
   {
    "id": "tokens-color",
@@ -1805,6 +1805,76 @@
     "interaction": "Botão Entrar com Google.",
     "state": "normal, erro, não configurado, modo local.",
     "uxRule": "Mensagens de erro dizem o que fazer, sem detalhes internos."
+   }
+  },
+  {
+   "id": "project-switcher",
+   "family": "Composites",
+   "name": "Project switcher",
+   "function": "Selects the current client project for every page.",
+   "variants": [
+    "header"
+   ],
+   "props": [
+    "projects",
+    "current"
+   ],
+   "states": [
+    "default",
+    "focus"
+   ],
+   "dependencies": [
+    "ds:input"
+   ],
+   "usage": [
+    "app shell"
+   ],
+   "status": "adopted",
+   "source": "app/root.tsx",
+   "metanote": {
+    "name": "Project switcher",
+    "function": "Escolhe o projeto (cliente) em que você está trabalhando.",
+    "whenToUse": "Sempre que houver mais de um projeto.",
+    "data": "Lista de projetos e o atual (cookie gs_project).",
+    "interaction": "Selecionar e clicar em Abrir; funciona sem JavaScript.",
+    "state": "projeto atual sempre visível no cabeçalho.",
+    "uxRule": "O código do projeto (PRJ-NN) aparece em todas as telas para evitar editar o cliente errado."
+   }
+  },
+  {
+   "id": "pattern-projects",
+   "family": "Patterns",
+   "name": "Projects",
+   "function": "Create client projects and link their Drive folder and spreadsheet.",
+   "variants": [
+    "list",
+    "create",
+    "links"
+   ],
+   "props": [],
+   "states": [
+    "empty",
+    "linked",
+    "unlinked"
+   ],
+   "dependencies": [
+    "ds:card",
+    "ds:input",
+    "ds:button"
+   ],
+   "usage": [
+    "/projects"
+   ],
+   "status": "adopted",
+   "source": "app/routes/projects.tsx",
+   "metanote": {
+    "name": "Projects",
+    "function": "Cadastro dos projetos de clientes.",
+    "whenToUse": "Ao receber um novo cliente ou mudar a pasta do Drive.",
+    "data": "Código, nome, identificador (slug), links da pasta e da planilha.",
+    "interaction": "Formulários com validação; links colados são convertidos em IDs.",
+    "state": "sem vínculo, vinculado.",
+    "uxRule": "IDs do Google ficam só no banco; a tela mostra links, não IDs soltos."
    }
   }
  ]
