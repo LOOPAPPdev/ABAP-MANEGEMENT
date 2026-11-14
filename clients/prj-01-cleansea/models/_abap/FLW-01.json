@@ -1,0 +1,343 @@
+{
+  "_abap": {
+    "projectId": "prj-01-cleansea",
+    "id": "FLW-01",
+    "kind": "flow",
+    "templateId": null,
+    "title": "Fluxograma operacional · AS-IS",
+    "status": "extraído com pendências",
+    "source": "import:clients/prj-01-cleansea/models/FLW-01.json",
+    "createdAt": "2026-11-14T11:05:54.843Z",
+    "updatedAt": "2026-11-14T11:05:54.843Z",
+    "updatedBy": "claude-code (aprovado pelo owner)",
+    "note": "Gerado por models:pull a partir do ABAP. Edite no app, não aqui."
+  },
+  "id": "FLW-01",
+  "title": "Fluxograma operacional · AS-IS",
+  "version": "1.0",
+  "type": "AS-IS",
+  "status": "extraído com pendências",
+  "context": {
+    "primary_port": "Santos",
+    "other_ports": "Execução por terceirizados; áreas administrativa e comercial participam",
+    "monthly_operations_approx": 8,
+    "lead_time_days": [
+      4,
+      7
+    ],
+    "risk": "Meteorologia pode atrasar chegadas e provocar operações simultâneas",
+    "data_capture": "Planilha preenchida pela equipa via formulários"
+  },
+  "phases": [
+    {
+      "id": "F1",
+      "name": "Entrada comercial",
+      "span": [
+        1,
+        4
+      ],
+      "tag": "Comercial"
+    },
+    {
+      "id": "F2",
+      "name": "Preparação e monitorização",
+      "span": [
+        5,
+        10
+      ],
+      "tag": "Operacional"
+    },
+    {
+      "id": "F3",
+      "name": "Mobilização",
+      "span": [
+        11,
+        13
+      ],
+      "tag": "Logística + Operacional"
+    },
+    {
+      "id": "F4",
+      "name": "Execução e evidências",
+      "span": [
+        14,
+        15
+      ],
+      "tag": "Operacional"
+    },
+    {
+      "id": "F5",
+      "name": "Controlo e fecho",
+      "span": [
+        16,
+        17
+      ],
+      "tag": "Direção"
+    }
+  ],
+  "steps": [
+    {
+      "id": "S01",
+      "number": 1,
+      "title": "Contacto do cliente",
+      "detail": "O cliente solicita o serviço.",
+      "owner": "Cliente / Comercial",
+      "output": "Pedido recebido",
+      "source": "PIPE:L19",
+      "area": "comercial",
+      "phase": "F1"
+    },
+    {
+      "id": "S02",
+      "number": 2,
+      "title": "Fechar venda e acionar fluxo",
+      "detail": "A equipa comercial fecha a venda; Felipe é envolvido na logística.",
+      "owner": "Comercial + Felipe",
+      "output": "Venda confirmada",
+      "source": "PIPE:L22",
+      "area": "comercial",
+      "phase": "F1"
+    },
+    {
+      "id": "S03",
+      "number": 3,
+      "title": "Registar informações",
+      "detail": "Registar dados comerciais; o ponto X do pipeline não está identificado.",
+      "owner": "Comercial / Cecília",
+      "output": "Registo de venda",
+      "source": "PIPE:L24; PRD:L175-L180",
+      "area": "comercial",
+      "phase": "F1"
+    },
+    {
+      "id": "S04",
+      "number": 4,
+      "title": "Comunicar venda",
+      "detail": "Cecília publica o acionamento da equipa operacional pelo WhatsApp.",
+      "owner": "Cecília",
+      "output": "Mensagem de acionamento",
+      "source": "PIPE:L26",
+      "area": "comercial",
+      "phase": "F1"
+    },
+    {
+      "id": "S05",
+      "number": 5,
+      "title": "Preparar documentação",
+      "detail": "Marcos inicia preparação documental (X por especificar); João entra em sobreaviso.",
+      "owner": "Marcos + João",
+      "output": "Documentos em preparação",
+      "source": "PIPE:L28",
+      "area": "operacional",
+      "phase": "F2"
+    },
+    {
+      "id": "S06",
+      "number": 6,
+      "title": "Colocar equipa em sobreaviso",
+      "detail": "Equipa acompanha a previsão de chegada do navio.",
+      "owner": "Equipa operacional",
+      "output": "Estado de sobreaviso",
+      "source": "PIPE:L30",
+      "area": "operacional",
+      "phase": "F2"
+    },
+    {
+      "id": "S07",
+      "number": 7,
+      "title": "Monitorizar navio",
+      "detail": "Consultar MarineTraffic, Praticagem SP e Semafórico; o PRD também cita APS.",
+      "owner": "João + Marcos",
+      "output": "Consultas de posição e chegada",
+      "source": "PIPE:L32; PRD:L151-L172",
+      "area": "operacional",
+      "phase": "F2"
+    },
+    {
+      "id": "S08",
+      "number": 8,
+      "title": "Acompanhar variáveis",
+      "detail": "Monitorizar V1, V2 e V3; os significados ainda não estão descritos.",
+      "owner": "João + Marcos",
+      "output": "Atualização das variáveis",
+      "source": "PIPE:L34-L36",
+      "area": "operacional",
+      "phase": "F2"
+    },
+    {
+      "id": "S09",
+      "number": 9,
+      "title": "Estimar chegada",
+      "detail": "Utilizar posição e geolocalização para estimar a data e a hora de chegada.",
+      "owner": "João + Marcos",
+      "output": "ETA operacional",
+      "source": "PIPE:L36",
+      "area": "operacional",
+      "phase": "F2"
+    },
+    {
+      "id": "S10",
+      "number": 10,
+      "title": "Confirmar chegada",
+      "detail": "Confirmar V1, V2 e V3 antes de acionar o deslocamento.",
+      "owner": "Equipa operacional",
+      "output": "Confirmação de prontidão",
+      "source": "PIPE:L38",
+      "area": "operacional",
+      "phase": "F2"
+    },
+    {
+      "id": "S11",
+      "number": 11,
+      "title": "Mobilizar motoristas",
+      "detail": "Felipe contacta os motoristas e coordena os recursos de transporte.",
+      "owner": "Felipe · Paulo · Hélio",
+      "output": "Recursos mobilizados",
+      "source": "PIPE:L40; PDF:p.5-6",
+      "area": "logistica",
+      "phase": "F3"
+    },
+    {
+      "id": "S12",
+      "number": 12,
+      "title": "Deslocar Marcos",
+      "detail": "Marcos desloca-se e executa uma tarefa X ainda não definida.",
+      "owner": "Marcos",
+      "output": "Presença em campo",
+      "source": "PIPE:L42",
+      "area": "operacional",
+      "phase": "F3"
+    },
+    {
+      "id": "S13",
+      "number": 13,
+      "title": "Preparar formulários",
+      "detail": "João imprime D1; D2, D3 e D4 são formulários de preenchimento manual.",
+      "owner": "João",
+      "output": "D1-D4 preparados",
+      "source": "PIPE:L44-L53",
+      "area": "operacional",
+      "phase": "F3"
+    },
+    {
+      "id": "S14",
+      "number": 14,
+      "title": "Executar operação",
+      "detail": "Realizar e concluir a operação de recolha/serviço.",
+      "owner": "Equipa operacional + logística",
+      "output": "Serviço concluído",
+      "source": "PIPE:L55",
+      "area": "operacional",
+      "phase": "F4"
+    },
+    {
+      "id": "S15",
+      "number": 15,
+      "title": "Recolher evidências",
+      "detail": "João e Marcos enviam documentação por WhatsApp para Felipe.",
+      "owner": "João + Marcos → Felipe",
+      "output": "Documentos e evidências",
+      "source": "PIPE:L56",
+      "area": "operacional",
+      "phase": "F4"
+    },
+    {
+      "id": "S16",
+      "number": 16,
+      "title": "Submeter certificados",
+      "detail": "Felipe encaminha documentação às entidades e sistemas de controlo; regista informação da balança, quando aplicável.",
+      "owner": "Felipe",
+      "output": "Submissões e registos",
+      "source": "PIPE:L57; PDF:p.6",
+      "area": "direcao",
+      "phase": "F5"
+    },
+    {
+      "id": "S17",
+      "number": 17,
+      "title": "Encerrar operação",
+      "detail": "Finalizar a operação após o fecho documental.",
+      "owner": "Felipe / Direção",
+      "output": "Operação finalizada",
+      "source": "PIPE:L58; PDF:p.6",
+      "area": "direcao",
+      "phase": "F5"
+    }
+  ],
+  "decision": {
+    "id": "G-01",
+    "after": "S10",
+    "question": "Chegada e variáveis confirmadas?",
+    "yes": "S11",
+    "no": "S07",
+    "status": "ramo de retorno inferido; validar",
+    "source": "PIPE:L32-L40"
+  },
+  "documents": [
+    {
+      "id": "D1",
+      "name": "CETESB — Manifesto de Transporte de Resíduos",
+      "handling": "Impresso",
+      "source": "PIPE:L46,L52"
+    },
+    {
+      "id": "D2",
+      "name": "Terrestre Ambiental — Manifesto de Carga",
+      "handling": "Preenchimento manual",
+      "source": "PIPE:L47,L53"
+    },
+    {
+      "id": "D3",
+      "name": "Premium Ambiental — Certificado de Retirada de Resíduos de Embarcação (MARPOL)",
+      "handling": "Preenchimento manual",
+      "source": "PIPE:L48,L53"
+    },
+    {
+      "id": "D4",
+      "name": "Premium Ambiental — Certificado de Coleta de Resíduos (CETESB / IBAMA / ANVISA)",
+      "handling": "Preenchimento manual",
+      "source": "PIPE:L49,L53"
+    }
+  ],
+  "assumptions": [
+    "O retorno do gateway 10 para o monitoramento é uma hipótese visual, não uma regra de decisão aprovada.",
+    "As fases são agrupamentos de UI, não novos passos.",
+    "Algumas atividades de preparação e transporte podem ocorrer em paralelo; condições formais não definidas."
+  ],
+  "outstanding": [
+    "Confirmar líder hierárquico da equipa operacional e papel de Marcos.",
+    "Definir as tarefas marcadas X nas etapas 3, 5 e 12.",
+    "Definir V1/V2/V3 e o critério formal de confirmação.",
+    "Confirmar a função dos documentos D1-D4, titulares e templates.",
+    "Confirmar estados dos dados PRE/DURANTE/POS e unidade de volume.",
+    "Confirmar integrações autorizadas e autenticadas das fontes portuárias.",
+    "Descrever ramificações de cancelamento, meteorologia e operações em paralelo."
+  ],
+  "data_capture": {
+    "PRE": {
+      "owner": "Cecília / Comercial",
+      "source": "PRD:L180"
+    },
+    "DURANTE": {
+      "owner": "João",
+      "source": "PRD:L182"
+    },
+    "POS": {
+      "owner": "Marcos",
+      "source": "PRD:L181"
+    },
+    "rule": "POS prevalece sobre PRE e DURANTE",
+    "source": "PRD:L186-L190"
+  },
+  "post_close": {
+    "task": "Felipe trata posteriormente da venda do material recolhido",
+    "status": "fora das 17 etapas; dados administrativos por confirmar",
+    "source": "PIPE:L61"
+  },
+  "integration_notes": {
+    "current": "Consultas manuais a múltiplas fontes e comunicação via WhatsApp",
+    "target": "Consolidar consultas e registos no dashboard, com dados de origem identificados",
+    "status": "integração de produção não validada",
+    "source": "PRD:L151-L204; API:L2-L14,L127"
+  }
+}

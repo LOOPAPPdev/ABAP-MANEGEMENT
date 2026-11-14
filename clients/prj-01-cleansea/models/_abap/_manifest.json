@@ -1,0 +1,24 @@
+{
+  "project": "prj-01-cleansea",
+  "exportedAt": "2026-11-14T11:06:37.862Z",
+  "files": [
+    {
+      "path": "DIAG-01.json",
+      "kind": "diagnostic",
+      "status": "review_required",
+      "updatedAt": "2026-11-14T11:05:54.843Z"
+    },
+    {
+      "path": "FLW-01.json",
+      "kind": "flow",
+      "status": "extraído com pendências",
+      "updatedAt": "2026-11-14T11:05:54.843Z"
+    },
+    {
+      "path": "ORG-01.json",
+      "kind": "org",
+      "status": "extraído com pendências",
+      "updatedAt": "2026-11-14T11:05:54.843Z"
+    }
+  ]
+}

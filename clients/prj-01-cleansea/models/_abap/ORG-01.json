@@ -1,0 +1,163 @@
+{
+  "_abap": {
+    "projectId": "prj-01-cleansea",
+    "id": "ORG-01",
+    "kind": "org",
+    "templateId": null,
+    "title": "Organograma operacional · CleanSea",
+    "status": "extraído com pendências",
+    "source": "import:clients/prj-01-cleansea/models/ORG-01.json",
+    "createdAt": "2026-11-14T11:05:54.843Z",
+    "updatedAt": "2026-11-14T11:05:54.843Z",
+    "updatedBy": "claude-code (aprovado pelo owner)",
+    "note": "Gerado por models:pull a partir do ABAP. Edite no app, não aqui."
+  },
+  "id": "ORG-01",
+  "title": "Organograma operacional · CleanSea",
+  "version": "1.0",
+  "type": "AS-IS",
+  "status": "extraído com pendências",
+  "company": "CleanSea",
+  "port": "Santos, SP",
+  "governance": [
+    {
+      "id": "P-FEL",
+      "name": "Felipe",
+      "role": "Sócio fundador · gestor",
+      "areas": [
+        "Administração",
+        "Financeiro",
+        "Logística"
+      ],
+      "scope": "Mobilização dos motoristas, coordenação logística e fecho documental.",
+      "sources": [
+        "PDF:p.3,p.8",
+        "PIPE:L22,L40,L57"
+      ]
+    },
+    {
+      "id": "P-CEC",
+      "name": "Cecília",
+      "role": "Sócia fundadora · gerente comercial",
+      "areas": [
+        "Gestão comercial",
+        "Comunicação operacional"
+      ],
+      "scope": "Coordenação comercial e comunicação da venda à equipa operacional.",
+      "sources": [
+        "PDF:p.3,p.8",
+        "PIPE:L26",
+        "PRD:L180,L200"
+      ]
+    }
+  ],
+  "departments": [
+    {
+      "id": "A-COM",
+      "name": "Comercial",
+      "leader": "P-CEC",
+      "leader_status": "documentado",
+      "members": [
+        {
+          "id": "P-ANA",
+          "name": "Ana",
+          "role": "Comercial · contacto por email",
+          "source": "PDF:p.4"
+        },
+        {
+          "id": "P-REN",
+          "name": "Renan",
+          "role": "Comercial · WhatsApp",
+          "source": "PDF:p.4"
+        },
+        {
+          "id": "P-JOS",
+          "name": "José",
+          "role": "Comercial · planilha central",
+          "source": "PDF:p.4"
+        }
+      ],
+      "activities": [
+        "Receber pedido",
+        "Negociar e fechar",
+        "Registar informações",
+        "Comunicar venda"
+      ],
+      "sources": [
+        "PDF:p.3-4,p.8",
+        "PIPE:L19-L26"
+      ]
+    },
+    {
+      "id": "A-OPE",
+      "name": "Operacional",
+      "leader": null,
+      "leader_status": "por confirmar",
+      "members": [
+        {
+          "id": "P-MAR",
+          "name": "Marcos",
+          "role": "Administração operacional; PRD indica gerente operacional",
+          "source": "PDF:p.4-5; PRD:L181"
+        },
+        {
+          "id": "P-JOA",
+          "name": "João",
+          "role": "Visitador de bordo; evidências e documentação",
+          "source": "PDF:p.4-5; PRD:L182"
+        }
+      ],
+      "activities": [
+        "Preparar documentos",
+        "Monitorizar chegada",
+        "Executar operação",
+        "Recolher evidências"
+      ],
+      "sources": [
+        "PDF:p.4-5,p.9",
+        "PIPE:L28-L56",
+        "PRD:L181-L182"
+      ]
+    },
+    {
+      "id": "A-LOG",
+      "name": "Transporte e logística",
+      "leader": "P-FEL",
+      "leader_status": "documentado",
+      "members": [
+        {
+          "id": "P-PAU",
+          "name": "Paulo",
+          "role": "Motorista",
+          "source": "PDF:p.5-6"
+        },
+        {
+          "id": "P-HEL",
+          "name": "Hélio",
+          "role": "Motorista",
+          "source": "PDF:p.5-6"
+        }
+      ],
+      "activities": [
+        "Receber acionamento",
+        "Confirmar disponibilidade",
+        "Coordenar deslocamento",
+        "Concluir transporte"
+      ],
+      "sources": [
+        "PDF:p.5-6",
+        "PIPE:L40"
+      ]
+    }
+  ],
+  "external_parties": [
+    "Cliente",
+    "Terminais/autoridades portuárias",
+    "Executores terceirizados em outros portos"
+  ],
+  "notes": [
+    "As áreas são pares organizacionais; a sequência de entregas não representa subordinação.",
+    "Coordenação direta da equipa operacional ainda não validada.",
+    "Felipe executa a função de Administração e controlo no fecho; não é uma quarta equipa."
+  ]
+}
