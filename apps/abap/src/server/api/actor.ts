@@ -8,7 +8,7 @@ type Ctx = Context<{ Bindings: { DB: D1Database }; Variables: Partial<AuthVariab
 /** Authenticated e-mail when Google login is on; otherwise the X-Actor header (local development only). */
 export function actorOf(c: Ctx): string {
   const user = c.get("user");
-  if (user?.mode === "google") return user.email;
+  if (user?.mode === "google" || user?.mode === "machine") return user.email;
   const cfg = c.get("cfg") ?? parseConfig(c.env);
   return cfg.auth === "google" ? "unknown" : actorSchema.parse(c.req.header("x-actor"));
 }

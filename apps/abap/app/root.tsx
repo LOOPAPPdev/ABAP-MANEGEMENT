@@ -4,12 +4,13 @@ import "./app.css";
 import { projectFrom, projectsFrom } from "./lib/service.server";
 
 const NAV = [
+  ["/projects", "Projects"],
   ["/dashboard", "Dashboard"],
   ["/activities", "Activities"],
   ["/canvas", "Canvas"],
   ["/evidence", "Evidence"],
   ["/sheets", "Planilha"],
-  ["/projects", "Projects"],
+  ["/docs", "Docs"],
   ["/showcase", "Design system"],
   ["/settings", "Settings"],
 ] as const;

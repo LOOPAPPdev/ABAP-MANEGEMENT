@@ -52,3 +52,9 @@ test.describe("Feature: client projects (monorepo clients/<slug>)", () => {
     await expect(page.getByText(/pasta do Drive vinculada/)).toBeVisible();
   });
 });
+
+test("Docs explains that Drive is unavailable in local mode (no Google)", async ({ page }) => {
+  await page.goto("/docs");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Docs");
+  await expect(page.getByTestId("drive-error")).toContainText("modo local");
+});

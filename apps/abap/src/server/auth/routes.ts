@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { getDb } from "../db/client";
 import { storeSheetsCredential } from "../sheets/sources";
 import { randomToken, signJson, verifyJson } from "./crypto";
-import { buildAuthUrl, exchangeCode, GoogleError, readIdToken, SCOPE_LOGIN, SCOPE_SHEETS, type Fetch } from "./google";
+import { buildAuthUrl, exchangeCode, GoogleError, readIdToken, SCOPE_DRIVE, SCOPE_LOGIN, SCOPE_SHEETS, type Fetch } from "./google";
 import type { AuthVariables } from "./middleware";
 import { clearCookie, cookie, createSession, OAUTH_COOKIE, readCookie, safeReturnTo, SESSION_COOKIE, SESSION_TTL_S, type OAuthState } from "./session";
 
@@ -11,7 +11,7 @@ const STATE_TTL_S = 600;
 /**
  * OAuth routes:
  *  GET  /auth/login           → Google sign-in (openid email profile)
- *  GET  /auth/sheets/connect  → incremental consent for spreadsheets.readonly (offline, refresh token)
+ *  GET  /auth/sheets/connect  → incremental consent for Sheets (read) + Drive (read/write), offline refresh token
  *  GET  /auth/google/callback → verifies state + PKCE, checks the allow-list, sets the session
  *  POST /auth/logout
  */
@@ -38,7 +38,7 @@ export function createAuthRoutes(deps: { fetch?: Fetch; now?: () => number } = {
         redirectUri: redirectUri(c.req.url),
         state: st.state,
         verifier: st.verifier,
-        scope: purpose === "login" ? SCOPE_LOGIN : `${SCOPE_LOGIN} ${SCOPE_SHEETS}`,
+        scope: purpose === "login" ? SCOPE_LOGIN : `${SCOPE_LOGIN} ${SCOPE_SHEETS} ${SCOPE_DRIVE}`,
         offline: purpose === "sheets",
         loginHint: purpose === "sheets" ? c.get("user")?.email : undefined,
       });
@@ -67,7 +67,8 @@ export function createAuthRoutes(deps: { fetch?: Fetch; now?: () => number } = {
       if (!id.emailVerified || !cfg.allowedEmails.includes(id.email)) return fail("not_allowed");
       if (st.purpose === "sheets") {
         if (!tokens.refresh_token || !tokens.scope.split(" ").includes(SCOPE_SHEETS)) return fail("sheets_scope");
-        await storeSheetsCredential(getDb(c.env.DB), cfg, { email: id.email, scope: SCOPE_SHEETS, refreshToken: tokens.refresh_token }, new Date(now()).toISOString());
+        // Store the scopes Google actually granted (the user may untick Drive on the consent screen).
+        await storeSheetsCredential(getDb(c.env.DB), cfg, { email: id.email, scope: tokens.scope, refreshToken: tokens.refresh_token }, new Date(now()).toISOString());
       }
       c.header("Set-Cookie", clearCookie(OAUTH_COOKIE), { append: true });
       c.header("Set-Cookie", cookie(SESSION_COOKIE, await createSession({ email: id.email, name: id.name }, cfg.sessionSecret, now()), SESSION_TTL_S), { append: true });

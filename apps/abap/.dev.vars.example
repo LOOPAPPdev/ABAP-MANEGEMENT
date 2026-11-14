@@ -14,3 +14,5 @@ ENVIRONMENT=development
 # TOKEN_ENCRYPTION_KEY=<32 random bytes, base64: openssl rand -base64 32>
 # ALLOWED_EMAILS=you@example.com,partner@example.com
 # SPREADSHEET_ID=<the part of the sheet URL between /d/ and /edit>
+# Optional: read-only machine token for `npm run docs:pull` (>= 32 chars: openssl rand -base64 48)
+# ABAP_API_TOKEN=

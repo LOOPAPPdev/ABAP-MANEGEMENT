@@ -56,18 +56,24 @@ export default function Settings({ loaderData: d }: Route.ComponentProps) {
         </dl>
       </Card>
       <Card>
-        <CardTitle>Google Sheets</CardTitle>
+        <CardTitle>Google (Sheets e Drive) · projeto {d.project.code ?? d.project.name}</CardTitle>
         <dl className="mt-2 space-y-2">
           <Row k="Planilha">{d.spreadsheetUrl ? <a className="text-primary underline" href={d.spreadsheetUrl} target="_blank" rel="noreferrer">Abrir no Google Sheets</a> : "SPREADSHEET_ID não configurado"}</Row>
           <Row k="Intervalo lido">{d.range}</Row>
-          <Row k="Conexão">{d.connection ? `Conectada por ${d.connection.email} em ${new Date(d.connection.updatedAt).toLocaleString("pt-BR")} (somente leitura)` : "Não conectada"}</Row>
+          <Row k="Conexão">{d.connection ? `Conectada por ${d.connection.email} em ${new Date(d.connection.updatedAt).toLocaleString("pt-BR")}` : "Não conectada"}</Row>
+          <Row k="Permissões concedidas">
+            <span data-testid="google-scopes">
+              Sheets (leitura): {d.connection?.scope.includes("spreadsheets") || d.connection?.scope.includes("/auth/drive") ? "✓ sim" : "✗ não"} · Drive (leitura e escrita):{" "}
+              {d.connection?.scope.split(/\s+/).includes("https://www.googleapis.com/auth/drive") ? "✓ sim" : "✗ não — reconecte para liberar"}
+            </span>
+          </Row>
           <Row k="Modo de sincronização">
             {d.mode === "auto" ? "Automático ao abrir" : "Prévia + Aplicar"} · <Link className="text-primary underline" to="/sheets">alterar na página Planilha</Link>
           </Row>
         </dl>
         {d.auth === "google" && (
           <a href="/auth/sheets/connect?returnTo=%2Fsheets" className="mt-3 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-brand-fg">
-            {d.connection ? "Reconectar Google Sheets" : "Conectar Google Sheets"}
+            {d.connection ? "Reconectar Google (Sheets + Drive)" : "Conectar Google (Sheets + Drive)"}
           </a>
         )}
       </Card>

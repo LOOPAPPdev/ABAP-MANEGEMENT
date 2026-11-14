@@ -2,7 +2,7 @@
   "name": "abap-monorepo",
   "private": true,
   "version": "0.2.0",
-  "description": "ABAP \u2014 consultancy services platform (apps/abap) and one workspace per client project (clients/*).",
+  "description": "ABAP — consultancy services platform (apps/abap) and one workspace per client project (clients/*).",
   "workspaces": [
     "apps/*",
     "packages/*",
@@ -32,6 +32,7 @@
     "import:dv-criteria": "npm run import:dv-criteria -w @abap/platform",
     "client:new": "node tools/new-client.mjs",
     "docs:pull": "node tools/pull-drive-docs.mjs",
-    "check:clients": "node tools/check-clients.mjs"
+    "check:clients": "node tools/check-clients.mjs",
+    "test:tools": "node --test \"tools/test/*.test.mjs\""
   }
 }

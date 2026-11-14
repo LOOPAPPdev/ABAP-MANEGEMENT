@@ -1,8 +1,9 @@
 import { eq } from "drizzle-orm";
 import fixtureJson from "../../../data/seed/activities.v1.json";
 import type { AppConfig } from "../config";
-import { decrypt, encrypt } from "../auth/crypto";
-import { fetchSheetValues, refreshAccessToken, type Fetch } from "../auth/google";
+import { encrypt } from "../auth/crypto";
+import { fetchSheetValues, type Fetch } from "../auth/google";
+import { googleAccess, GoogleNotConnectedError } from "../google-token";
 import type { Db } from "../db/client";
 import { appSettings, googleCredentials } from "../db/schema";
 
@@ -45,15 +46,15 @@ export class GoogleSheetSource implements SheetSource {
     this.label = `Google Sheets · ${cfg.sheetRange}`;
   }
   async read() {
-    const { google, tokenKey, sheetRange } = this.cfg;
     const spreadsheetId = this.spreadsheetId;
-    if (!google || !tokenKey) throw new SheetsNotConnectedError("Google não configurado no servidor (client ou chave ausente).");
     if (!spreadsheetId) throw new SheetsNotConnectedError("Nenhuma planilha vinculada a este projeto: vincule em Projects.");
-    const [cred] = await this.db.select().from(googleCredentials).where(eq(googleCredentials.id, SHEETS_CREDENTIAL_ID));
-    if (!cred) throw new SheetsNotConnectedError("Planilha ainda não conectada: use “Conectar Google Sheets”.");
-    const refreshToken = await decrypt(cred, tokenKey);
-    const accessToken = await refreshAccessToken({ refreshToken, ...google }, this.f);
-    return fetchSheetValues({ accessToken, spreadsheetId, range: sheetRange }, this.f);
+    try {
+      const { accessToken } = await googleAccess(this.db, this.cfg, this.f);
+      return await fetchSheetValues({ accessToken, spreadsheetId, range: this.cfg.sheetRange }, this.f);
+    } catch (e) {
+      if (e instanceof GoogleNotConnectedError) throw new SheetsNotConnectedError(e.message);
+      throw e;
+    }
   }
 }
 

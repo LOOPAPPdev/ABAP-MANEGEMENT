@@ -9,6 +9,7 @@ export default [
   route("activities/:id", "routes/activity.tsx"),
   route("evidence", "routes/evidence.tsx"),
   route("sheets", "routes/sheets.tsx"),
+  route("docs", "routes/docs.tsx"),
   route("canvas", "routes/canvas.tsx"),
   route("showcase", "routes/showcase.tsx"),
   route("settings", "routes/settings.tsx"),

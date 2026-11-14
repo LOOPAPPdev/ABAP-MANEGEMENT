@@ -6,6 +6,8 @@ import { b64url, fromB64url, sha256b64url } from "./crypto";
 
 export const SCOPE_LOGIN = "openid email profile";
 export const SCOPE_SHEETS = "https://www.googleapis.com/auth/spreadsheets.readonly";
+/** Full Drive access (read and write in client folders). Restricted scope: fine in Testing; production needs Google's security assessment. */
+export const SCOPE_DRIVE = "https://www.googleapis.com/auth/drive";
 const AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 

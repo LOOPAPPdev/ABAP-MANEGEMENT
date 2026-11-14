@@ -11,7 +11,7 @@
 | D-004 | 2026-11-12 | Status changes are flagged, not rejected (DONE without evidence and pending dependency are allowed but not counted) | Mirrors workbook behaviour; keeps owner in control | PROPOSED — alternative: hard reject | Owner |
 | D-005 | 2026-11-12 | Excel import recurrence: one-time (default) | Simplicity | PROPOSED | Owner |
 | D-006 | 2026-11-12 | Authentication: Google login + allow-list of e-mails (secret), actor = signed-in e-mail (ADR-005). Local bypass only in development without Google secrets | Required before public deploy | RESOLVED (owner, session) | Owner |
-| D-007 | 2026-11-12 | Single project in MVP; schema keeps `project_id` | Smallest slice | PROPOSED | Owner |
+| D-007 | 2026-11-14 | Multi-project: one project per client (id = client slug), own activities, spreadsheet, sync mode, Drive folder (ADR-006) | Platform for many clients | RESOLVED (owner, session) | Owner |
 | D-008 | 2026-11-12 | Evidence stores references (URL, commit SHA, repo path, text); no file upload | Avoid storage decisions before need | PROPOSED — R2 candidate later | Owner |
 | D-009 | 2026-11-12 | UI labels in English; workbook content kept in Portuguese as imported | Preserve source data verbatim | OPEN — choose UI language | Owner |
 | D-010 | 2026-11-12 | Generic metadata-driven template engine (legacy ADR in `reference/xls-pwa/`) deferred | Not needed for the 14-activity MVP | DEFERRED | Owner |
@@ -26,3 +26,8 @@
 | D-019 | 2026-11-12 | Integration implemented in this repository, not in a new `consultoria-platform` monorepo | Session can only write to this repository; one Worker | APPROVED (owner, session) | Owner |
 | D-020 | 2026-11-12 | All account-specific values (client ID/secret, spreadsheet ID, allowed e-mails, keys) are Cloudflare secrets, never committed | Privacy and secret hygiene | APPLIED | Claude Code |
 | D-021 | 2026-11-12 | Production deployed with static files served from KV (`deploy:kv-assets`) because the Static Assets upload API returned 401 behind the session proxy. Standard `deploy` remains supported without code changes | Unblock deploy from the agent session | APPLIED — revert to standard deploy when deploying from CI or a workstation | Claude Code |
+| D-022 | 2026-11-14 | Monorepo with npm workspaces: apps/abap, clients/<slug>, packages/, tools/ | One repo for platform + clients; Claude Code context per client | APPROVED (owner, session) | Owner |
+| D-023 | 2026-11-14 | Each client = folder `clients/<slug>` (not a separate GitHub repo) | Owner choice; session can only write this repo | APPROVED (owner, session) | Owner |
+| D-024 | 2026-11-14 | Google Drive read **and write** through ABAP with scope `drive` (restricted); writes create new Docs only, with confirmation and audit | Owner asked for read + write | APPROVED (owner, session) — publishing the Google app needs verification | Owner |
+| D-025 | 2026-11-14 | Drive docs mirrored to `clients/<slug>/docs/drive` by `docs:pull` with a read-only machine token; hashed keys, Drive URLs omitted | Code production needs local Markdown; no Google IDs in Git | APPLIED | Claude Code |
+| D-026 | 2026-11-14 | Client spreadsheets use the same governance model (DATA_Activities, 14 activities) | Owner answer | APPROVED (owner, session) | Owner |

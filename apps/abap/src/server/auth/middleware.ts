@@ -5,8 +5,8 @@ import { readCookie, readSession, SESSION_COOKIE } from "./session";
 export interface AppUser {
   email: string;
   name?: string;
-  /** "dev" = local bypass (development without Google configured). */
-  mode: "google" | "dev";
+  /** "dev" = local bypass (development without Google configured); "machine" = ABAP_API_TOKEN (read-only automation). */
+  mode: "google" | "dev" | "machine";
 }
 
 export type AuthVariables = { user: AppUser | null; cfg: AppConfig };
@@ -23,11 +23,33 @@ export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefin
   return s && cfg.allowedEmails.includes(s.email.toLowerCase()) ? { ...s, mode: "google" } : null;
 }
 
+/** Read-only endpoints the machine token may call (used by `npm run docs:pull`). */
+const MACHINE_ALLOWED = [/^\/api\/v1\/projects\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/drive\/(export|files)\/?$/];
+export const machineMayCall = (method: string, path: string) => method === "GET" && MACHINE_ALLOWED.some((r) => r.test(path));
+
+async function digest(s: string) {
+  return new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)));
+}
+/** Constant-time comparison (compares fixed-length digests). */
+export async function tokenMatches(given: string, expected: string): Promise<boolean> {
+  const [a, b] = await Promise.all([digest(given), digest(expected)]);
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i]! ^ b[i]!;
+  return diff === 0;
+}
+
 /** Authentication gate for the whole Worker (API + pages). Fails closed in production. */
 export function authGate(): MiddlewareHandler<{ Bindings: object; Variables: AuthVariables }> {
   return async (c, next) => {
     const cfg = parseConfig(c.env);
     c.set("cfg", cfg);
+    const bearer = c.req.header("authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
+    if (bearer && new URL(c.req.url).pathname.startsWith("/api/")) {
+      if (!cfg.apiToken || !(await tokenMatches(bearer, cfg.apiToken))) return c.json({ ok: false, error: "invalid_token" }, 401);
+      if (!machineMayCall(c.req.method, new URL(c.req.url).pathname)) return c.json({ ok: false, error: "forbidden_for_token" }, 403);
+      c.set("user", { email: "machine:api-token", mode: "machine" });
+      return next();
+    }
     const user = await resolveUser(cfg, c.req.header("cookie"));
     c.set("user", user);
     const path = new URL(c.req.url).pathname;

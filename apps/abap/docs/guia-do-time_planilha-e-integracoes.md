@@ -266,7 +266,19 @@ Os motivos técnicos de cada escolha estão em `docs/architecture/adr-005_google
 
 ---
 
-## 19. Glossário rápido
+## 19. Vários clientes: Projects e Docs
+
+Cada cliente é um **projeto** no sistema, com a própria planilha e a própria pasta no Google Drive (ex.: `PRJ-01-CLEANSEA`).
+
+- **Trocar de projeto:** use o seletor no topo da tela e clique em **Abrir**. Tudo o que você vê (Dashboard, Activities, Canvas, Planilha, Docs) passa a ser daquele cliente.
+- **Projects:** lista os clientes, cria um novo projeto (com as 14 atividades) e guarda os links da pasta do Drive e da planilha.
+- **Docs:** mostra os arquivos da pasta do cliente. Google Docs podem ser lidos ali. Você também pode **publicar um documento novo** na pasta: é preciso marcar a confirmação, e o sistema **nunca altera nem apaga** arquivos que já existem. Tudo fica no histórico.
+- **Detectar planilha:** se a pasta do cliente tiver uma única planilha de governança, o sistema a encontra e vincula ao projeto.
+- **No repositório:** a equipe técnica copia os documentos do cliente para `clients/<cliente>/docs/drive/` com um comando. É dali que o Claude Code lê os fatos do cliente para escrever a documentação e, depois, o código.
+
+> A permissão do Google para ler e escrever no Drive é "restrita": funciona enquanto o app do Google está em modo de teste com os usuários cadastrados.
+
+## 20. Glossário rápido
 
 | Termo | Quer dizer |
 |---|---|

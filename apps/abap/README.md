@@ -63,12 +63,20 @@ flowchart LR
 - **Team guide (plain language, PT-BR):** `docs/guia-do-time_planilha-e-integracoes.md`.
 - A change made only in the app is never reverted by the sheet; a field changed on both sides is a conflict and is never applied automatically. Details: `docs/architecture/adr-005_google-auth-sheets-sync.md`.
 
+## Projects and Google Drive (ADR-006)
+
+- **Projects** (`/projects`): one per client, id = `clients/<slug>` in the monorepo. Each has its own 14 activities, spreadsheet, sync mode, Drive folder and history. Header switcher sets the current project.
+- **Docs** (`/docs`): files of the client's Drive folder; read Google Docs as Markdown; **publish** a new Google Doc (confirmation required, never overwrites); detect the governance spreadsheet in the folder.
+- **Repository mirror**: `npm run docs:pull -w @clients/<slug>` (from the repo root) writes Google Docs as Markdown to `clients/<slug>/docs/drive/` using the read-only `ABAP_API_TOKEN`.
+
 ## Production setup (one time)
 
 1. Google Cloud Console → APIs & Services → Credentials → the OAuth client (type *Web*) → **Authorized redirect URIs**: add `https://governance-system.<your-workers-subdomain>.workers.dev/auth/google/callback` (and `http://localhost:5173/auth/google/callback` for local tests).
 2. Enable the **Google Sheets API** in the same project. On the OAuth consent screen, add the scope `.../auth/spreadsheets.readonly`; if the app is in *Testing*, add the allowed accounts as test users (refresh tokens then expire after 7 days).
 3. Cloudflare secrets (`--env production`): `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET`, `TOKEN_ENCRYPTION_KEY`, `ALLOWED_EMAILS`, `SPREADSHEET_ID` — e.g. `npx wrangler secret put ALLOWED_EMAILS --env production`.
-4. Open the app → **Entrar com Google** → Settings → **Conectar Google Sheets** (one consent with read-only access).
+4. Open the app → **Entrar com Google** → Settings → **Conectar Google (Sheets + Drive)**.
+5. **Drive** (ADR-006): enable the **Google Drive API** in the same Google Cloud project and add the scope `https://www.googleapis.com/auth/drive` on the consent screen (*Data access*). It is a restricted scope: fine in *Testing*; publishing requires Google verification.
+6. Optional machine token for `docs:pull`: `npx wrangler secret put ABAP_API_TOKEN --env production` (≥ 32 random characters).
 
 ## Deploy
 
@@ -169,8 +177,16 @@ Reset local data: `npm run db:reset:local`.
 | GET | `/api/v1/sheets/preview` | Read the sheet and return the plan (no writes) |
 | POST | `/api/v1/sheets/sync` | `{ "resolve"?: ["ACT-02:status"] }` apply plan (+ chosen conflicts) |
 | PUT | `/api/v1/sheets/mode` | `{ "mode": "auto" \| "preview" }` |
+| GET/POST | `/api/v1/projects` | List / create a project `{ code, name, id }` |
+| GET | `/api/v1/projects/:id` | Project (machine token allowed) |
+| PUT | `/api/v1/projects/:id/links` | `{ driveFolder?, spreadsheet? }` pasted URLs or IDs |
+| GET | `/api/v1/projects/:id/drive/files` | Drive folder tree (machine token allowed) |
+| GET | `/api/v1/projects/:id/drive/files/:fileId` | One file + Markdown if Google Doc |
+| GET | `/api/v1/projects/:id/drive/export` | All Google Docs as Markdown (machine token allowed) |
+| POST | `/api/v1/projects/:id/drive/documents` | `{ title, markdown, confirm: true }` create a Google Doc |
+| POST | `/api/v1/projects/:id/drive/detect-spreadsheet` | Link the spreadsheet found in the folder |
 
-Every route except `/api/v1/health`, `/login` and `/auth/*` requires a session. Actor = signed-in e-mail (`X-Actor` is accepted only in the local development bypass).
+Every route except `/api/v1/health`, `/login` and `/auth/*` requires a session (or, for the read-only endpoints marked above, the machine token). Governance endpoints accept `?project=<id>`. Actor = signed-in e-mail (`X-Actor` is accepted only in the local development bypass).
 
 ## Repository structure
 

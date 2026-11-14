@@ -13,6 +13,8 @@ const raw = z.object({
   ALLOWED_EMAILS: z.string().optional().catch(undefined),
   SPREADSHEET_ID: z.string().trim().regex(/^[A-Za-z0-9_-]{20,}$/).optional().catch(undefined),
   SHEET_RANGE: z.string().trim().min(1).catch("DATA_Activities!A1:R200"),
+  /** Machine token for read-only automation (npm run docs:pull). Optional; at least 32 characters. */
+  ABAP_API_TOKEN: z.string().min(32).optional().catch(undefined),
 });
 
 export type AuthMode = "google" | "dev-bypass" | "misconfigured";
@@ -28,6 +30,7 @@ export interface AppConfig {
   allowedEmails: string[];
   spreadsheetId?: string;
   sheetRange: string;
+  apiToken?: string;
 }
 
 export function parseConfig(env: unknown): AppConfig {
@@ -58,5 +61,6 @@ export function parseConfig(env: unknown): AppConfig {
     allowedEmails,
     spreadsheetId: e.SPREADSHEET_ID,
     sheetRange: e.SHEET_RANGE,
+    apiToken: e.ABAP_API_TOKEN,
   };
 }

@@ -1,5 +1,5 @@
 {
- "version": "1.2.0",
+ "version": "1.3.0",
  "components": [
   {
    "id": "tokens-color",
@@ -1875,6 +1875,44 @@
     "interaction": "Formulários com validação; links colados são convertidos em IDs.",
     "state": "sem vínculo, vinculado.",
     "uxRule": "IDs do Google ficam só no banco; a tela mostra links, não IDs soltos."
+   }
+  },
+  {
+   "id": "pattern-drive-docs",
+   "family": "Patterns",
+   "name": "Drive docs",
+   "function": "Lists, reads and publishes documents in the client's Google Drive folder.",
+   "variants": [
+    "list",
+    "read",
+    "publish"
+   ],
+   "props": [],
+   "states": [
+    "local",
+    "not-linked",
+    "not-connected",
+    "scope-missing",
+    "ready"
+   ],
+   "dependencies": [
+    "ds:card",
+    "ds:input",
+    "ds:button"
+   ],
+   "usage": [
+    "/docs"
+   ],
+   "status": "adopted",
+   "source": "app/routes/docs.tsx",
+   "metanote": {
+    "name": "Drive docs",
+    "function": "Mostra e publica os documentos da pasta do cliente no Google Drive.",
+    "whenToUse": "Para consultar a fonte dos fatos do cliente e entregar documentos a ele.",
+    "data": "Arquivos da pasta vinculada ao projeto (ID guardado no banco).",
+    "interaction": "Ver Markdown de um Google Doc; publicar novo documento com confirmação; detectar a planilha.",
+    "state": "local, sem pasta, sem conexão, sem escopo do Drive, pronto.",
+    "uxRule": "Escrita só cria documentos novos (nunca sobrescreve) e exige confirmação explícita; tudo fica no histórico do projeto."
    }
   }
  ]
