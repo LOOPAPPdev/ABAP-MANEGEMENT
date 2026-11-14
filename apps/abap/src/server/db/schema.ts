@@ -131,3 +131,25 @@ export const syncRuns = sqliteTable("sync_runs", {
   status: text("status").notNull(), // ok | error
   message: text("message").notNull().default(""),
 });
+
+/**
+ * Project models (ADR-008): diagnostic sessions (template "diagnostico-processos"), org charts, flows.
+ * Customised per project; the client area in Git receives a copy via docs:pull. One row per model.
+ */
+export const projectModels = sqliteTable(
+  "project_models",
+  {
+    projectId: text("project_id").notNull().references(() => projects.id),
+    id: text("id").notNull(), // DIAG-01 | ORG-01 | FLW-01
+    kind: text("kind").notNull(), // diagnostic | org | flow
+    templateId: text("template_id"),
+    title: text("title").notNull(),
+    status: text("status").notNull().default("rascunho"),
+    dataJson: text("data_json").notNull(),
+    source: text("source").notNull().default(""), // template | import:<file> | api
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+    updatedBy: text("updated_by").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.projectId, t.id] })],
+);

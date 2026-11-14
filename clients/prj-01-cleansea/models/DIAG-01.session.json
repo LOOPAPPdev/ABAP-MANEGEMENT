@@ -1,0 +1,372 @@
+{
+  "schema_version": "1.0.0",
+  "session_id": "demo-cleansea-documento",
+  "organization": {
+    "name": "Cleansea"
+  },
+  "questionnaire": {
+    "current_stage": "I",
+    "answers": {
+      "company_name": {
+        "value": "Cleansea",
+        "origin": "customer_document",
+        "verification": "needs_review",
+        "updated_at": "2026-11-14"
+      },
+      "activities": {
+        "value": "01. Cliente entra em contacto\\n02. Comercial fecha venda; Felipe contacta motoristas\\n03. Informação registada no sistema X (não identificado)\\n04. Cecília comunica venda no WhatsApp\\n05. Marcos prepara documentos X; João fica de sobreaviso\\n06. Equipa permanece de sobreaviso\\n07. Monitorizar navio: MarineTraffic, Praticagem SP e semafórico\\n08. Acompanhar variáveis V1, V2, V3 (não definidas)\\n09. Determinar data/hora de chegada com V1/V2/V3 e GEOLOC\\n10. Confirmar variáveis V1/V2/V3\\n11. Felipe coordena motoristas\\n12. Marcos desloca-se e executa atividade X\\n13. João imprime D1 e prepara formulários D2/D3/D4\\n14. Executar e concluir a operação de recolha\\n15. João e Marcos enviam documentação por WhatsApp a Felipe\\n16. Felipe despacha entidades e submete certificados aos portais\\n17. Encerrar operação",
+        "origin": "customer_document",
+        "verification": "needs_review",
+        "updated_at": "2026-11-14"
+      },
+      "frequency_month": {
+        "value": 8,
+        "origin": "customer_document",
+        "verification": "needs_review",
+        "updated_at": "2026-11-14"
+      },
+      "exceptions": {
+        "value": "Condições meteorológicas atrasam navios; libertação simultânea pode provocar operações sobrepostas",
+        "origin": "customer_document",
+        "verification": "needs_review",
+        "updated_at": "2026-11-14"
+      },
+      "operational_locations": {
+        "value": "Porto principal: Santos. Outros portos com participação administrativa/comercial; execução por empresa terceirizada.",
+        "origin": "customer_document",
+        "verification": "needs_review",
+        "updated_at": "2026-11-14"
+      },
+      "lead_time_days": {
+        "value": "Pedido de OS chega com 4 a 7 dias de antecedência.",
+        "origin": "customer_document",
+        "verification": "needs_review",
+        "updated_at": "2026-11-14"
+      },
+      "shared_control": {
+        "value": "Planilha de controlo preenchida pelos envolvidos por formulário.",
+        "origin": "customer_document",
+        "verification": "needs_review",
+        "updated_at": "2026-11-14"
+      },
+      "document_catalog": {
+        "value": "D1: CETESB — manifesto de transporte de resíduos (impresso). D2: Terrestre Ambiental — manifesto de carga (preenchimento manual). D3: Premium Ambiental — certificado de retirada de resíduos de embarcação / MARPOL (manual). D4: Premium Ambiental — CETESB/IBAMA/ANVISA — certificado de coleta de resíduos (manual).",
+        "origin": "customer_document",
+        "verification": "needs_review",
+        "updated_at": "2026-11-14"
+      },
+      "post_operation": {
+        "value": "Venda posterior do que foi coletado é mencionada como possível atividade, sem detalhe suficiente para modelar.",
+        "origin": "customer_document",
+        "verification": "needs_review",
+        "updated_at": "2026-11-14"
+      }
+    }
+  },
+  "research": {
+    "state": "idle",
+    "suggestions": []
+  },
+  "process": {
+    "id": "proc-cleansea",
+    "name": "Operação de recolha e documentação — AS-IS (rascunho documental)",
+    "version": 1,
+    "status": "review_required",
+    "nodes": [
+      {
+        "id": "N_start",
+        "type": "start",
+        "label": "Início — contacto do cliente",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_01",
+        "type": "task",
+        "label": "Cliente entra em contacto",
+        "actor": "Cliente",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_02",
+        "type": "task",
+        "label": "Comercial fecha venda; Felipe contacta motoristas",
+        "actor": "Comercial / Felipe",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_03",
+        "type": "task",
+        "label": "Informação registada no sistema X (não identificado)",
+        "actor": "Equipa a confirmar",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_04",
+        "type": "task",
+        "label": "Cecília comunica venda no WhatsApp",
+        "actor": "Cecília",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_05",
+        "type": "task",
+        "label": "Marcos prepara documentos X; João fica de sobreaviso",
+        "actor": "Marcos / João",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_06",
+        "type": "task",
+        "label": "Equipa permanece de sobreaviso",
+        "actor": "Equipa operacional",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_07",
+        "type": "task",
+        "label": "Monitorizar navio: MarineTraffic, Praticagem SP e semafórico",
+        "actor": "Equipa a confirmar",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_08",
+        "type": "task",
+        "label": "Acompanhar variáveis V1, V2, V3 (não definidas)",
+        "actor": "Equipa a confirmar",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_09",
+        "type": "task",
+        "label": "Determinar data/hora de chegada com V1/V2/V3 e GEOLOC",
+        "actor": "Equipa a confirmar",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_10",
+        "type": "task",
+        "label": "Confirmar variáveis V1/V2/V3",
+        "actor": "Equipa a confirmar",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_11",
+        "type": "task",
+        "label": "Felipe coordena motoristas",
+        "actor": "Felipe",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_12",
+        "type": "task",
+        "label": "Marcos desloca-se e executa atividade X",
+        "actor": "Marcos",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_13",
+        "type": "task",
+        "label": "João imprime D1 e prepara formulários D2/D3/D4",
+        "actor": "João",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_14",
+        "type": "task",
+        "label": "Executar e concluir a operação de recolha",
+        "actor": "Equipa operacional",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_15",
+        "type": "task",
+        "label": "João e Marcos enviam documentação por WhatsApp a Felipe",
+        "actor": "João / Marcos",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_16",
+        "type": "task",
+        "label": "Felipe despacha entidades e submete certificados aos portais",
+        "actor": "Felipe",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_17",
+        "type": "task",
+        "label": "Encerrar operação",
+        "actor": "Equipa a confirmar",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      },
+      {
+        "id": "N_end",
+        "type": "end",
+        "label": "Fim do fluxo descrito",
+        "verification": "unverified",
+        "origin": "customer_document",
+        "source_ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+      }
+    ],
+    "edges": [
+      {
+        "id": "E_00",
+        "source": "N_start",
+        "target": "N_01",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_01",
+        "source": "N_01",
+        "target": "N_02",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_02",
+        "source": "N_02",
+        "target": "N_03",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_03",
+        "source": "N_03",
+        "target": "N_04",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_04",
+        "source": "N_04",
+        "target": "N_05",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_05",
+        "source": "N_05",
+        "target": "N_06",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_06",
+        "source": "N_06",
+        "target": "N_07",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_07",
+        "source": "N_07",
+        "target": "N_08",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_08",
+        "source": "N_08",
+        "target": "N_09",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_09",
+        "source": "N_09",
+        "target": "N_10",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_10",
+        "source": "N_10",
+        "target": "N_11",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_11",
+        "source": "N_11",
+        "target": "N_12",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_12",
+        "source": "N_12",
+        "target": "N_13",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_13",
+        "source": "N_13",
+        "target": "N_14",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_14",
+        "source": "N_14",
+        "target": "N_15",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_15",
+        "source": "N_15",
+        "target": "N_16",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_16",
+        "source": "N_16",
+        "target": "N_17",
+        "kind": "sequence"
+      },
+      {
+        "id": "E_17",
+        "source": "N_17",
+        "target": "N_end",
+        "kind": "sequence"
+      }
+    ],
+    "risks": [
+      "O documento não identifica o sistema X",
+      "Atividade X de Marcos não descrita",
+      "V1, V2, V3 e GEOLOC não definidos",
+      "Decisões e caminhos alternativos não especificados",
+      "Documento contém D4 mas o título de impressão enumera D1–D3",
+      "Prazos por atividade e custos não fornecidos",
+      "Sobreposição de operações não modelada como gateway"
+    ]
+  },
+  "sources": [
+    {
+      "type": "uploaded_document",
+      "ref": "CLEAN_PIPILINE_COMPELTO_OPERACIONAL(7).md"
+    }
+  ]
+}

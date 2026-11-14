@@ -10,6 +10,8 @@ export default [
   route("evidence", "routes/evidence.tsx"),
   route("sheets", "routes/sheets.tsx"),
   route("docs", "routes/docs.tsx"),
+  route("models", "routes/models.tsx"),
+  route("models/:modelId", "routes/model.tsx"),
   route("canvas", "routes/canvas.tsx"),
   route("showcase", "routes/showcase.tsx"),
   route("settings", "routes/settings.tsx"),

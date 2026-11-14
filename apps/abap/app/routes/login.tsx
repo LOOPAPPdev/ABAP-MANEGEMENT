@@ -36,7 +36,7 @@ export default function Login({ loaderData: d }: Route.ComponentProps) {
       <p className="mt-1 text-sm text-muted-foreground">Acesso restrito às contas Google autorizadas.</p>
       {d.loggedOut && <p role="status" className="mt-3 text-sm">Você saiu do sistema.</p>}
       {d.error && (
-        <p role="alert" className="mt-3 rounded border border-destructive p-2 text-sm text-destructive">
+        <p role="alert" className="mt-3 rounded border border-destructive p-2 text-sm text-destructive-strong">
           {d.error}
           {d.missing.length > 0 && <span className="block text-xs">Configuração ausente: {d.missing.join(", ")}</span>}
         </p>
@@ -44,7 +44,7 @@ export default function Login({ loaderData: d }: Route.ComponentProps) {
       {d.auth === "google" && (
         <a
           href={`/auth/login?returnTo=${encodeURIComponent(d.returnTo)}`}
-          className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-brand-fg"
+          className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
           Entrar com Google
         </a>

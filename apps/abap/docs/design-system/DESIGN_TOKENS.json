@@ -1,66 +1,324 @@
 {
-  "$description": "Normalized design tokens (DTCG format). Source of truth: workbook sheet 'Design Tokens' (data/source/Full_Stack_Governance_Workbook.xlsx). app/app.css MUST match these values (tests/unit/design-system.test.ts). Tokens from the CleanSea and Workspace prototypes are inventoried in COMPONENT_INVENTORY.md and NOT adopted (one identity).",
-  "$metadata": { "version": "1.0.0", "status": "PROPOSED", "adr": "ADR-004" },
+  "$description": "ABAP design system tokens (DTCG). Source of truth: the 'ABAP LOOP · Diagnóstico de processos v1.1' bundle (shadcn/ui neutral, DM Sans + DM Mono), adopted as the single design system for the platform and every client area (ADR-007). app/app.css MUST match these channels (tests/unit/design-system.test.ts). Replaces the workbook 'Design Tokens' sheet (D-013 superseded by D-027). Imported client material never adds tokens.",
+  "$metadata": {
+    "version": "2.0.0",
+    "status": "ACCEPTED",
+    "adr": "ADR-007",
+    "source": "bundle.html (ABAP LOOP · Diagnóstico de processos v1.1)"
+  },
   "color": {
-    "bg": {
-      "1": { "$type": "color", "$value": "#ffffff", "$description": "Base surface: cards, inputs", "css": "--card" },
-      "2": { "$type": "color", "$value": "#fafafa", "$description": "Page background", "css": "--background" },
-      "3": { "$type": "color", "$value": "#f5f5f5", "$description": "Calculated / output fields, table headers", "css": "--muted" },
-      "4": { "$type": "color", "$value": "#f0f0f0", "$description": "Section bands, separators, hover", "css": "--accent" }
+    "background": {
+      "$type": "color",
+      "$value": "hsl(0 0% 98%)",
+      "channels": "0 0% 98%",
+      "css": "--background",
+      "$description": "Page background"
     },
-    "stroke": {
-      "1": { "$type": "color", "$value": "#d1d1d1", "$description": "Borders of fields, tables, nodes", "css": "--border" }
+    "foreground": {
+      "$type": "color",
+      "$value": "hsl(0 0% 3.9%)",
+      "channels": "0 0% 3.9%",
+      "css": "--foreground",
+      "$description": "Main text"
     },
-    "fg": {
-      "1": { "$type": "color", "$value": "#242424", "$description": "Main text; DONE status fill", "css": "--foreground" },
-      "2": { "$type": "color", "$value": "#424242", "$description": "Secondary text, labels", "css": "--secondary-foreground" },
-      "3": { "$type": "color", "$value": "#616161", "$description": "Support text; NOT STARTED", "css": "--muted-foreground" }
+    "card": {
+      "$type": "color",
+      "$value": "hsl(0 0% 100%)",
+      "channels": "0 0% 100%",
+      "css": "--card",
+      "$description": "Cards, inputs"
     },
-    "brand": {
-      "default": { "$type": "color", "$value": "#0f6cbd", "$description": "Action, navigation, user input border, links, focus", "css": "--primary" },
-      "fg": { "$type": "color", "$value": "#115ea3", "$description": "Text on brand tint", "css": "--brand-fg" },
-      "tint": { "$type": "color", "$value": "#ebf3fc", "$description": "Selected / active background", "css": "--brand-tint" },
-      "tint2": { "$type": "color", "$value": "#cfe4fa", "$description": "Review / approval intermediate state", "css": "--brand-tint-2" }
+    "card-foreground": {
+      "$type": "color",
+      "$value": "hsl(0 0% 3.9%)",
+      "channels": "0 0% 3.9%",
+      "css": "--card-foreground",
+      "$description": "Text on cards"
     },
-    "alert": { "$type": "color", "$value": "#b10e1c", "$description": "ONLY functional accent: blocked, critical, flags", "css": "--destructive" }
+    "popover": {
+      "$type": "color",
+      "$value": "hsl(0 0% 100%)",
+      "channels": "0 0% 100%",
+      "css": "--popover",
+      "$description": "Popovers"
+    },
+    "popover-foreground": {
+      "$type": "color",
+      "$value": "hsl(0 0% 3.9%)",
+      "channels": "0 0% 3.9%",
+      "css": "--popover-foreground",
+      "$description": "Text on popovers"
+    },
+    "primary": {
+      "$type": "color",
+      "$value": "hsl(0 0% 9%)",
+      "channels": "0 0% 9%",
+      "css": "--primary",
+      "$description": "Primary action (black), done status"
+    },
+    "primary-foreground": {
+      "$type": "color",
+      "$value": "hsl(0 0% 98%)",
+      "channels": "0 0% 98%",
+      "css": "--primary-foreground",
+      "$description": "Text on primary"
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "hsl(0 0% 96.1%)",
+      "channels": "0 0% 96.1%",
+      "css": "--secondary",
+      "$description": "Secondary surfaces"
+    },
+    "secondary-foreground": {
+      "$type": "color",
+      "$value": "hsl(0 0% 9%)",
+      "channels": "0 0% 9%",
+      "css": "--secondary-foreground",
+      "$description": "Labels, strong secondary text"
+    },
+    "muted": {
+      "$type": "color",
+      "$value": "hsl(0 0% 96.1%)",
+      "channels": "0 0% 96.1%",
+      "css": "--muted",
+      "$description": "Muted surfaces, table headers"
+    },
+    "muted-foreground": {
+      "$type": "color",
+      "$value": "hsl(0 0% 45.1%)",
+      "channels": "0 0% 45.1%",
+      "css": "--muted-foreground",
+      "$description": "Support text (use on card/background, not on muted)"
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "hsl(0 0% 96.1%)",
+      "channels": "0 0% 96.1%",
+      "css": "--accent",
+      "$description": "Hover surfaces"
+    },
+    "accent-foreground": {
+      "$type": "color",
+      "$value": "hsl(0 0% 9%)",
+      "channels": "0 0% 9%",
+      "css": "--accent-foreground",
+      "$description": "Text on accent"
+    },
+    "destructive": {
+      "$type": "color",
+      "$value": "hsl(0 84.2% 60.2%)",
+      "channels": "0 84.2% 60.2%",
+      "css": "--destructive",
+      "$description": "Error/blocked borders (bundle red; 3.76:1 on white — borders only)"
+    },
+    "destructive-foreground": {
+      "$type": "color",
+      "$value": "hsl(0 0% 98%)",
+      "channels": "0 0% 98%",
+      "css": "--destructive-foreground",
+      "$description": "Text on strong red"
+    },
+    "border": {
+      "$type": "color",
+      "$value": "hsl(0 0% 90.5%)",
+      "channels": "0 0% 90.5%",
+      "css": "--border",
+      "$description": "Borders"
+    },
+    "input": {
+      "$type": "color",
+      "$value": "hsl(0 0% 89.8%)",
+      "channels": "0 0% 89.8%",
+      "css": "--input",
+      "$description": "Input borders"
+    },
+    "ring": {
+      "$type": "color",
+      "$value": "hsl(0 0% 3.9%)",
+      "channels": "0 0% 3.9%",
+      "css": "--ring",
+      "$description": "Focus ring"
+    },
+    "sel-bg": {
+      "$type": "color",
+      "$value": "hsl(218 60% 94%)",
+      "channels": "218 60% 94%",
+      "css": "--sel-bg",
+      "$description": "Selection / active / in progress"
+    },
+    "sel-border": {
+      "$type": "color",
+      "$value": "hsl(218 62% 70%)",
+      "channels": "218 62% 70%",
+      "css": "--sel-border",
+      "$description": "Selection border; verified status"
+    },
+    "note-bg": {
+      "$type": "color",
+      "$value": "hsl(0 0% 96.5%)",
+      "channels": "0 0% 96.5%",
+      "css": "--note-bg",
+      "$description": "Notes, callouts"
+    },
+    "warn-bg": {
+      "$type": "color",
+      "$value": "hsl(42 100% 94%)",
+      "channels": "42 100% 94%",
+      "css": "--warn-bg",
+      "$description": "Warnings, review status, not validated"
+    },
+    "warn-fg": {
+      "$type": "color",
+      "$value": "hsl(38 100% 24%)",
+      "channels": "38 100% 24%",
+      "css": "--warn-fg",
+      "$description": "Text on warning"
+    },
+    "warn-border": {
+      "$type": "color",
+      "$value": "hsl(42 70% 78%)",
+      "channels": "42 70% 78%",
+      "css": "--warn-border",
+      "$description": "Warning border"
+    },
+    "destructive-strong": {
+      "$type": "color",
+      "$value": "hsl(0 72% 42%)",
+      "channels": "0 72% 42%",
+      "css": "--destructive-strong",
+      "$description": "ACCESSIBILITY ADDITION (ADR-007): bundle hue at AA contrast for text and solid badges"
+    }
   },
   "status": {
-    "not-started": { "$type": "color-pair", "$value": { "bg": "{color.bg.3}", "fg": "{color.fg.3}" } },
-    "in-progress": { "$type": "color-pair", "$value": { "bg": "{color.brand.tint}", "fg": "{color.brand.fg}" }, "$description": "IN PROGRESS, PREPARED" },
-    "in-review": { "$type": "color-pair", "$value": { "bg": "{color.brand.tint2}", "fg": "{color.brand.fg}" }, "$description": "IN REVIEW, APPROVED" },
-    "verified": { "$type": "color-pair", "$value": { "bg": "{color.brand.default}", "fg": "{color.bg.1}" } },
-    "done": { "$type": "color-pair", "$value": { "bg": "{color.fg.1}", "fg": "{color.bg.1}" }, "$description": "DONE with evidence" },
-    "blocked": { "$type": "color-pair", "$value": { "bg": "{color.alert}", "fg": "{color.bg.1}" } }
+    "not-started": {
+      "$type": "style",
+      "$value": "outline: border + card + muted-foreground"
+    },
+    "in-progress": {
+      "$type": "style",
+      "$value": "sel-bg + foreground",
+      "$description": "IN PROGRESS, PREPARED"
+    },
+    "in-review": {
+      "$type": "style",
+      "$value": "warn-bg + warn-fg + warn-border",
+      "$description": "IN REVIEW, APPROVED"
+    },
+    "verified": {
+      "$type": "style",
+      "$value": "sel-border + foreground"
+    },
+    "done": {
+      "$type": "style",
+      "$value": "primary + primary-foreground",
+      "$description": "DONE with evidence"
+    },
+    "blocked": {
+      "$type": "style",
+      "$value": "destructive-strong + destructive-foreground"
+    }
   },
   "type": {
-    "family": { "$type": "fontFamily", "$value": ["Segoe UI", "Arial", "ui-sans-serif", "system-ui", "sans-serif"], "css": "--font-sans" },
-    "title": { "$type": "dimension", "$value": "24px", "$description": "Page title (h1)" },
-    "body": { "$type": "dimension", "$value": "14px" },
-    "small": { "$type": "dimension", "$value": "12px" }
+    "family": {
+      "$type": "fontFamily",
+      "$value": [
+        "DM Sans Variable",
+        "DM Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif"
+      ],
+      "css": "--font-sans",
+      "$description": "Self-hosted via @fontsource-variable/dm-sans (OFL)"
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": [
+        "DM Mono",
+        "ui-monospace",
+        "monospace"
+      ],
+      "css": "--font-mono",
+      "$description": "IDs, codes, metadata labels; self-hosted via @fontsource/dm-mono (OFL)"
+    },
+    "body": {
+      "$type": "dimension",
+      "$value": "15px"
+    },
+    "meta-label": {
+      "$type": "style",
+      "$value": "DM Mono 12px uppercase, letter-spacing .05em, muted-foreground",
+      "css": ".meta-label"
+    }
   },
   "radius": {
-    "md": { "$type": "dimension", "$value": "0.375rem", "css": "--radius" },
-    "node": { "$type": "dimension", "$value": "4px", "$description": "Diagram node corner (square geometry, ADR diagramming system)" }
-  },
-  "space": {
-    "unit": { "$type": "dimension", "$value": "4px" },
-    "gutter": { "$type": "dimension", "$value": "16px" }
+    "lg": {
+      "$type": "dimension",
+      "$value": "0.625rem",
+      "css": "--radius",
+      "$description": "Cards, panels"
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": "calc(0.625rem - 2px)",
+      "$description": "Inputs, buttons"
+    },
+    "sm": {
+      "$type": "dimension",
+      "$value": "calc(0.625rem - 4px)"
+    },
+    "node": {
+      "$type": "dimension",
+      "$value": "4px",
+      "$description": "Diagram node corner (square geometry, diagramming system)"
+    }
   },
   "focus": {
-    "outline": { "$type": "dimension", "$value": "2px solid {color.brand.default}", "$description": "Global :focus-visible outline, offset 2px" }
+    "outline": {
+      "$type": "dimension",
+      "$value": "2px solid hsl(var(--ring))",
+      "$description": "Global :focus-visible, offset 2px"
+    }
   },
   "diagram": {
     "node": {
-      "width": { "$type": "dimension", "$value": "184px" },
-      "height": { "$type": "dimension", "$value": "80px" },
-      "border-solid": { "$type": "strokeStyle", "$value": "solid", "$description": "Executable / validated element" },
-      "border-dashed": { "$type": "strokeStyle", "$value": "dashed", "$description": "Gap, not validated or future element" }
+      "width": {
+        "$type": "dimension",
+        "$value": "184px"
+      },
+      "height": {
+        "$type": "dimension",
+        "$value": "80px"
+      },
+      "border-solid": {
+        "$type": "strokeStyle",
+        "$value": "solid",
+        "$description": "Executable / validated"
+      },
+      "border-dashed": {
+        "$type": "strokeStyle",
+        "$value": "dashed",
+        "$description": "Gap, not validated, hypothesis"
+      }
     },
     "edge": {
-      "flow": { "$type": "strokeStyle", "$value": "solid", "$description": "Sequence; arrow head" },
-      "dependency": { "$type": "strokeStyle", "$value": "solid", "$description": "Predecessor → dependent; arrow head" },
-      "hierarchy": { "$type": "strokeStyle", "$value": "solid", "$description": "Parent – child; no arrow; low emphasis" },
-      "association": { "$type": "strokeStyle", "$value": "dashed", "$description": "Relationship; no arrow" }
+      "flow": {
+        "$type": "strokeStyle",
+        "$value": "solid"
+      },
+      "dependency": {
+        "$type": "strokeStyle",
+        "$value": "solid"
+      },
+      "hierarchy": {
+        "$type": "strokeStyle",
+        "$value": "solid"
+      },
+      "association": {
+        "$type": "strokeStyle",
+        "$value": "dashed"
+      }
     }
   }
 }

@@ -154,7 +154,6 @@ Reset local data: `npm run db:reset:local`.
 | `test` | Vitest unit + integration (local in-memory D1) |
 | `test:e2e` | Playwright on an isolated local D1 (`.wrangler/e2e`) |
 | `import:workbook` | Re-generate `data/seed/activities.v1.json` from the workbook |
-| `extract:cleansea` | Re-generate `data/reference/cleansea.v1.json` from the Clean Sea prototype |
 | `import:dv-criteria` | Re-generate `data/quality/dv-criteria.v1.json` from the CSV |
 | `db:generate` | Generate a SQL migration from `src/server/db/schema.ts` |
 | `db:migrate:local` / `seed:local` / `db:reset:local` | Local D1 lifecycle |

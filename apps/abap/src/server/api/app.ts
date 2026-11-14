@@ -7,6 +7,7 @@ import type { Fetch } from "../auth/google";
 import { GovernanceService, NotFoundError, systemClock, type Clock } from "../governance-service";
 import { projectOf } from "./project-context";
 import { registerDriveRoutes } from "./drive-routes";
+import { registerModelRoutes } from "./models-routes";
 import { registerProjectRoutes } from "./projects-routes";
 import { registerSheetsRoutes } from "./sheets-routes";
 import { actorOf } from "./actor";
@@ -70,6 +71,7 @@ export function createApi(clock: Clock = systemClock, deps: { fetch?: Fetch } = 
 
   registerProjectRoutes(api, clock);
   registerDriveRoutes(api, clock, deps.fetch);
+  registerModelRoutes(api, clock);
   registerSheetsRoutes(api, clock, deps.fetch);
 
   api.notFound((c) => c.json({ ok: false, error: "not_found" }, 404));

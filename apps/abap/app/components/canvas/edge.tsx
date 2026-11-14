@@ -22,10 +22,10 @@ export function edgePath(a: Box, b: Box): string {
 }
 
 const STYLE: Record<EdgeKind, { dash?: string; arrow: boolean; width: number; color: string }> = {
-  flow: { arrow: true, width: 1.5, color: "var(--secondary-foreground)" },
-  dependency: { arrow: true, width: 1.5, color: "var(--secondary-foreground)" },
-  hierarchy: { arrow: false, width: 1, color: "var(--border)" },
-  association: { dash: "4 4", arrow: false, width: 1, color: "var(--muted-foreground)" },
+  flow: { arrow: true, width: 1.5, color: "var(--color-secondary-foreground)" },
+  dependency: { arrow: true, width: 1.5, color: "var(--color-secondary-foreground)" },
+  hierarchy: { arrow: false, width: 1, color: "var(--color-border)" },
+  association: { dash: "4 4", arrow: false, width: 1, color: "var(--color-muted-foreground)" },
 };
 
 export function EdgeLine({ d, kind, highlighted, inferred, id }: { d: string; kind: EdgeKind; highlighted: boolean; inferred?: boolean; id: string }) {
@@ -36,7 +36,7 @@ export function EdgeLine({ d, kind, highlighted, inferred, id }: { d: string; ki
       data-edge-id={id}
       data-component-id="diagram-edge"
       fill="none"
-      stroke={highlighted ? "var(--primary)" : s.color}
+      stroke={highlighted ? "var(--color-primary)" : s.color}
       strokeWidth={highlighted ? s.width + 1 : s.width}
       strokeDasharray={inferred ? "4 4" : s.dash}
       markerEnd={s.arrow ? (highlighted ? "url(#arrow-hl)" : "url(#arrow)") : undefined}
@@ -48,8 +48,8 @@ export function ArrowDefs() {
   return (
     <defs>
       {[
-        ["arrow", "var(--secondary-foreground)"],
-        ["arrow-hl", "var(--primary)"],
+        ["arrow", "var(--color-secondary-foreground)"],
+        ["arrow-hl", "var(--color-primary)"],
       ].map(([id, color]) => (
         <marker key={id} id={id} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M0,0 L10,5 L0,10 z" fill={color} />

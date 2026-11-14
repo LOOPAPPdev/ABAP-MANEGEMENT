@@ -11,16 +11,16 @@ export const TYPE_META: Record<NodeType, { label: string; Icon: typeof Square }>
   group: { label: "GRUPO", Icon: Users },
 };
 
-/** Left stripe colour from the workbook status.* tokens. */
+/** Left stripe colour from the ABAP design system status mapping (badges.tsx). */
 const STRIPE: Record<string, string> = {
-  "NOT STARTED": "var(--muted-foreground)",
-  "IN PROGRESS": "var(--brand-tint-2)",
-  PREPARED: "var(--brand-tint-2)",
-  "IN REVIEW": "var(--brand-fg)",
-  APPROVED: "var(--brand-fg)",
-  VERIFIED: "var(--primary)",
-  DONE: "var(--foreground)",
-  BLOCKED: "var(--destructive)",
+  "NOT STARTED": "var(--color-border)",
+  "IN PROGRESS": "var(--color-sel-border)",
+  PREPARED: "var(--color-sel-border)",
+  "IN REVIEW": "var(--color-warn-foreground)",
+  APPROVED: "var(--color-warn-foreground)",
+  VERIFIED: "var(--color-muted-foreground)",
+  DONE: "var(--color-primary)",
+  BLOCKED: "var(--color-destructive-strong)",
 };
 
 /** camelCase data key → readable label (e.g. effectivelyDone → effectively done). */
@@ -59,7 +59,7 @@ export function NodeShape({ node, box, selected, dimmed, onSelect }: Props) {
       data-component-id="diagram-node"
       transform={`translate(${box.x},${box.y})`}
       opacity={dimmed ? 0.3 : 1}
-      className="cursor-pointer focus:outline-none [&:focus-visible>rect.frame]:stroke-[var(--ring)] [&:focus-visible>rect.frame]:[stroke-width:3]"
+      className="cursor-pointer focus:outline-none [&:focus-visible>rect.frame]:stroke-[var(--color-ring)] [&:focus-visible>rect.frame]:[stroke-width:3]"
       onClick={() => onSelect(node.id)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -73,21 +73,21 @@ export function NodeShape({ node, box, selected, dimmed, onSelect }: Props) {
         width={box.w}
         height={box.h}
         rx={4}
-        fill="var(--card)"
-        stroke={selected ? "var(--primary)" : node.flag === "BLOCKED" ? "var(--destructive)" : "var(--border)"}
+        fill="var(--color-card)"
+        stroke={selected ? "var(--color-primary)" : node.flag === "BLOCKED" ? "var(--color-destructive-strong)" : "var(--color-border)"}
         strokeWidth={selected ? 2.5 : 1}
         strokeDasharray={node.unvalidated ? "6 4" : undefined}
       />
-      {node.status && <rect width={5} height={box.h} rx={2} fill={STRIPE[node.status] ?? "var(--border)"} />}
-      <Icon x={12} y={9} width={14} height={14} aria-hidden="true" color="var(--secondary-foreground)" />
-      <text x={30} y={20} fontSize={10} fontWeight={700} letterSpacing={0.6} fill="var(--secondary-foreground)">
+      {node.status && <rect width={5} height={box.h} rx={2} fill={STRIPE[node.status] ?? "var(--color-border)"} />}
+      <Icon x={12} y={9} width={14} height={14} aria-hidden="true" color="var(--color-secondary-foreground)" />
+      <text x={30} y={20} fontSize={10} fontWeight={700} letterSpacing={0.6} fill="var(--color-secondary-foreground)">
         {truncate(`${typeLabel}${node.subtitle ? ` · ${node.subtitle}` : ""}`, 26)}
       </text>
       <foreignObject x={12} y={26} width={box.w - 20} height={34}>
         <div className="line-clamp-2 text-[12px] leading-[15px] font-semibold text-foreground">{node.label}</div>
       </foreignObject>
       {footer && (
-        <text x={12} y={box.h - 9} fontSize={10} fill={node.flag ? "var(--destructive)" : "var(--muted-foreground)"}>
+        <text x={12} y={box.h - 9} fontSize={10} fill={node.flag ? "var(--color-destructive-strong)" : "var(--color-muted-foreground)"}>
           {truncate(footer, 34)}
         </text>
       )}

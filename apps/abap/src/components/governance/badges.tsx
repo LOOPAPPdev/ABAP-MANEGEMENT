@@ -2,16 +2,20 @@ import type { Flag, Status } from "~/domain/governance";
 import { Badge } from "~/components/ui/badge";
 import { cn } from "~/lib/utils";
 
-/** Status colours from the workbook tokens status.* */
+/**
+ * Status colours from the ABAP design system (ADR-007, bundle tokens). The status is always written,
+ * so colour only reinforces it: neutral outline → selection blue → warning amber → stronger blue →
+ * solid black (done with evidence) → accessible red (blocked).
+ */
 const statusClass: Record<Status, string> = {
-  "NOT STARTED": "bg-muted text-muted-foreground",
-  "IN PROGRESS": "bg-brand-tint text-brand-fg",
-  PREPARED: "bg-brand-tint text-brand-fg",
-  "IN REVIEW": "bg-brand-tint-2 text-brand-fg",
-  APPROVED: "bg-brand-tint-2 text-brand-fg",
-  VERIFIED: "bg-primary text-primary-foreground",
-  DONE: "bg-foreground text-card",
-  BLOCKED: "bg-destructive text-destructive-foreground",
+  "NOT STARTED": "border border-border bg-card text-muted-foreground",
+  "IN PROGRESS": "bg-sel text-foreground",
+  PREPARED: "bg-sel text-foreground",
+  "IN REVIEW": "border border-warn-border bg-warn text-warn-foreground",
+  APPROVED: "border border-warn-border bg-warn text-warn-foreground",
+  VERIFIED: "bg-sel-border text-foreground",
+  DONE: "bg-primary text-primary-foreground",
+  BLOCKED: "bg-destructive-strong text-destructive-foreground",
 };
 
 export function StatusBadge({ status }: { status: Status }) {
@@ -21,7 +25,7 @@ export function StatusBadge({ status }: { status: Status }) {
 export function FlagBadge({ flag }: { flag: Flag | null }) {
   if (!flag) return null;
   return (
-    <Badge className={cn("border border-destructive text-destructive", flag === "BLOCKED" && "bg-destructive text-destructive-foreground")}>
+    <Badge className={cn("border border-destructive text-destructive-strong", flag === "BLOCKED" && "bg-destructive-strong text-destructive-foreground")}>
       <span aria-hidden="true">⚑&nbsp;</span>
       {flag}
     </Badge>

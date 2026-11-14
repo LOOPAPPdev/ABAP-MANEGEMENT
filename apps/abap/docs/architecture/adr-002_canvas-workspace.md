@@ -41,3 +41,6 @@ Sidebars are collapsible and resizable (`react-resizable-panels`, layout saved i
 - GIVEN the canvas, WHEN the user selects an activity, THEN the Inspector shows its data and metanote. ✅
 - GIVEN an expanded sidebar, WHEN it is collapsed, THEN the canvas uses the free space. ✅
 - GIVEN the Clean Sea flow, WHEN the user switches views, THEN relations and data stay consistent. ✅ (unit invariant for all views × both datasets)
+
+
+> **Update 2026-11-14 (ADR-008):** the static CleanSea dataset (`data/reference/cleansea.v1.json`) moved to `clients/prj-01-cleansea/reference/`. Canvas datasets are now the current project's governance activities plus its models (DIAG/ORG/FLW).

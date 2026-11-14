@@ -4,6 +4,7 @@ import { getDb } from "~/server/db/client";
 import { GovernanceService, systemClock } from "~/server/governance-service";
 import { ProjectService, type Project } from "~/server/projects";
 import { syncServiceFor } from "~/server/sheets/factory";
+import { ModelService } from "~/server/models";
 
 /** Actor recorded in the audit trail: the signed-in e-mail, or "local-dev" in the development bypass. */
 export function actorFrom(context: AppLoadContext): string {
@@ -25,4 +26,8 @@ export function serviceFrom(context: AppLoadContext, project: Pick<Project, "id"
 
 export function syncFrom(context: AppLoadContext, project: Pick<Project, "id" | "spreadsheetId">) {
   return syncServiceFor(context.cfg, context.cloudflare.env.DB, systemClock, project);
+}
+
+export function modelsFrom(context: AppLoadContext, project: Pick<Project, "id">) {
+  return new ModelService(context.cloudflare.env.DB, systemClock, project.id);
 }

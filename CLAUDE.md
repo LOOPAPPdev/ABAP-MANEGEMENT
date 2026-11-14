@@ -18,14 +18,16 @@ Nested `CLAUDE.md` files add rules for their folder. On conflict, the stricter r
 2. **Scaffold** — `npm run client:new -- PRJ-NN "Name" PRJ-NN-NAME` creates `clients/prj-nn-name/` from `tools/client-template/`.
 3. **Register in ABAP** — create the project (same slug), link its Drive folder and spreadsheet in the app. IDs live in ABAP, not in Git.
 4. **Sync** — ABAP reads the spreadsheet (status of ACT-01…ACT-14) and the Drive documents. `npm run docs:pull -w @clients/<slug>` writes the documents as Markdown to `clients/<slug>/docs/drive/`.
-5. **Document** — produce the ACT deliverables in `clients/<slug>/docs/` from those sources.
-6. **Build** — code only after the client's ACT-03, ACT-05 and ACT-06 are approved.
+5. **Models** — optional interface template *Diagnóstico de processos* at project creation (DIAG-01), plus imported org charts (ORG-NN) and flows (FLW-NN). `npm run models:pull -w @clients/<slug>` exports them to `clients/<slug>/models/_abap/`.
+6. **Document** — produce the ACT deliverables in `clients/<slug>/docs/` from those sources.
+7. **Build** — code only after the client's ACT-03, ACT-05 and ACT-06 are approved.
 
 Details: `docs/client-onboarding.md`.
 
 ## Rules for every workspace
 - Follow `docs/global-instructions.md` (controlled language, EARS + RFC 2119, Gherkin, visual-first, verified execution).
 - **No secrets, tokens, Drive/Sheets IDs or personal data in Git.** `npm run check:clients` scans client folders; CI fails on violations.
+- **One design system** (ABAP bundle, `apps/abap/docs/architecture/adr-007_single-design-system-bundle.md`) for the platform and everything imported. Never reproduce a client file's own styles.
 - Never mix clients: no imports, copies or references from one `clients/<slug>` into another.
 - Do not invent approvals, interviews, client facts, test results or deployed URLs. Mark assumptions.
 - Do not mark a governance activity DONE; the owner does it with evidence.
@@ -40,6 +42,7 @@ Details: `docs/client-onboarding.md`.
 | `npm run check:clients` | Validate client workspaces |
 | `npm run client:new -- PRJ-02 "Name"` | New client workspace |
 | `npm run docs:pull -w @clients/<slug>` | Pull the client's Drive documents as Markdown (needs `ABAP_URL` and `ABAP_API_TOKEN`) |
+| `npm run models:pull -w @clients/<slug>` | Export the client's ABAP models (DIAG/ORG/FLW) to `clients/<slug>/models/_abap/` (same token) |
 | `npm run deploy:kv-assets` | Deploy ABAP to production (see `apps/abap/README.md`) |
 
 ## Execution gates

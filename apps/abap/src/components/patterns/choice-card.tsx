@@ -38,7 +38,7 @@ export function CardSelectionGroup({ legend, name, options, multiple = false, va
               className={cn(
                 "relative flex cursor-pointer flex-col gap-1 rounded-md border bg-card p-3 text-sm transition-colors hover:border-primary",
                 "has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-ring",
-                checked ? "border-2 border-primary bg-brand-tint" : "border-border",
+                checked ? "border-2 border-input bg-sel" : "border-border",
                 o.disabled && "cursor-not-allowed opacity-50",
                 error && !checked && "border-destructive",
               )}
@@ -58,7 +58,7 @@ export function CardSelectionGroup({ legend, name, options, multiple = false, va
                 {o.label}
                 <span
                   aria-hidden="true"
-                  className={cn("inline-flex h-5 w-5 items-center justify-center rounded-[4px] border", checked ? "border-primary bg-primary text-primary-foreground" : "border-border")}
+                  className={cn("inline-flex h-5 w-5 items-center justify-center rounded-[4px] border", checked ? "border-input bg-primary text-primary-foreground" : "border-border")}
                 >
                   {checked && <Check className="h-3.5 w-3.5" />}
                 </span>
@@ -69,7 +69,7 @@ export function CardSelectionGroup({ legend, name, options, multiple = false, va
         })}
       </div>
       {error && (
-        <p id={errorId} className="mt-1 text-sm text-destructive">
+        <p id={errorId} className="mt-1 text-sm text-destructive-strong">
           {error}
         </p>
       )}

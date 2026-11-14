@@ -22,7 +22,7 @@ Every node is the same rectangle (184 × 80 px, 4 px radius). No ovals, diamonds
 Additional signals:
 
 - **Solid border**: executable / validated. **Dashed border**: gap, not validated or future.
-- **Left stripe**: workbook status token (governance only). Status is also written as text.
+- **Left stripe**: status token from the bundle design system (governance only). Status is also written as text.
 - **Selected**: 2.5 px brand border; related edges highlighted.
 
 ## Rule 3 — Standard connectors

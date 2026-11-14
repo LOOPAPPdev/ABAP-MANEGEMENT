@@ -52,7 +52,7 @@ export function Inspector({ graph, projection, selectedId, tab, metanoteId, onTa
                   Não representado na visão {VIEW_LABELS[projection.view]}. O elemento continua no modelo.
                 </p>
               )}
-              {node.unvalidated && <p className="text-xs text-destructive">⚑ Lacuna ou dado não validado.</p>}
+              {node.unvalidated && <p className="text-xs text-destructive-strong">⚑ Lacuna ou dado não validado.</p>}
               <dl className="space-y-2">
                 {Object.entries(node.data).map(([k, v]) => (
                   <div key={k}>

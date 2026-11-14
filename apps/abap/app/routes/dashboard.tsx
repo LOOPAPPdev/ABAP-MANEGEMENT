@@ -33,7 +33,7 @@ function SyncBanner({ b }: { b: NonNullable<Route.ComponentProps["loaderData"]["
         (b.invalid ? `, ${b.invalid} célula(s) inválida(s)` : "") +
         ".";
   return (
-    <p role="status" data-component-id="sync-banner" data-testid="sync-banner" className={`rounded border p-2 text-sm ${b.error && !b.notConnected ? "border-destructive text-destructive" : "border-border bg-card"}`}>
+    <p role="status" data-component-id="sync-banner" data-testid="sync-banner" className={`rounded border p-2 text-sm ${b.error && !b.notConnected ? "border-destructive text-destructive-strong" : "border-border bg-card"}`}>
       {text} <Link className="text-primary underline" to="/sheets">Ver planilha</Link>
     </p>
   );

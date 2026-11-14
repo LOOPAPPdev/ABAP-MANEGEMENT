@@ -1,9 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
-  fromCleanSea,
   fromGovernance,
-  parseCleanSea,
   project,
   validateGraph,
   VIEWS,
@@ -11,6 +9,7 @@ import {
   type GovernanceActivityInput,
 } from "~/domain/diagram";
 import { evaluate, fixtureSchema, type Area, type Status } from "~/domain/governance";
+import { flowModelSchema, fromFlowModel, fromOrgModel, orgModelSchema } from "~/domain/models";
 
 const read = (p: string) => JSON.parse(readFileSync(p, "utf8"));
 const fixture = fixtureSchema.parse(read("data/seed/activities.v1.json"));
@@ -32,10 +31,13 @@ const activities: GovernanceActivityInput[] = evaluate(
   "2026-11-12",
 );
 const governance = fromGovernance(activities, "Full Stack Governance System");
-const cleansea = fromCleanSea(parseCleanSea(read("data/reference/cleansea.v1.json")));
+// Synthetic fixtures (no client data in apps/abap): same shapes as the client models FLW-xx / ORG-xx.
+const flow = fromFlowModel(flowModelSchema.parse(read("tests/fixtures/flow.sample.json")));
+const org = fromOrgModel(orgModelSchema.parse(read("tests/fixtures/org.sample.json")));
 const graphs: [string, Graph][] = [
   ["governance", governance],
-  ["cleansea", cleansea],
+  ["flow", flow],
+  ["org", org],
 ];
 
 describe("Feature: universal graph adapters", () => {
@@ -51,25 +53,33 @@ describe("Feature: universal graph adapters", () => {
     expect(governance.nodes.find((n) => n.id === "ACT-01")).toMatchObject({ done: true, href: "/activities/ACT-01" });
   });
 
-  it("cleansea graph has 17 steps in 6 phases, 4 documents, 9 people, and is marked not validated", () => {
-    expect(cleansea.nodes.filter((n) => n.type === "process" || n.type === "decision")).toHaveLength(17);
-    expect(cleansea.groups).toHaveLength(6);
-    expect(cleansea.nodes.filter((n) => n.type === "document")).toHaveLength(4);
-    expect(cleansea.nodes.filter((n) => n.type === "person")).toHaveLength(9);
-    expect(cleansea.status).toBe("não validado");
-    expect(cleansea.notes[0]).toContain("23 atividades");
+  it("flow graph has 8 steps in 3 phases, 2 documents, and keeps the source status", () => {
+    expect(flow.nodes.filter((n) => n.type === "process" || n.type === "decision")).toHaveLength(8);
+    expect(flow.groups).toHaveLength(3);
+    expect(flow.nodes.filter((n) => n.type === "document")).toHaveLength(2);
+    expect(flow.status).toBe("rascunho");
+    expect(flow.notes.join(" ")).toContain("Pendente: Confirmar quem aprova a janela");
   });
 
-  it("cleansea step 10 (release gateway) is a decision and gaps are unvalidated", () => {
-    expect(cleansea.nodes.find((n) => n.id === "S10")).toMatchObject({ type: "decision", unvalidated: true });
-    expect(cleansea.nodes.find((n) => n.id === "S01")).toMatchObject({ unvalidated: false });
+  it("flow decision step is a decision node with an inferred return branch; 'validar' marks unvalidated", () => {
+    expect(flow.nodes.find((n) => n.id === "S04")).toMatchObject({ type: "decision", unvalidated: true });
+    expect(flow.nodes.find((n) => n.id === "S01")).toMatchObject({ unvalidated: false });
+    expect(flow.edges).toContainEqual(expect.objectContaining({ from: "S04", to: "S03", kind: "flow", inferred: true }));
   });
 
   it("inferred links are flagged as inferred", () => {
-    const a = cleansea.edges.filter((e) => e.kind === "association");
+    const a = flow.edges.filter((e) => e.kind === "association");
     expect(a.length).toBeGreaterThan(0);
     expect(a.every((e) => e.inferred)).toBe(true);
-    expect(a).toContainEqual(expect.objectContaining({ from: "S13", to: "D1" }));
+    expect(a).toContainEqual(expect.objectContaining({ from: "S06", to: "D1" }));
+  });
+
+  it("org graph: company → governance → departments → members; source colours are dropped", () => {
+    expect(org.nodes.filter((n) => n.type === "person")).toHaveLength(5);
+    expect(org.edges).toContainEqual(expect.objectContaining({ from: "P-A", to: "A-COM", kind: "hierarchy" }));
+    expect(org.edges).toContainEqual(expect.objectContaining({ from: "ORG:ORG-01", to: "A-OPE", inferred: true }));
+    expect(org.nodes.find((n) => n.id === "A-OPE")).toMatchObject({ unvalidated: true });
+    expect(JSON.stringify(org)).not.toContain("purple");
   });
 });
 
@@ -128,24 +138,24 @@ describe("Feature: view toggle preserves the model (ADR-003 D)", () => {
   });
 
   it("bpmn has one lane per responsibility plus start and end events", () => {
-    const p = project(cleansea, "bpmn");
-    expect(p.decorations.filter((d) => d.kind === "lane").map((d) => d.label)).toEqual(cleansea.lanes);
+    const p = project(flow, "bpmn");
+    expect(p.decorations.filter((d) => d.kind === "lane").map((d) => d.label)).toEqual(flow.lanes);
     expect(p.decorations.some((d) => d.kind === "start")).toBe(true);
     expect(p.eventLinks).toContainEqual({ from: "event:start", to: "S01" });
-    expect(p.eventLinks).toContainEqual({ from: "S17", to: "event:end" });
+    expect(p.eventLinks).toContainEqual({ from: "S08", to: "event:end" });
   });
 
-  it("cleansea bpmn uses the 6 phases as columns and stays within the lanes' width", () => {
-    const p = project(cleansea, "bpmn");
+  it("flow bpmn uses the 3 phases as columns and stays within the lanes' width", () => {
+    const p = project(flow, "bpmn");
     const cols = p.decorations.filter((d) => d.id.startsWith("col:"));
-    expect(cols).toHaveLength(6);
+    expect(cols).toHaveLength(3);
     const laneRight = Math.max(...p.decorations.filter((d) => d.kind === "lane").map((d) => d.x + d.w));
     expect(Math.max(...cols.map((d) => d.x + d.w))).toBeLessThanOrEqual(laneRight);
     expect(p.width).toBeLessThan(laneRight + 100); // regression: header frames once stretched the canvas to ~3300px
   });
 
   it("tutorial follows the process order", () => {
-    expect(project(cleansea, "tutorial").sequence.slice(0, 3)).toEqual(["S01", "S02", "S03"]);
+    expect(project(flow, "tutorial").sequence.slice(0, 3)).toEqual(["S01", "S02", "S03"]);
     expect(project(governance, "tutorial").sequence[0]).toBe("ACT-01");
   });
 });

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 
 const VIEWS = ["Infográfico", "Tutorial", "BPMN", "Organograma", "Diagrama complexo"];
@@ -49,17 +50,20 @@ test.describe("Feature: Canvas Multiview (ADR-002 / ADR-003)", () => {
     await expect(page.getByTestId("canvas-notes")).toContainText("Sem dados de pessoas");
   });
 
-  test("GIVEN the CleanSea dataset THEN it is flagged as not validated and the tutorial has 17 steps", async ({ page }) => {
+  test("GIVEN a project model (flow) THEN it is a Canvas dataset with its status and the tutorial follows its steps", async ({ page, request }) => {
+    const flow = JSON.parse(readFileSync("tests/fixtures/flow.sample.json", "utf8"));
+    const res = await request.post("/api/v1/projects/default/models", { data: { import: flow, source: "e2e", replace: true } });
+    expect(res.ok()).toBe(true);
     await open(page);
-    await page.locator("#dataset").selectOption("cleansea");
-    await expect(page.getByTestId("canvas-notes")).toContainText("não validado");
-    await expect(page.getByTestId("canvas-notes")).toContainText("23 atividades");
+    await page.locator("#dataset").selectOption("FLW-01");
+    await expect(page.getByTestId("canvas-notes")).toContainText("rascunho");
+    await expect(page.getByTestId("canvas-notes")).toContainText("AS-IS");
     await page.getByRole("radio", { name: "Tutorial" }).click();
-    await expect(page.getByTestId("tutorial-position")).toContainText("Etapa 1 de 17");
+    await expect(page.getByTestId("tutorial-position")).toContainText("Etapa 1 de 8");
     await page.getByRole("button", { name: "Próximo" }).click();
-    await expect(page.getByTestId("tutorial-position")).toContainText("Etapa 2 de 17");
+    await expect(page.getByTestId("tutorial-position")).toContainText("Etapa 2 de 8");
     await page.getByRole("button", { name: "Reiniciar" }).click();
-    await expect(page.getByTestId("tutorial-position")).toContainText("Etapa 1 de 17");
+    await expect(page.getByTestId("tutorial-position")).toContainText("Etapa 1 de 8");
   });
 
   test("the view toggle and the nodes are keyboard operable", async ({ page }) => {
@@ -80,7 +84,7 @@ test.describe("Feature: component showcase (ADR-004)", () => {
   test("lists every adopted component with an example area and a metanote", async ({ page }) => {
     await page.goto("/showcase");
     await expect(page.getByRole("heading", { level: 1, name: "Design system" })).toBeVisible();
-    await expect(page.getByTestId("showcase-entry")).toHaveCount(41);
+    await expect(page.getByTestId("showcase-entry")).toHaveCount(44);
     for (const fam of ["Foundations", "Primitives", "Composites", "Layouts", "Diagrams", "Patterns"])
       await expect(page.getByRole("heading", { level: 2, name: new RegExp(`^${fam}`) })).toBeVisible();
   });

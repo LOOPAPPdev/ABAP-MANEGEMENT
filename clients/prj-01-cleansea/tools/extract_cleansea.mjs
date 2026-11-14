@@ -1,6 +1,6 @@
 /**
  * One-time extraction of the CleanSea operational model embedded in the legacy
- * prototype reference/loop-design/cleansea-operacao-integrada.html (const MODEL = {...}).
+ * prototype reference/cleansea-operacao-integrada.html (client area; legacy — superseded by models/FLW-01.json) (const MODEL = {...}).
  *
  * Usage: node scripts/extract_cleansea.mjs <html> <out.json>
  *

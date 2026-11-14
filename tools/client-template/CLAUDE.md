@@ -8,7 +8,8 @@ Turn the client's material into **structured, verifiable documentation**, then i
 ## Sources of truth (in this order)
 1. **`docs/drive/`** — Markdown mirror of the client's Google Drive folder ({{FOLDER}}). Read-only here. Regenerate with `npm run docs:pull -w @clients/{{SLUG}}`. Check `docs/drive/_manifest.json` for what exists and when it changed.
 2. **Project in ABAP** (`projectId = {{SLUG}}`) — status, owner, due date and evidence of ACT-01…ACT-14, synced from the client's project spreadsheet. Read it through the ABAP API or ask the owner; never guess a status.
-3. **`docs/<area>/`** — our structured deliverables (see `docs/README.md` for the ACT → file map).
+3. **`models/`** — process models. `models/_abap/` is exported from ABAP by `npm run models:pull -w @clients/{{SLUG}}` (read-only here; edit in the app, *Modelos*). Hand-made sources (`ORG-NN.json`, `FLW-NN.json`, diagnostic sessions) sit in `models/` and are imported through the app.
+4. **`docs/<area>/`** — our structured deliverables (see `docs/README.md` for the ACT → file map).
 
 If a fact is not in (1) or (2), it is an **assumption**: write `[ASSUMPTION]` next to it and list it in the deliverable's open questions.
 
@@ -23,7 +24,8 @@ If a fact is not in (1) or (2), it is an **assumption**: write `[ASSUMPTION]` ne
 - Requirements: EARS wording + RFC 2119 (MUST/SHOULD/MAY) + one GIVEN–WHEN–THEN per requirement, each with a stable ID (`{{CODE}}-FR-01`).
 - Cite the Drive source for every client fact: `(fonte: docs/drive/<file>.md)`.
 - Client-facing text in **pt-BR**, plain language. Technical files may be in English.
-- Prefer diagrams (Mermaid) when they explain flow, structure or dependencies better than text.
+- Prefer diagrams (Mermaid) when they explain flow, structure or dependencies better than text. The Mermaid export of each diagnostic is in the app (*Modelos → Mermaid*).
+- Visual style: the ABAP design system only. Never copy styles or colours from client files in `reference/`.
 - Never invent interviews, approvals, numbers, people or test results.
 
 ## Code rules (only after ACT-03, ACT-05 and ACT-06 are APPROVED)

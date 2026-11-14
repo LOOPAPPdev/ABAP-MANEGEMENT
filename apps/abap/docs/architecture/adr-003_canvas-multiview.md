@@ -49,3 +49,6 @@ flowchart LR
 - Sidebars MUST be collapsible and resizable. ✅
 - Prototype MUST work with local data — Clean Sea fixture is local; Governance uses the local D1. ✅
 - Five views, reusable library, documented contracts. ✅
+
+
+> **Update 2026-11-14 (ADR-008):** the static CleanSea dataset (`data/reference/cleansea.v1.json`) moved to `clients/prj-01-cleansea/reference/`. Canvas datasets are now the current project's governance activities plus its models (DIAG/ORG/FLW).

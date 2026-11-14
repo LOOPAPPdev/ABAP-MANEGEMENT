@@ -22,9 +22,9 @@ interface LegendItem {
 }
 
 const EDGE_LEGEND: LegendItem[] = [
-  { label: "Sequência / dependência (seta = direção)", kinds: ["flow", "dependency"], arrow: true, color: "var(--secondary-foreground)" },
-  { label: "Hierarquia (sem seta)", kinds: ["hierarchy"], arrow: false, color: "var(--muted-foreground)" },
-  { label: "Associação inferida (tracejada)", kinds: ["association"], arrow: false, dash: "4 4", color: "var(--muted-foreground)" },
+  { label: "Sequência / dependência (seta = direção)", kinds: ["flow", "dependency"], arrow: true, color: "var(--color-secondary-foreground)" },
+  { label: "Hierarquia (sem seta)", kinds: ["hierarchy"], arrow: false, color: "var(--color-muted-foreground)" },
+  { label: "Associação inferida (tracejada)", kinds: ["association"], arrow: false, dash: "4 4", color: "var(--color-muted-foreground)" },
 ];
 
 /** Left sidebar (registry: sidebar-library): legend, highlight filters and a text outline of every node. */
@@ -102,7 +102,7 @@ export function Library({ graph, projection, selectedId, highlight, onHighlight,
                 type="button"
                 onClick={() => onSelect(n.id)}
                 aria-current={n.id === selectedId ? "true" : undefined}
-                className={`w-full truncate rounded px-2 py-0.5 text-left ${n.id === selectedId ? "bg-brand-tint font-semibold text-brand-fg" : "hover:bg-accent"} ${hidden.has(n.id) ? "text-muted-foreground" : ""}`}
+                className={`w-full truncate rounded px-2 py-0.5 text-left ${n.id === selectedId ? "bg-sel font-semibold text-foreground" : "hover:bg-accent"} ${hidden.has(n.id) ? "text-muted-foreground" : ""}`}
                 title={hidden.has(n.id) ? "Não representado nesta visão" : n.label}
               >
                 <span className="font-mono text-xs">{n.subtitle ?? n.id}</span> {n.label}

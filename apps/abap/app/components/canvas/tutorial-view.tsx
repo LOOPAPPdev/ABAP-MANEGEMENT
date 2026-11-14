@@ -23,7 +23,7 @@ export function TutorialView({ graph, projection, selectedId, onSelect }: { grap
                   type="button"
                   onClick={() => onSelect(id)}
                   aria-current={i === index ? "step" : undefined}
-                  className={`w-full rounded px-2 py-1 text-left text-sm ${i === index ? "bg-brand-tint font-semibold text-brand-fg" : "hover:bg-accent"}`}
+                  className={`w-full rounded px-2 py-1 text-left text-sm ${i === index ? "bg-sel font-semibold text-foreground" : "hover:bg-accent"}`}
                 >
                   <span className="font-mono text-xs">{String(i + 1).padStart(2, "0")}</span> {n.subtitle} {n.done ? "✓" : ""}
                 </button>
@@ -40,7 +40,7 @@ export function TutorialView({ graph, projection, selectedId, onSelect }: { grap
         <h2 className="mt-1 text-xl font-bold">
           {node.subtitle} — {node.label}
         </h2>
-        {node.unvalidated && <p className="mt-2 text-sm text-destructive">⚑ Lacuna ou dado não validado na fonte.</p>}
+        {node.unvalidated && <p className="mt-2 text-sm text-destructive-strong">⚑ Lacuna ou dado não validado na fonte.</p>}
         <dl className="mt-4 grid gap-3 sm:grid-cols-2">
           {fields.map(([k, v]) => (
             <div key={k}>

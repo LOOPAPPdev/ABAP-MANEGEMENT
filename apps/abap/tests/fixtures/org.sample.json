@@ -1,0 +1,76 @@
+{
+ "id": "ORG-01",
+ "title": "Organograma exemplo",
+ "version": "1.0",
+ "type": "AS-IS",
+ "status": "rascunho",
+ "company": "Empresa Exemplo",
+ "governance": [
+  {
+   "id": "P-A",
+   "name": "Ana",
+   "role": "Sócia",
+   "areas": [
+    "Comercial"
+   ],
+   "sources": [
+    "DOC:p1"
+   ]
+  },
+  {
+   "id": "P-B",
+   "name": "Bruno",
+   "role": "Sócio",
+   "areas": [
+    "Operação"
+   ]
+  }
+ ],
+ "departments": [
+  {
+   "id": "A-COM",
+   "name": "Comercial",
+   "color": "purple",
+   "leader": "P-A",
+   "leader_status": "documentado",
+   "members": [
+    {
+     "id": "P-C",
+     "name": "Carla",
+     "role": "Vendas"
+    }
+   ],
+   "activities": [
+    "Vender"
+   ]
+  },
+  {
+   "id": "A-OPE",
+   "name": "Operação",
+   "color": "blue",
+   "leader": null,
+   "leader_status": "por confirmar",
+   "members": [
+    {
+     "id": "P-D",
+     "name": "Davi",
+     "role": "Técnico"
+    },
+    {
+     "id": "P-E",
+     "name": "Eva",
+     "role": "Técnica"
+    }
+   ],
+   "activities": [
+    "Executar"
+   ]
+  }
+ ],
+ "external_parties": [
+  "Cliente"
+ ],
+ "notes": [
+  "Dados de exemplo para testes."
+ ]
+}

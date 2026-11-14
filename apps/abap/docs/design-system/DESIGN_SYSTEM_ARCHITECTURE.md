@@ -24,7 +24,7 @@ app/routes/*                (Patterns / templates: dashboard, canvas, showcase)
 
 ## Rules
 
-1. Colours only through tokens. `#B10E1C` (alert) only for blocked / critical / flags.
+1. Colours only through tokens (bundle, ADR-007). `destructive-strong` only for blocked / critical / flags; never add colours from imported material.
 2. State is never shown by colour alone: text, icon, border or check mark too (DV-QC-032, WCAG 1.4.1).
 3. Focus: global 2px brand outline. Adopted shadcn components had `focus-visible:outline-none` removed.
 4. A new component enters the registry first (status `planned`), then the code, then the showcase.

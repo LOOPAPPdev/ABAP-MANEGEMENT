@@ -66,9 +66,9 @@ export default function Docs({ loaderData: d, actionData }: Route.ComponentProps
           {d.folderUrl && <> <a className="text-primary underline" href={d.folderUrl} target="_blank" rel="noreferrer">Abrir pasta no Drive</a></>}
         </p>
       </header>
-      {actionData && "error" in actionData && <p role="alert" className="rounded border border-destructive p-2 text-sm text-destructive">{actionData.error}</p>}
+      {actionData && "error" in actionData && <p role="alert" className="rounded border border-destructive p-2 text-sm text-destructive-strong">{actionData.error}</p>}
       {actionData && "ok" in actionData && (
-        <p role="status" className="rounded border border-border bg-brand-tint p-2 text-sm">
+        <p role="status" className="rounded border border-border bg-sel p-2 text-sm">
           {actionData.ok} {actionData.link && <a className="text-primary underline" href={actionData.link} target="_blank" rel="noreferrer">Abrir</a>}
         </p>
       )}
@@ -79,7 +79,7 @@ export default function Docs({ loaderData: d, actionData }: Route.ComponentProps
           <p className="mt-1 text-sm" data-testid="drive-error">{d.error}</p>
           {d.reason === "not_linked" && <Link className="mt-2 inline-block text-primary underline" to="/projects">Vincular a pasta em Projects</Link>}
           {(d.reason === "not_connected" || d.reason === "scope_missing") && (
-            <a href="/auth/sheets/connect?returnTo=%2Fdocs" className="mt-3 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-brand-fg">Conectar Google (Sheets + Drive)</a>
+            <a href="/auth/sheets/connect?returnTo=%2Fdocs" className="mt-3 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90">Conectar Google (Sheets + Drive)</a>
           )}
         </Card>
       ) : (
@@ -130,7 +130,7 @@ export default function Docs({ loaderData: d, actionData }: Route.ComponentProps
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="markdown">Conteúdo (Markdown)</Label>
-                  <textarea id="markdown" name="markdown" required rows={8} className="w-full rounded-md border border-primary bg-card p-2 font-mono text-sm" />
+                  <textarea id="markdown" name="markdown" required rows={8} className="w-full rounded-md border border-input bg-card p-2 font-mono text-sm" />
                 </div>
                 <label className="flex items-start gap-2 text-sm">
                   <input type="checkbox" name="confirm" required className="mt-1" />

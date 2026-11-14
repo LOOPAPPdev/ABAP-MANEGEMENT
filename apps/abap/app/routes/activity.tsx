@@ -83,7 +83,7 @@ export default function ActivityDetail({ loaderData, actionData }: Route.Compone
       {(errors.length > 0 || warnings.length > 0) && (
         <div role="status" className="space-y-1">
           {errors.map((e) => (
-            <p key={e} className="rounded border border-destructive p-2 text-sm text-destructive">{e}</p>
+            <p key={e} className="rounded border border-destructive p-2 text-sm text-destructive-strong">{e}</p>
           ))}
           {warnings.map((w) => (
             <p key={w} className="rounded border border-destructive p-2 text-sm">

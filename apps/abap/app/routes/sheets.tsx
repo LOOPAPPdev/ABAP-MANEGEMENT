@@ -130,9 +130,9 @@ export default function Sheets({ loaderData: d, actionData }: Route.ComponentPro
         </p>
       </header>
 
-      {d.connected && <p role="status" className="rounded border border-border bg-brand-tint p-2 text-sm">Google Sheets conectado.</p>}
-      {actionData && "error" in actionData && <p role="alert" className="rounded border border-destructive p-2 text-sm text-destructive">{actionData.error}</p>}
-      {actionData && "applied" in actionData && <p role="status" className="rounded border border-border bg-brand-tint p-2 text-sm" data-testid="apply-result">{actionData.applied} alteração(ões) aplicada(s).</p>}
+      {d.connected && <p role="status" className="rounded border border-border bg-sel p-2 text-sm">Google Sheets conectado.</p>}
+      {actionData && "error" in actionData && <p role="alert" className="rounded border border-destructive p-2 text-sm text-destructive-strong">{actionData.error}</p>}
+      {actionData && "applied" in actionData && <p role="status" className="rounded border border-border bg-sel p-2 text-sm" data-testid="apply-result">{actionData.applied} alteração(ões) aplicada(s).</p>}
 
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -162,7 +162,7 @@ export default function Sheets({ loaderData: d, actionData }: Route.ComponentPro
           <CardTitle>{d.notConnected ? "Planilha não conectada" : "Falha ao ler a planilha"}</CardTitle>
           <p className="mt-1 text-sm" role="alert">{d.error}</p>
           {d.canConnect && (
-            <a href="/auth/sheets/connect?returnTo=%2Fsheets" className="mt-3 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-brand-fg">
+            <a href="/auth/sheets/connect?returnTo=%2Fsheets" className="mt-3 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90">
               Conectar Google Sheets
             </a>
           )}

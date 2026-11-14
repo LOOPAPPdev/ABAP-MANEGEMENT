@@ -7,6 +7,7 @@ const NAV = [
   ["/projects", "Projects"],
   ["/dashboard", "Dashboard"],
   ["/activities", "Activities"],
+  ["/models", "Modelos"],
   ["/canvas", "Canvas"],
   ["/evidence", "Evidence"],
   ["/sheets", "Planilha"],
@@ -34,7 +35,7 @@ function ProjectSwitcher({ projects, current }: { projects: { id: string; label:
       <input type="hidden" name="intent" value="select" />
       <input type="hidden" name="returnTo" value={location.pathname} />
       <label htmlFor="project-switch" className="sr-only">Projeto</label>
-      <select id="project-switch" name="project" defaultValue={current} key={current} className="h-8 rounded-md border border-primary bg-card px-2 text-sm" data-testid="project-switch">
+      <select id="project-switch" name="project" defaultValue={current} key={current} className="h-8 rounded-md border border-input bg-card px-2 text-sm" data-testid="project-switch">
         {projects.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
       </select>
       <button type="submit" className="h-8 rounded-md border border-border bg-card px-2 text-sm hover:bg-accent">Abrir</button>
@@ -54,31 +55,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="min-h-screen">
+      <body className={fullBleed ? "flex h-dvh flex-col" : "min-h-screen"}>
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:m-2 focus:bg-card focus:p-2">
           Skip to content
         </a>
         <header className="border-b border-border bg-card">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-            <span className="font-bold">ABAP</span>
-            {root?.user && (
-            <nav aria-label="Main">
-              <ul className="flex flex-wrap gap-1">
-                {NAV.map(([to, label]) => (
-                  <li key={to}>
-                    <NavLink
-                      to={to}
-                      className={({ isActive }) =>
-                        `rounded px-3 py-1.5 text-sm ${isActive ? "bg-brand-tint font-semibold text-brand-fg" : "hover:bg-accent"}`
-                      }
-                    >
-                      {label}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            )}
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5">
+            <a href="/dashboard" className="flex items-center gap-2.5" aria-label="ABAP — início">
+              <span aria-hidden="true" className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground">A</span>
+              <span className="leading-tight">
+                <span className="block text-sm font-semibold">ABAP <span className="font-normal text-muted-foreground">/ LOOP</span></span>
+                <span className="block font-mono text-[11px] text-muted-foreground">Plataforma de serviços</span>
+              </span>
+            </a>
             {root?.user && root.current && <ProjectSwitcher projects={root.projects} current={root.current} />}
             {root?.user && (
               <div className="ml-auto flex items-center gap-2 text-sm">
@@ -87,14 +76,32 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </span>
                 {root.user.mode === "google" && (
                   <form method="post" action="/auth/logout">
-                    <button type="submit" className="rounded px-2 py-1 text-primary underline hover:bg-accent">Sair</button>
+                    <button type="submit" className="rounded-md px-2 py-1 underline hover:bg-accent">Sair</button>
                   </form>
                 )}
               </div>
             )}
           </div>
+          {root?.user && (
+            <nav aria-label="Main" className="mx-auto max-w-7xl px-4 pb-2.5">
+              <ul className="inline-flex flex-wrap gap-1 rounded-lg border border-border bg-muted p-1">
+                {NAV.map(([to, label]) => (
+                  <li key={to}>
+                    <NavLink
+                      to={to}
+                      className={({ isActive }) =>
+                        `block rounded-md px-3 py-1.5 text-sm ${isActive ? "bg-primary font-medium text-primary-foreground" : "text-foreground hover:bg-card"}`
+                      }
+                    >
+                      {label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
         </header>
-        <main id="main" className={fullBleed ? "" : "mx-auto max-w-6xl px-4 py-6"}>
+        <main id="main" className={fullBleed ? "min-h-0 flex-1" : "mx-auto max-w-7xl px-4 py-6"}>
           {children}
         </main>
         <ScrollRestoration />

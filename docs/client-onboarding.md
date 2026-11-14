@@ -39,6 +39,8 @@ Cria `clients/prj-01-cleansea/` com `CLAUDE.md`, `client.json`, `README.md` e `d
 
 No app: **Projects → Novo projeto**, com o mesmo identificador (`prj-01-cleansea`), o código (`PRJ-01`) e o nome. O ABAP cria as 14 atividades do modelo de governança.
 
+Em **Modelo de interface**, escolha *Diagnóstico de processos* para o projeto já nascer com o questionário (DIAG-01). Organogramas (ORG-NN) e fluxos (FLW-NN) do cliente entram depois em **Modelos → Importar**. Tudo usa o design system ABAP: cores e estilos dos arquivos do cliente são descartados.
+
 ## 4. Vincular pasta e planilha
 
 Na página do projeto, em **Google Drive**, cole o link da pasta do cliente. O ABAP encontra a planilha de governança dentro dela (ou você cola o link da planilha). Os IDs ficam só no banco do ABAP, nunca no Git.
@@ -52,6 +54,8 @@ Na página do projeto, em **Google Drive**, cole o link da pasta do cliente. O A
 ```bash
 npm run docs:pull -w @clients/prj-01-cleansea
 ```
+
+Os modelos do projeto vão para o repositório com `npm run models:pull -w @clients/prj-01-cleansea` (pasta `models/_abap/`).
 
 Precisa de `ABAP_URL` e `ABAP_API_TOKEN` (token de máquina, só leitura; peça ao administrador). Escreve `clients/prj-01-cleansea/docs/drive/*.md` e `_manifest.json`.
 

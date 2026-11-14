@@ -34,8 +34,8 @@ export function DiagramView({ graph, projection: p, selectedId, highlight, zoom,
         if (d.kind === "lane")
           return (
             <g key={d.id} data-component-id="lane-band">
-              <rect x={d.x} y={d.y} width={d.w} height={d.h} fill="none" stroke="var(--border)" />
-              <rect x={d.x} y={d.y} width={124} height={d.h} fill="var(--muted)" stroke="var(--border)" />
+              <rect x={d.x} y={d.y} width={d.w} height={d.h} fill="none" stroke="var(--color-border)" />
+              <rect x={d.x} y={d.y} width={124} height={d.h} fill="var(--color-muted)" stroke="var(--color-border)" />
               <foreignObject x={d.x + 8} y={d.y + 8} width={110} height={d.h - 16}>
                 <div className="text-[12px] font-semibold text-secondary-foreground">{d.label}</div>
               </foreignObject>
@@ -44,12 +44,12 @@ export function DiagramView({ graph, projection: p, selectedId, highlight, zoom,
         if (d.kind === "frame")
           return (
             <g key={d.id} data-component-id="phase-frame">
-              <rect x={d.x} y={d.y} width={d.w} height={d.h} rx={4} fill="var(--muted)" opacity={0.6} />
-              <text x={d.x + 10} y={d.y + 20} fontSize={12} fontWeight={700} fill="var(--foreground)">
+              <rect x={d.x} y={d.y} width={d.w} height={d.h} rx={4} fill="var(--color-muted)" opacity={0.6} />
+              <text x={d.x + 10} y={d.y + 20} fontSize={12} fontWeight={700} fill="var(--color-foreground)">
                 {d.label.length > 28 ? d.label.slice(0, 27) + "…" : d.label}
               </text>
               {d.detail && (
-                <text x={d.x + 10} y={d.y + 36} fontSize={11} fill="var(--secondary-foreground)">
+                <text x={d.x + 10} y={d.y + 36} fontSize={11} fill="var(--color-secondary-foreground)">
                   {d.detail}
                 </text>
               )}
@@ -57,8 +57,8 @@ export function DiagramView({ graph, projection: p, selectedId, highlight, zoom,
           );
         return (
           <g key={d.id} data-component-id="bpmn-event" aria-label={d.label}>
-            <rect x={d.x} y={d.y} width={d.w} height={d.h} rx={4} fill="var(--card)" stroke="var(--foreground)" strokeWidth={d.kind === "end" ? 3 : 1.5} />
-            <text x={d.x + d.w / 2} y={d.y + d.h / 2 + 4} fontSize={10} fontWeight={700} textAnchor="middle" fill="var(--foreground)">
+            <rect x={d.x} y={d.y} width={d.w} height={d.h} rx={4} fill="var(--color-card)" stroke="var(--color-foreground)" strokeWidth={d.kind === "end" ? 3 : 1.5} />
+            <text x={d.x + d.w / 2} y={d.y + d.h / 2 + 4} fontSize={10} fontWeight={700} textAnchor="middle" fill="var(--color-foreground)">
               {d.kind === "start" ? "INÍCIO" : "FIM"}
             </text>
           </g>

@@ -72,7 +72,7 @@ export default function Settings({ loaderData: d }: Route.ComponentProps) {
           </Row>
         </dl>
         {d.auth === "google" && (
-          <a href="/auth/sheets/connect?returnTo=%2Fsheets" className="mt-3 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-brand-fg">
+          <a href="/auth/sheets/connect?returnTo=%2Fsheets" className="mt-3 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90">
             {d.connection ? "Reconectar Google (Sheets + Drive)" : "Conectar Google (Sheets + Drive)"}
           </a>
         )}

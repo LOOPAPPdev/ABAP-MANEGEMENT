@@ -1,0 +1,152 @@
+{
+ "id": "FLW-01",
+ "title": "Fluxo exemplo",
+ "version": "1.0",
+ "type": "AS-IS",
+ "status": "rascunho",
+ "context": {
+  "monthly_operations_approx": 5
+ },
+ "phases": [
+  {
+   "id": "F1",
+   "name": "Entrada",
+   "span": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "F2",
+   "name": "Preparação",
+   "span": [
+    3,
+    4
+   ]
+  },
+  {
+   "id": "F3",
+   "name": "Execução",
+   "span": [
+    5,
+    8
+   ]
+  }
+ ],
+ "steps": [
+  {
+   "id": "S01",
+   "number": 1,
+   "title": "Receber pedido",
+   "detail": "",
+   "owner": "Cliente / Comercial",
+   "output": "Pedido",
+   "source": "DOC:L1",
+   "area": "comercial",
+   "phase": "F1"
+  },
+  {
+   "id": "S02",
+   "number": 2,
+   "title": "Fechar venda",
+   "detail": "",
+   "owner": "Comercial",
+   "output": "Venda confirmada",
+   "source": "DOC:L2",
+   "area": "comercial",
+   "phase": "F1"
+  },
+  {
+   "id": "S03",
+   "number": 3,
+   "title": "Planejar execução",
+   "detail": "",
+   "owner": "Operação",
+   "output": "Plano",
+   "source": "DOC:L3",
+   "area": "operacional",
+   "phase": "F2"
+  },
+  {
+   "id": "S04",
+   "number": 4,
+   "title": "Confirmar janela",
+   "detail": "Retorno inferido; validar.",
+   "owner": "Operação",
+   "output": "Janela confirmada",
+   "source": "DOC:L4",
+   "area": "operacional",
+   "phase": "F2"
+  },
+  {
+   "id": "S05",
+   "number": 5,
+   "title": "Mobilizar equipe",
+   "detail": "",
+   "owner": "Logística",
+   "output": "Equipe no local",
+   "source": "DOC:L5",
+   "area": "logistica",
+   "phase": "F3"
+  },
+  {
+   "id": "S06",
+   "number": 6,
+   "title": "Emitir D1 de transporte",
+   "detail": "",
+   "owner": "Logística",
+   "output": "D1 emitido",
+   "source": "DOC:L6",
+   "area": "logistica",
+   "phase": "F3"
+  },
+  {
+   "id": "S07",
+   "number": 7,
+   "title": "Executar serviço",
+   "detail": "",
+   "owner": "Operação",
+   "output": "Serviço feito",
+   "source": "DOC:L7",
+   "area": "operacional",
+   "phase": "F3"
+  },
+  {
+   "id": "S08",
+   "number": 8,
+   "title": "Fechar e faturar",
+   "detail": "",
+   "owner": "Direção",
+   "output": "Fatura",
+   "source": "DOC:L8",
+   "area": "direcao",
+   "phase": "F3"
+  }
+ ],
+ "decision": {
+  "id": "G-01",
+  "after": "S04",
+  "question": "Janela confirmada?",
+  "yes": "S05",
+  "no": "S03",
+  "status": "ramo de retorno inferido; validar"
+ },
+ "documents": [
+  {
+   "id": "D1",
+   "name": "Manifesto de transporte",
+   "handling": "Impresso"
+  },
+  {
+   "id": "D2",
+   "name": "Relatório final",
+   "handling": "Digital"
+  }
+ ],
+ "assumptions": [
+  "Volume mensal aproximado"
+ ],
+ "outstanding": [
+  "Confirmar quem aprova a janela"
+ ]
+}

@@ -17,9 +17,12 @@ React Router v7 + Hono on Cloudflare Workers; Tailwind + shadcn/ui; D1 + Drizzle
 - `src/server/` — Hono API (`/api/v1`), use cases, Drizzle repository.
 - `app/` — React Router routes and UI. UI reads data only through `/api/v1` or server loaders that call use cases.
 - `workers/app.ts` — Worker entry: Hono first, React Router fallback.
+- `src/domain/models/` — interface templates + project models (diagnostic, org, flow), pure; adapters to the diagram graph (ADR-008). Template files in `templates/`.
+- `apps/abap` holds **no client data**: client sources live in `clients/<slug>/`; tests use `tests/fixtures/*.sample.json`.
 - `src/domain/diagram/` — universal graph + view projectors (pure). Projectors MUST NOT change node data; placed ∪ hidden = all nodes (tested).
 
-## Design system (ADR-004)
+## Design system (ADR-004, ADR-007)
+- **One design system only: the ABAP bundle** (shadcn neutral, DM Sans + DM Mono). Never add tokens or colours from imported material (client models, prototypes); schemas drop them.
 - Tokens: `docs/design-system/DESIGN_TOKENS.json` ↔ `app/app.css` (test enforces equality).
 - Components: register in `docs/design-system/COMPONENT_REGISTRY.json` first (with metanote if adopted), then code, then `/showcase`. Every `data-component-id` must exist in the registry.
 - Diagrams: square geometry; type by label + icon; dashed = not validated (`docs/design/diagramming-system.md`).
@@ -41,13 +44,13 @@ Follow `../../docs/global-instructions.md` (repository root) (controlled languag
 ## Engineering rules
 - Strict TypeScript; validate external input with Zod.
 - Keep domain rules in pure, testable functions.
-- Prefer accessible semantic controls and keyboard navigation. Use the CSS tokens in `app/app.css` (from the workbook `Design Tokens` sheet).
+- Prefer accessible semantic controls and keyboard navigation. Use the CSS tokens in `app/app.css` (bundle design system, ADR-007).
 - Do not add dependencies without a concrete need.
 - No secrets, tokens, or credentials in commits.
 - Use Conventional Commits.
 
 ## Scripts
-`npm run dev`, `lint`, `typecheck`, `test`, `test:e2e`, `build`, `db:generate`, `db:migrate:local`, `seed:local`, `import:workbook`, `extract:cleansea`, `import:dv-criteria`. Check `package.json` before running.
+`npm run dev`, `lint`, `typecheck`, `test`, `test:e2e`, `build`, `db:generate`, `db:migrate:local`, `seed:local`, `import:workbook`, `import:dv-criteria`. Check `package.json` before running.
 
 ## Execution gates
 inspect -> plan -> implement smallest slice -> run relevant checks -> inspect diff -> report results and evidence. Never claim a command passed unless executed. Do not mark a workbook activity DONE unless acceptance criteria are verified and evidence exists.

@@ -13,15 +13,6 @@ function walk(dir: string): string[] {
   });
 }
 
-function cssTokens(node: unknown, out: { css: string; value: string }[] = []) {
-  if (node && typeof node === "object") {
-    const n = node as Record<string, unknown>;
-    if (typeof n.css === "string" && typeof n.$value === "string" && n.$type === "color") out.push({ css: n.css, value: n.$value });
-    for (const v of Object.values(n)) cssTokens(v, out);
-  }
-  return out;
-}
-
 describe("Feature: design system registry (ADR-004 G3/G4)", () => {
   it("the registry JSON is valid and IDs are unique", () => {
     expect(registrySchema.safeParse(registry).success).toBe(true);
@@ -54,13 +45,24 @@ describe("Feature: design system registry (ADR-004 G3/G4)", () => {
   });
 });
 
-describe("Feature: design tokens stay in sync", () => {
-  it("every colour token with a CSS variable has the same value in app/app.css", () => {
-    const list = cssTokens(tokens);
-    expect(list.length).toBe(13);
+describe("Feature: design tokens stay in sync (single design system, ADR-007)", () => {
+  it("every colour token has the same HSL channels in app/app.css", () => {
+    const list = Object.values(tokens.color as Record<string, { css: string; channels: string }>);
+    expect(list.length).toBe(26);
     for (const t of list) {
-      const m = css.match(new RegExp(`${t.css}:\\s*(#[0-9a-fA-F]{6})`));
-      expect(m?.[1]?.toLowerCase(), t.css).toBe(t.value.toLowerCase());
+      const m = css.match(new RegExp(`${t.css}:\\s*([^;]+);`));
+      expect(m?.[1]?.trim(), t.css).toBe(t.channels);
     }
+  });
+
+  it("uses the bundle fonts and radius", () => {
+    expect(css).toContain('--font-sans: "DM Sans Variable"');
+    expect(css).toContain('--font-mono: "DM Mono"');
+    expect(css).toMatch(/--radius: 0\.625rem/);
+  });
+
+  it("no hex colour values remain in app.css tokens (one source, HSL channels)", () => {
+    const root = css.match(/:root\s*\{([\s\S]*?)\}/)![1]!;
+    expect(root).not.toMatch(/#[0-9a-fA-F]{3,6}/);
   });
 });

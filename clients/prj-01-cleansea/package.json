@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "description": "PRJ-01 — CleanSea: client workspace (structured docs first, code after the governance gates).",
   "scripts": {
-    "docs:pull": "node ../../tools/pull-drive-docs.mjs prj-01-cleansea"
+    "docs:pull": "node ../../tools/pull-drive-docs.mjs prj-01-cleansea",
+    "extract:legacy": "node tools/extract_cleansea.mjs reference/cleansea-operacao-integrada.html reference/cleansea.v1.json",
+    "models:pull": "node ../../tools/pull-models.mjs prj-01-cleansea"
   }
 }

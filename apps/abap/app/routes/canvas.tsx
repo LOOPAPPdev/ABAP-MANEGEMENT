@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ImperativePanelHandle } from "react-resizable-panels";
 import { useSearchParams, type ShouldRevalidateFunction } from "react-router";
-import cleanSeaRaw from "../../data/reference/cleansea.v1.json";
 import { ContextBar } from "../components/canvas/context-bar";
 import { DiagramView } from "../components/canvas/diagram-view";
 import { Inspector } from "../components/canvas/inspector";
@@ -11,8 +10,9 @@ import { TutorialView } from "../components/canvas/tutorial-view";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { Label, Select } from "~/components/ui/input";
-import { fromCleanSea, fromGovernance, parseCleanSea, project, VIEW_LABELS, VIEWS, type Graph, type ViewId } from "~/domain/diagram";
-import { projectFrom, serviceFrom } from "../lib/service.server";
+import { fromGovernance, project, VIEW_LABELS, VIEWS, type Graph, type ViewId } from "~/domain/diagram";
+import { fromDiagnostic, fromFlowModel, fromOrgModel } from "~/domain/models";
+import { modelsFrom, projectFrom, serviceFrom } from "../lib/service.server";
 import type { Route } from "./+types/canvas";
 
 export const handle = { fullBleed: true };
@@ -24,7 +24,12 @@ export function meta() {
 export async function loader({ context, request }: Route.LoaderArgs) {
   const current = await projectFrom(context, request);
   const activities = await serviceFrom(context, current).listEvaluated();
-  const graphs: Graph[] = [fromGovernance(activities, current.code ? `${current.code} · ${current.name}` : current.name), fromCleanSea(parseCleanSea(cleanSeaRaw))];
+  // Datasets: the project's governance activities + every model of the project (diagnostic, org chart, flow).
+  const models = await modelsFrom(context, current).listFull();
+  const graphs: Graph[] = [
+    fromGovernance(activities, current.code ? `${current.code} · ${current.name}` : current.name),
+    ...models.map((m) => (m.kind === "flow" ? fromFlowModel(m.data, m.id) : m.kind === "org" ? fromOrgModel(m.data, m.id) : fromDiagnostic(m.data, m.id, `${m.id} · ${m.title}`))),
+  ];
   return { graphs };
 }
 
@@ -91,7 +96,7 @@ export default function Canvas({ loaderData }: Route.ComponentProps) {
   };
 
   return (
-    <div className="flex h-[calc(100vh-57px)] flex-col" data-component-id="canvas-workspace" ref={root}>
+    <div className="flex h-full flex-col" data-component-id="canvas-workspace" ref={root}>
       {/* Topbar */}
       <div className="flex flex-wrap items-center gap-3 border-b border-border bg-card px-3 py-2">
         <div className="flex items-center gap-2">
@@ -162,7 +167,7 @@ export default function Canvas({ loaderData }: Route.ComponentProps) {
             {(graph.notes.length > 0 || projection.warnings.length > 0) && (
               <div className="space-y-1 border-b border-border bg-background px-3 py-2 text-xs" data-testid="canvas-notes">
                 {graph.status !== "operacional" && (
-                  <p className="font-semibold text-destructive">⚑ Dados {graph.status}: {graph.notes[0]}</p>
+                  <p className="font-semibold text-destructive-strong">⚑ Dados {graph.status}: {graph.notes[0]}</p>
                 )}
                 {projection.warnings.map((w) => (
                   <p key={w} role="status">⚠ {w}</p>

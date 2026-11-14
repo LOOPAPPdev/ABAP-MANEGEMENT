@@ -1,0 +1,195 @@
+{
+  "id": "diagnostico-processos",
+  "name": "Diagnóstico de processos (AS-IS)",
+  "templateVersion": "1.1",
+  "source": {
+    "artifact": "bundle.html · ABAP LOOP · Diagnóstico de processos v1.1",
+    "sha256": "33b630a3bd00a141ea7ff50ec2052bb7db39e6991e4c6b4575d9ffe43c86db95",
+    "note": "Questionnaire schema copied verbatim; UI re-implemented natively with the ABAP design system."
+  },
+  "outputs": [
+    "diagram",
+    "mermaid",
+    "adaptive_plan",
+    "gaps"
+  ],
+  "questionnaire": {
+    "version": "1.0.0",
+    "visible_stage_count": 9,
+    "field_count": 18,
+    "description": "Nove etapas; dois campos por etapa. Campos opcionais podem ser saltados.",
+    "stages": [
+      {
+        "id": "A",
+        "title": "Identificação",
+        "description": "Identificar organização e iniciar pesquisa pública",
+        "fields": [
+          {
+            "id": "company_name",
+            "label": "Qual é o nome da empresa?",
+            "type": "text",
+            "required": true
+          },
+          {
+            "id": "website",
+            "label": "Qual é o website oficial?",
+            "type": "url",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "B",
+        "title": "Escopo",
+        "description": "Delimitar o processo a analisar",
+        "fields": [
+          {
+            "id": "process_name",
+            "label": "Qual processo pretende analisar?",
+            "type": "text",
+            "required": true
+          },
+          {
+            "id": "objective",
+            "label": "O que este processo precisa alcançar?",
+            "type": "textarea",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "C",
+        "title": "Limites",
+        "description": "Definir onde o processo começa e termina",
+        "fields": [
+          {
+            "id": "trigger",
+            "label": "O que inicia o processo?",
+            "type": "text",
+            "required": true
+          },
+          {
+            "id": "deliverable",
+            "label": "Qual é o resultado final esperado?",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "D",
+        "title": "Responsabilidades",
+        "description": "Identificar participantes e ferramentas",
+        "fields": [
+          {
+            "id": "actors",
+            "label": "Quem participa? Indique funções ou equipas.",
+            "type": "textarea",
+            "required": false
+          },
+          {
+            "id": "systems",
+            "label": "Que sistemas e canais utilizam?",
+            "type": "textarea",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "E",
+        "title": "Sequência",
+        "description": "Reconstituir as atividades e transferências",
+        "fields": [
+          {
+            "id": "activities",
+            "label": "Quais são as etapas pela ordem em que acontecem? Uma por linha.",
+            "type": "textarea",
+            "required": true
+          },
+          {
+            "id": "handoffs",
+            "label": "Onde o trabalho passa de uma pessoa/equipa para outra?",
+            "type": "textarea",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "F",
+        "title": "Condições",
+        "description": "Registar decisões e exceções reais",
+        "fields": [
+          {
+            "id": "decisions",
+            "label": "Em que pontos existem decisões? Descreva as alternativas.",
+            "type": "textarea",
+            "required": false
+          },
+          {
+            "id": "exceptions",
+            "label": "O que atrasa, interrompe ou altera o percurso normal?",
+            "type": "textarea",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "G",
+        "title": "Volume e tempo",
+        "description": "Definir medidas operacionais",
+        "fields": [
+          {
+            "id": "frequency_month",
+            "label": "Quantas operações ocorrem por mês?",
+            "type": "number",
+            "required": false
+          },
+          {
+            "id": "duration_hours",
+            "label": "Qual é a duração média de uma operação, em horas?",
+            "type": "number",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "H",
+        "title": "Fricção e valor",
+        "description": "Localizar gargalos e levantar dados económicos",
+        "fields": [
+          {
+            "id": "bottlenecks",
+            "label": "Onde surgem atrasos, retrabalho ou erros?",
+            "type": "textarea",
+            "required": false
+          },
+          {
+            "id": "cost_per_operation",
+            "label": "Qual é o custo médio por operação, se conhecido?",
+            "type": "number",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "I",
+        "title": "Revisão",
+        "description": "Revisar lacunas e validar o diagrama AS-IS",
+        "fields": [
+          {
+            "id": "corrections",
+            "label": "Há alguma etapa em falta ou informação a corrigir?",
+            "type": "textarea",
+            "required": false
+          },
+          {
+            "id": "confirmation",
+            "label": "Confirma que o fluxo mostrado representa o processo atual?",
+            "type": "boolean",
+            "required": true
+          }
+        ]
+      }
+    ]
+  }
+}
