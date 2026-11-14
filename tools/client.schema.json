@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ABAP client workspace",
+  "type": "object",
+  "required": ["code", "slug", "name", "projectId", "status", "governanceModel", "drive", "language"],
+  "properties": {
+    "code": { "type": "string", "pattern": "^PRJ-\\d{2,3}$" },
+    "slug": { "type": "string", "pattern": "^prj-\\d{2,3}-[a-z0-9-]+$" },
+    "name": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string" },
+    "status": { "enum": ["onboarding", "discovery", "build", "live", "closed"] },
+    "governanceModel": { "const": "full-stack-governance-v1" },
+    "drive": {
+      "type": "object",
+      "required": ["folderName"],
+      "properties": { "folderName": { "type": "string" }, "note": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "language": { "type": "string" }
+  }
+}

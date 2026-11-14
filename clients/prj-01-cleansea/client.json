@@ -1,0 +1,14 @@
+{
+  "$schema": "../../tools/client.schema.json",
+  "code": "PRJ-01",
+  "slug": "prj-01-cleansea",
+  "name": "CleanSea",
+  "projectId": "prj-01-cleansea",
+  "status": "onboarding",
+  "governanceModel": "full-stack-governance-v1",
+  "drive": {
+    "folderName": "PRJ-01-CLEANSEA",
+    "note": "Drive folder ID and spreadsheet ID are stored in ABAP (project settings), never in Git."
+  },
+  "language": "pt-BR"
+}

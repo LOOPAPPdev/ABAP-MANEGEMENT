@@ -10,5 +10,8 @@ worker-configuration.d.ts
 test-results/
 playwright-report/
 .DS_Store
-data/seed/seed.sql
+**/data/seed/seed.sql
+# Local machine token for `npm run docs:pull` (never commit)
+.abap-token
+.env.local
 *.tsbuildinfo

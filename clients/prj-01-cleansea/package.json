@@ -1,0 +1,9 @@
+{
+  "name": "@clients/prj-01-cleansea",
+  "private": true,
+  "version": "0.0.0",
+  "description": "PRJ-01 — CleanSea: client workspace (structured docs first, code after the governance gates).",
+  "scripts": {
+    "docs:pull": "node ../../tools/pull-drive-docs.mjs prj-01-cleansea"
+  }
+}

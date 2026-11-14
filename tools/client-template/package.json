@@ -1,0 +1,9 @@
+{
+  "name": "@clients/{{SLUG}}",
+  "private": true,
+  "version": "0.0.0",
+  "description": "{{CODE}} — {{NAME}}: client workspace (structured docs first, code after the governance gates).",
+  "scripts": {
+    "docs:pull": "node ../../tools/pull-drive-docs.mjs {{SLUG}}"
+  }
+}
