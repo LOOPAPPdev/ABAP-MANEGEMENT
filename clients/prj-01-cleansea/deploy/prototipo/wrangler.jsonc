@@ -1,0 +1,17 @@
+// Public static Worker for the CleanSea design prototype (ADR-018, Proposed).
+// No login. Simulated data only. Account ID comes from CLOUDFLARE_ACCOUNT_ID at deploy time (no IDs in Git).
+{
+  "$schema": "../../../../node_modules/wrangler/config-schema.json",
+  "name": "cleansea-prototipo",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "../../reference/design-handoff-cleansea-app",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "html_handling": "none",
+    "not_found_handling": "none"
+  }
+}

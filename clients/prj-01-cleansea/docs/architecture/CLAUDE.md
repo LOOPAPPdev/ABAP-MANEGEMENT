@@ -540,6 +540,7 @@ Read the stack board and the decision cards in [`README.md`](./README.md) first.
 | ADR-015 | Identify vessels by IMO with provider ID maps, and keep every position and ETA observation | Proposed | UNVERIFIED | SR, DE | PW.1, PW.5 |
 | ADR-016 | Mirror WhatsApp through the WhatsApp Business Platform and associate each message to one operation | Proposed | UNVERIFIED | DE | PS.1, PW.1, PW.5 |
 | ADR-017 | Put the vessel tracking widget inside the prototype with proximity push and data crossing | Accepted | VERIFIED | DE | PW.1, PW.8 |
+| ADR-018 | Publish the prototype on a public Worker without login | Proposed | UNVERIFIED | DE | PW.1, PS.1 |
 
 ## 3.2 ADRs
 
@@ -1391,6 +1392,59 @@ A real AIS contract exists, or the production app replaces the prototype.
 
 ---
 
+## ADR-018 — Publish the prototype on a public Worker without login
+
+- id: ADR-018
+- status: Proposed
+- date: 2026-11-15
+- deciders: Project owner
+- supersedes: none
+- superseded_by: none
+- as_built: UNVERIFIED
+- nist_process: DE
+- arc42: 7, 9
+- ssdf: PW.1, PS.1
+- trace: BRD-003
+- evidence: OWNER:chat 2026-11-15 ; CODE:clients/prj-01-cleansea/deploy/prototipo/src/worker.js
+
+### Context
+`[FACT]` The owner asks to publish the CleanSea app on Cloudflare as a new Worker, without login and password (chat, 2026-11-15).
+`[FACT]` ADR-014 chose the ABAP Studio with invited logins and listed this option (B, public static Worker) with the risk "the link can leak".
+`[FACT]` The only front end is the HTML design prototype (ADR-013). All its data is seeded locally. It calls no ABAP API. It calls Open-Meteo and loads map tiles and libraries from public hosts.
+`[FACT]` A scan of the prototype files found no e-mail address, phone number, CPF or CNPJ. Personas use first names only. The data includes agency names, terminals and planned volumes from the client spreadsheet "Controle Operacional de Navios" (not validated).
+
+### Decision
+- The prototype SHALL be served by its own Worker, `cleansea-prototipo`, on workers.dev, with no login.
+- The Worker SHALL serve the files of `reference/design-handoff-cleansea-app/` as static assets, open the prototype at `/`, and add a notice banner to every HTML page.
+- The Worker SHALL send `X-Robots-Tag: noindex, nofollow` and `Referrer-Policy: no-referrer`, and SHALL NOT serve Markdown files.
+- The Worker MUST NOT hold a secret, a binding to ABAP data, or a credential.
+- The Studio (ADR-014) stays the place for invited review.
+
+### Options
+| Option | Evidence | Fit | Risk |
+|---|---|---|---|
+| A Own public Worker (chosen) | OWNER:chat 2026-11-15 | High | Anyone with the link sees the prototype |
+| B Studio only (ADR-014) | CODE:apps/abap/src/server/studio.ts | Medium | Guests need a Google account |
+| C Cloudflare Access in front of the Worker | NONE: | Medium | The owner asked for no login |
+
+### Consequences
+- Easier: the client opens the prototype with one link, on any device, without an account.
+- Harder: the link cannot be revoked per person. To withdraw it, delete or rename the Worker.
+- Revisit: if the link reaches people outside the project.
+
+### Security impact
+Threat: the link leaks and a third party sees client agencies, terminals and planned volumes. Control: `noindex`, no referrer, the notice that data is simulated; the owner accepts the residual risk. Threat: a visitor takes simulated values as real. Control: banner on every page and the SIMULADO tags (ADR-017). No secret or ABAP session exists in this Worker (SSDF PW.1, PS.1).
+
+### Verification
+GIVEN the deployed Worker WHEN a visitor opens `/` without credentials THEN the prototype loads with the notice banner.
+GIVEN any response WHEN its headers are read THEN `x-robots-tag` is `noindex, nofollow`.
+GIVEN a request for `/README.md` WHEN it is served THEN the answer is 404.
+
+### Revisit when
+The link reaches people outside the project, the client objects, or the production app replaces the prototype.
+
+---
+
 # ACT 4 — TRACEABILITY MATRIX
 
 `TBD` means the SPEC or TEST document does not exist yet `[OPEN]`.
@@ -1414,6 +1468,7 @@ A real AIS contract exists, or the production app replaces the prototype.
 | ADR-015 | BRD-003 | PRD-008 | FRD-007 | TBD | TEST-007 | SR, DE | 5, 8, 9 | PW.1, PW.5 |
 | ADR-016 | BRD-003 | PRD-009 | FRD-008 | TBD | TBD | DE | 3, 8, 9 | PS.1, PW.1, PW.5 |
 | ADR-017 | BRD-003 | PRD-008 | — | — | — | DE | 5, 6, 9 | PW.1, PW.8 |
+| ADR-018 | BRD-003 | — | — | — | — | DE | 7, 9 | PW.1, PS.1 |
 
 BRD, PRD and FRD IDs come from the NIST-Docs requirements register (zero-padded). `[OPEN]` That register is not in this repository. The agent could not check the IDs (open item 12). ADR-010, ADR-011 and ADR-012 also trace to `NFR-004`.
 
