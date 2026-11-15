@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS leads (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  company TEXT NOT NULL,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL DEFAULT '',
+  consent_at TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
