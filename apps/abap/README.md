@@ -104,6 +104,21 @@ npm run deploy:kv-assets
 
 It uploads `build/client/assets/*` to the `STATIC` KV namespace and deploys the Worker without the assets binding; the Worker then serves `/assets/*` from KV (`src/server/static-kv.ts`). The standard `npm run deploy` needs no code change.
 
+### LOOP environment (Workers Builds, account adm-loop-app)
+
+A second deployment of the same code, owner request 2026-11-15 (D-038). Cloudflare Workers Builds builds and deploys it from GitHub; nobody deploys it by hand.
+
+| Item | Value |
+|---|---|
+| Worker | `abap-manegement` — `https://abap-manegement.adm-loop-app.workers.dev` |
+| D1 | `abap-governance` (`env.loop` in `wrangler.jsonc`) |
+| Build | `npm run build` with build variable `CLOUDFLARE_ENV=loop` |
+| Deploy | `cd apps/abap && npm run deploy:loop:ci` (migrations → seed → deploy) |
+| Non-production branches | `cd apps/abap && npx wrangler deploy --dry-run` (build check only) |
+| Secrets set | `SESSION_SECRET`, `TOKEN_ENCRYPTION_KEY` (random, set once, never shown) |
+| Secrets the owner sets | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ALLOWED_EMAILS` (dashboard → Worker → Settings → Variables and Secrets). Until then the app fails closed: only `/api/v1/health`, MCP with a token and signed studio links answer |
+| Google OAuth | Add `https://abap-manegement.adm-loop-app.workers.dev/auth/google/callback` to the OAuth client's redirect URIs |
+
 ## Canvas Multiview and design system
 
 - `/canvas` — one graph (`src/domain/diagram`), five views: Infográfico, Tutorial, BPMN, Organograma, Diagrama complexo. Collapsible/resizable sidebars, Inspector with metanotes, state in the URL (`?dataset=&view=&node=`). Read-only: edit on `/activities/:id`.
@@ -179,6 +194,11 @@ Reset local data: `npm run db:reset:local`.
 | GET/POST | `/api/v1/projects` | List / create a project `{ code, name, id }` |
 | GET | `/api/v1/projects/:id` | Project (machine token allowed) |
 | PUT | `/api/v1/projects/:id/links` | `{ driveFolder?, spreadsheet? }` pasted URLs or IDs |
+| GET | `/api/v1/studio/:projectId` | Studio artifacts (+ members for staff). Guests: own projects only (ADR-011) |
+| POST | `/api/v1/studio/:projectId/members` | Invite `{ email, role: client\|consultant }` — staff session only |
+| DELETE | `/api/v1/studio/:projectId/members/:email` | Revoke — staff session only |
+| POST | `/api/v1/studio/:projectId/artifacts` | Publish `{ slug, title, notice, entry, files[] }` — staff session (tokens use MCP `abap_studio_publish`) |
+| GET | `/studio/raw/:token/*` | Artifact files, signed link (12 h), sandboxed CSP, no cookie |
 | GET | `/api/v1/projects/:id/drive/files` | Drive folder tree (machine token allowed) |
 | GET | `/api/v1/projects/:id/drive/files/:fileId` | One file + Markdown if Google Doc |
 | GET | `/api/v1/projects/:id/drive/export` | All Google Docs as Markdown (machine token allowed) |

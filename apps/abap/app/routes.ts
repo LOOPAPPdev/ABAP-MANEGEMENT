@@ -13,6 +13,8 @@ export default [
   route("models", "routes/models.tsx"),
   route("models/:modelId", "routes/model.tsx"),
   route("agent", "routes/agent.tsx"),
+  route("studio", "routes/studio-index.tsx"),
+  route("studio/:projectId", "routes/studio.tsx"),
   route("agent.zip", "routes/agent-zip.ts"),
   route("canvas", "routes/canvas.tsx"),
   route("showcase", "routes/showcase.tsx"),

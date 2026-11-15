@@ -22,7 +22,8 @@
     "deploy": "CLOUDFLARE_ENV=production react-router build && wrangler deploy",
     "db:migrate:remote": "wrangler d1 migrations apply governance --remote --env production",
     "seed:remote": "npm run db:seed-sql && wrangler d1 execute governance --remote --env production --file=data/seed/seed.sql",
-    "deploy:kv-assets": "CLOUDFLARE_ENV=production react-router build && node scripts/deploy-kv-assets.mjs"
+    "deploy:kv-assets": "CLOUDFLARE_ENV=production react-router build && node scripts/deploy-kv-assets.mjs",
+    "deploy:loop:ci": "wrangler d1 migrations apply abap-governance --remote --env loop -c wrangler.jsonc && npm run db:seed-sql && wrangler d1 execute abap-governance --remote --env loop -c wrangler.jsonc --file=data/seed/seed.sql && wrangler deploy"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",

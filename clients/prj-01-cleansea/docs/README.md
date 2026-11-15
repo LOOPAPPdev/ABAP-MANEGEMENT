@@ -8,7 +8,7 @@ Mesma estrutura de entregáveis do modelo de governança (14 atividades). Crie c
 | ACT-02 | `product/02_discovery-notes_v0.1.md` |
 | ACT-03 | `product/03_requirements_v0.1.md` |
 | ACT-04 | `design/04_user-flows_v0.1.md` |
-| ACT-05 | `architecture/05_adr-001_stack.md` |
+| ACT-05 | `architecture/README.md` (stack board, leia primeiro) + `architecture/CLAUDE.md` (regras e registro de ADRs) |
 | ACT-06 | `architecture/06_data-model_v0.1.md` |
 | ACT-07 | código em `../src/` + commit |
 | ACT-08 | `engineering/08_standards_v0.1.md` |

@@ -9,6 +9,7 @@ const NAV = [
   ["/activities", "Activities"],
   ["/models", "Modelos"],
   ["/agent", "Agente"],
+  ["/studio", "Studio"],
   ["/canvas", "Canvas"],
   ["/evidence", "Evidence"],
   ["/sheets", "Planilha"],
@@ -18,7 +19,9 @@ const NAV = [
 ] as const;
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-  if (!context.user) return { user: null, auth: context.cfg.auth, projects: [], current: null };
+  if (!context.user) return { user: null, auth: context.cfg.auth, projects: [], current: null, guest: false };
+  // Guests (ADR-011) see only the studio: no project switcher, no governance navigation.
+  if (context.user.access?.kind === "guest") return { user: context.user, auth: context.cfg.auth, projects: [], current: null, guest: true };
   const svc = projectsFrom(context);
   const [list, current] = await Promise.all([svc.list(), projectFrom(context, request)]);
   return {
@@ -26,6 +29,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     auth: context.cfg.auth,
     projects: list.map((p) => ({ id: p.id, label: p.code ? `${p.code} · ${p.name}` : p.name })),
     current: current.id,
+    guest: false,
   };
 }
 
@@ -86,7 +90,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {root?.user && (
             <nav aria-label="Main" className="mx-auto max-w-7xl px-4 pb-2.5">
               <ul className="inline-flex flex-wrap gap-1 rounded-lg border border-border bg-muted p-1">
-                {NAV.map(([to, label]) => (
+                {(root.guest ? NAV.filter(([to]) => to === "/studio") : NAV).map(([to, label]) => (
                   <li key={to}>
                     <NavLink
                       to={to}

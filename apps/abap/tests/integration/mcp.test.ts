@@ -98,7 +98,7 @@ describe("Feature: MCP endpoint /mcp (ADR-009)", () => {
   it("lists the tools with read/write annotations", async () => {
     const { body } = await rpc(READ, "tools/list");
     const tools = body.result.tools as { name: string; annotations: { readOnlyHint: boolean; destructiveHint?: boolean } }[];
-    expect(tools).toHaveLength(25);
+    expect(tools).toHaveLength(27);
     expect(tools.every((t) => t.name.startsWith("abap_"))).toBe(true);
     expect(tools.find((t) => t.name === "abap_list_projects")!.annotations.readOnlyHint).toBe(true);
     expect(tools.find((t) => t.name === "abap_drive_create_document")!.annotations).toMatchObject({ readOnlyHint: false, destructiveHint: true });

@@ -201,3 +201,57 @@ export const deletedProjects = sqliteTable("deleted_projects", {
   deletedAt: text("deleted_at").notNull(),
   countsJson: text("counts_json").notNull(),
 });
+
+/**
+ * Studio members (ADR-011): people invited to the shared studio of one project. Guests only: staff access
+ * comes from ALLOWED_EMAILS. Never deleted: revocation keeps the row (who, when). Changes go to project_events.
+ */
+export const studioMembers = sqliteTable(
+  "studio_members",
+  {
+    projectId: text("project_id").notNull().references(() => projects.id),
+    email: text("email").notNull(), // lower case
+    role: text("role").notNull(), // client | consultant
+    status: text("status").notNull(), // invited | active | revoked
+    invitedBy: text("invited_by").notNull(),
+    invitedAt: text("invited_at").notNull(),
+    acceptedAt: text("accepted_at"),
+    revokedAt: text("revoked_at"),
+    revokedBy: text("revoked_by"),
+  },
+  (t) => [primaryKey({ columns: [t.projectId, t.email] }), index("studio_members_email_idx").on(t.email)],
+);
+
+/** Studio artifacts (ADR-011): a published static web artifact (e.g. a prototype) of one project. */
+export const studioArtifacts = sqliteTable(
+  "studio_artifacts",
+  {
+    projectId: text("project_id").notNull().references(() => projects.id),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    notice: text("notice").notNull(), // shown above the artifact, e.g. "Protótipo — dados simulados"
+    entry: text("entry").notNull(), // entry .html path
+    revision: integer("revision").notNull(),
+    bytes: integer("bytes").notNull(),
+    status: text("status").notNull().default("published"), // published | archived
+    publishedBy: text("published_by").notNull(),
+    publishedAt: text("published_at").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.projectId, t.slug] })],
+);
+
+/** Files of the current revision of an artifact. Replaced as a whole on each publish (one batch). */
+export const studioFiles = sqliteTable(
+  "studio_files",
+  {
+    projectId: text("project_id").notNull(),
+    slug: text("slug").notNull(),
+    path: text("path").notNull(),
+    contentType: text("content_type").notNull(),
+    content: text("content").notNull(),
+    bytes: integer("bytes").notNull(),
+    sha256: text("sha256").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.projectId, t.slug, t.path] })],
+);

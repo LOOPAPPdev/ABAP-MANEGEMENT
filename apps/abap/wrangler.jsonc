@@ -20,6 +20,26 @@
     }
   ],
   "env": {
+    // LOOP account (adm-loop-app): Worker "abap-manegement", built and deployed by Workers Builds.
+    // Build: CLOUDFLARE_ENV=loop npm run build · Deploy: npm run deploy:loop:ci (migrations + seed + deploy).
+    // Fails closed like production until the secrets are set (see README → LOOP environment).
+    "loop": {
+      "name": "abap-manegement",
+      "workers_dev": true,
+      "observability": { "enabled": true },
+      "vars": {
+        "ENVIRONMENT": "production",
+        "SHEET_RANGE": "DATA_Activities!A1:R200"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "abap-governance",
+          "database_id": "712871df-c6d6-4dac-891f-9b2920b6b8c2",
+          "migrations_dir": "migrations"
+        }
+      ]
+    },
     // Production: deploy with `npm run deploy`. Fails closed: without every secret
     // (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SESSION_SECRET, TOKEN_ENCRYPTION_KEY,
     // ALLOWED_EMAILS, SPREADSHEET_ID) all pages and APIs except /api/v1/health are blocked.

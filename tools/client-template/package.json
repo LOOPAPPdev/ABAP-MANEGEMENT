@@ -6,6 +6,7 @@
   "scripts": {
     "docs:pull": "node ../../tools/pull-drive-docs.mjs {{SLUG}}",
     "models:pull": "node ../../tools/pull-models.mjs {{SLUG}}",
-    "plugin:pull": "node ../../tools/pull-plugin.mjs {{SLUG}}"
+    "plugin:pull": "node ../../tools/pull-plugin.mjs {{SLUG}}",
+    "studio:publish": "node ../../tools/studio-publish.mjs {{SLUG}}"
   }
 }

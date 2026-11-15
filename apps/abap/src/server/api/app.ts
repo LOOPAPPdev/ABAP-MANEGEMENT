@@ -10,6 +10,7 @@ import { registerDriveRoutes } from "./drive-routes";
 import { registerModelRoutes } from "./models-routes";
 import { registerProjectRoutes } from "./projects-routes";
 import { registerSheetsRoutes } from "./sheets-routes";
+import { registerStudioRoutes } from "./studio-routes";
 import { actorOf } from "./actor";
 import { activityIdSchema, evidenceInputSchema, statusChangeSchema } from "./schemas";
 
@@ -73,6 +74,7 @@ export function createApi(clock: Clock = systemClock, deps: { fetch?: Fetch } = 
   registerDriveRoutes(api, clock, deps.fetch);
   registerModelRoutes(api, clock);
   registerSheetsRoutes(api, clock, deps.fetch);
+  registerStudioRoutes(api, clock);
 
   api.notFound((c) => c.json({ ok: false, error: "not_found" }, 404));
 

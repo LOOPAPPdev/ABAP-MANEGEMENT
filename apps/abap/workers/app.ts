@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { createRequestHandler } from "react-router";
 import { createApi } from "~/server/api/app";
+import { createStudioRawRoute } from "~/server/api/studio-routes";
+import { systemClock } from "~/server/governance-service";
 import { createMcpRoute } from "~/server/mcp/route";
 import { authGate, type AppUser, type AuthVariables } from "~/server/auth/middleware";
 import { createAuthRoutes } from "~/server/auth/routes";
@@ -33,6 +35,7 @@ app.get("/assets/*", async (c, next) => {
 });
 app.route("/", createAuthRoutes());
 app.route("/", createApi());
+app.route("/", createStudioRawRoute(systemClock));
 app.route("/", createMcpRoute());
 app.all("/api/*", (c) => c.json({ ok: false, error: "not_found" }, 404));
 app.all("*", (c) =>

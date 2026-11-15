@@ -2129,6 +2129,50 @@
         "state": "protegido (default), habilitado, confirmação errada, excluído.",
         "uxRule": "Dizer o que será apagado e o que não será (Drive, planilha, repositório); exigir confirmação digitada; deixar registro permanente."
       }
+    },
+    {
+      "id": "pattern-studio",
+      "family": "Patterns",
+      "name": "Project studio",
+      "function": "Shared area of a project: published artifacts in a sandboxed viewer with a mandatory notice, and guest invitations.",
+      "variants": [
+        "staff",
+        "guest"
+      ],
+      "props": [
+        "project",
+        "artifacts",
+        "selected",
+        "members"
+      ],
+      "states": [
+        "empty",
+        "published",
+        "archived",
+        "invited",
+        "active",
+        "revoked"
+      ],
+      "dependencies": [
+        "ds:card",
+        "ds:button",
+        "ds:input"
+      ],
+      "usage": [
+        "/studio",
+        "/studio/:projectId"
+      ],
+      "status": "adopted",
+      "source": "app/routes/studio.tsx",
+      "metanote": {
+        "name": "Studio do projeto",
+        "function": "Mostrar ao cliente e à equipe os artefatos publicados do projeto (ex.: protótipo) e gerir quem foi convidado.",
+        "whenToUse": "Quando um artefato precisa ser visto pelo cliente sem dar acesso à governança do projeto.",
+        "data": "Artefatos publicados (título, revisão, aviso), membros convidados (e-mail, papel, status).",
+        "interaction": "Escolher o artefato; abrir em tela cheia; a equipe convida, revoga e arquiva.",
+        "state": "vazio, publicado, arquivado; convidado, ativo, revogado.",
+        "uxRule": "O aviso do artefato fica sempre visível acima dele; o artefato roda isolado (sandbox) sem acesso à sessão; convidados veem só o studio do projeto."
+      }
     }
   ]
 }
