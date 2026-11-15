@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-1a9a97b3-bb61-48b5-a87b-a875df63c762/_ds_bundle.css">
+<link rel="stylesheet" href="_ds/design-system-1a9a97b3-bb61-48b5-a87b-a875df63c762/styles.css">
+<script src="_ds/design-system-1a9a97b3-bb61-48b5-a87b-a875df63c762/_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--color-surface);font-family:var(--font-body);color:var(--color-text);-webkit-font-smoothing:antialiased}
+a{color:var(--color-link)}a:hover{color:var(--action-primary-hover)}
+button,input{font-family:inherit}
+@media (prefers-reduced-motion: reduce){*{transition-duration:0ms!important}}
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="min-height:100vh;padding:24px;box-sizing:border-box;display:flex;flex-direction:column;gap:24px;background:var(--color-surface);color:var(--color-text)">
+  <div style="display:flex;flex-direction:column;gap:4px;max-width:720px">
+    <div style="font:600 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">Cleansea · App operacional · Protótipo navegável</div>
+    <div style="font-family:var(--font-heading);font-weight:600;font-size:24px;line-height:1.2">Do acesso ao fechamento de uma operação</div>
+    <div style="font-size:13px;line-height:1.5;color:var(--color-text-muted);text-wrap:pretty">Dados da planilha "Controle Operacional de Navios". Posição AIS, ETA, clima, mensagens, Ask AI e a operação 17/11 são simulados e levam selo. Nenhuma integração está ativa: as chamadas de API respondem a partir do seed local.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+    <div style="flex:none;width:390px;max-width:100%;display:flex;flex-direction:column;gap:10px">
+      <div data-screen-label="{{ screenLabel }}" style="position:relative;width:390px;max-width:100%;height:844px;border-radius:28px;overflow:hidden;background:var(--color-surface);border:1px solid var(--color-divider);box-shadow:0 1px 2px rgba(0,0,0,.06),0 12px 40px rgba(0,0,0,.10);display:flex;flex-direction:column;filter:{{ phoneFilter }}">
+
+        <sc-if value="{{ is.login }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="M00 Login" style="flex:1;display:flex;flex-direction:column;background:var(--color-bg)">
+            <div style="background:var(--color-accent-600);color:#fff;padding:56px 24px 28px;display:flex;flex-direction:column;gap:6px">
+              <div style="width:44px;height:44px;border-radius:12px;background:#fff;color:var(--color-accent-600);display:grid;place-items:center;font-weight:700;font-size:20px">C</div>
+              <div style="font-family:var(--font-heading);font-weight:700;font-size:26px;letter-spacing:.04em;margin-top:10px">CLEANSEA</div>
+              <div style="font-size:14px">Operational workspace</div>
+            </div>
+            <div style="flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:10px">
+              <div style="font-size:17px;font-weight:600">Entrar</div>
+              <div style="font-size:13px;color:var(--color-text-muted);line-height:1.45">Sessão de demonstração. Escolha o papel; a home e as permissões mudam, os dados não.</div>
+              <sc-for list="{{ logins }}" as="l" hint-placeholder-count="5">
+                <button onClick="{{ l.onClick }}" style="min-height:60px;border:1px solid var(--color-divider);background:var(--color-bg);border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:12px;padding:8px 14px;text-align:left;color:var(--color-text)" style-hover="border-color:var(--color-accent-300);background:var(--accent)">
+                  <span style="width:40px;height:40px;flex:none;border-radius:50%;background:var(--color-accent-100);color:var(--color-accent-700);display:grid;place-items:center;font-weight:600">{{ l.ini }}</span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">{{ l.name }}</span><span style="font-size:13px;color:var(--color-text-muted)">{{ l.role }} · {{ l.home }}</span></span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ is.app }}" hint-placeholder-val="{{ true }}">
+          <header style="flex:none;height:56px;display:flex;align-items:center;gap:4px;padding:0 6px;background:var(--color-accent-600);color:#fff">
+            <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ onBack }}" aria-label="Voltar" style="width:48px;height:48px;border:0;background:transparent;color:inherit;border-radius:10px;cursor:pointer;display:grid;place-items:center" style-hover="background:rgba(255,255,255,.14)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+            </sc-if>
+            <sc-if value="{{ showMenu }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ openDrawer }}" aria-label="Abrir navegação" style="width:48px;height:48px;border:0;background:transparent;color:inherit;border-radius:10px;cursor:pointer;display:grid;place-items:center" style-hover="background:rgba(255,255,255,.14)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+            </sc-if>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;padding-left:4px">
+              <div style="font-family:var(--font-heading);font-weight:700;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ title }}</div>
+              <div style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ subtitle }}</div>
+            </div>
+            <button onClick="{{ goNotif }}" aria-label="Notificações" style="position:relative;width:48px;height:48px;border:0;background:transparent;color:inherit;border-radius:10px;cursor:pointer;display:grid;place-items:center" style-hover="background:rgba(255,255,255,.14)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"></path></svg>
+              <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;top:6px;right:4px;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:#fff;color:var(--color-accent-700);font-size:11px;font-weight:700;display:grid;place-items:center">{{ unread }}</span></sc-if>
+            </button>
+          </header>
+
+          <sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ goFila }}" style="flex:none;border:0;cursor:pointer;display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 16px;background:var(--color-text);color:var(--color-bg);font-size:13px;text-align:left"><span style="font-weight:700">!</span><span style="flex:1">Sem sinal. Você pode continuar; enviaremos depois.</span><span style="font-weight:600;white-space:nowrap">Fila ({{ queueCount }})</span></button>
+          </sc-if>
+
+          <div style="flex:1;min-height:0;overflow-y:auto">
+            <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+
+              <sc-if value="{{ showOpTabs }}" hint-placeholder-val="{{ false }}">
+                <div role="tablist" style="display:flex;gap:8px;overflow-x:auto">
+                  <sc-for list="{{ opTabs }}" as="t" hint-placeholder-count="2">
+                    <button role="tab" onClick="{{ t.onClick }}" aria-selected="{{ t.sel }}" style="flex:1 0 auto;min-height:48px;padding:0 12px;border-radius:10px;border:1px solid {{ t.border }};background:{{ t.bg }};color:{{ t.color }};font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">{{ t.label }}</button>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.denied }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="Acesso negado" style="display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:60px 16px">
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3"></path></svg>
+                  <div style="font-size:17px;font-weight:600">Acesso negado</div>
+                  <div style="font-size:14px;line-height:1.5;color:var(--color-text-muted)">Seu papel não tem acesso a esta ação. Fale com Felipe.</div>
+                  <button onClick="{{ goHome }}" style="min-height:48px;padding:0 20px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Voltar ao início</button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.painel }}" hint-placeholder-val="{{ true }}">
+                <div data-screen-label="M01 Painel" style="display:flex;flex-direction:column;gap:12px">
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px">
+                    <div style="font-size:15px;font-weight:600">{{ home.title }}</div>
+                    <div style="font-size:13px;line-height:1.45;color:var(--color-text-muted)">{{ home.text }}</div>
+                    <button onClick="{{ home.onClick }}" style="min-height:48px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:15px;font-weight:600;cursor:pointer">{{ home.cta }}</button>
+                  </div>
+                  <div style="font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">Resumo da empresa / Coletas</div>
+                  <div style="display:flex;gap:6px;overflow-x:auto">
+                    <sc-for list="{{ months }}" as="m" hint-placeholder-count="6">
+                      <button onClick="{{ m.onClick }}" aria-pressed="{{ m.sel }}" style="flex:1;min-width:48px;min-height:48px;border-radius:8px;border:1px solid {{ m.border }};background:{{ m.bg }};color:{{ m.color }};font-size:13px;font-weight:600;cursor:pointer;text-transform:uppercase">{{ m.label }}</button>
+                    </sc-for>
+                  </div>
+                  <div role="img" aria-label="{{ ins.alt }}" style="border-radius:16px;overflow:hidden;border:1px solid var(--color-divider);background:var(--color-bg)">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px">
+                      <div style="display:flex;flex-direction:column"><span style="font-family:var(--font-heading);font-weight:700;font-size:28px;line-height:1;text-transform:uppercase">{{ ins.head }}</span><span style="font:600 10px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--color-text-muted)">insights</span></div>
+                      <button onClick="{{ ins.toggle }}" aria-pressed="{{ ins.isHist }}" style="min-height:48px;padding:0 14px;border-radius:10px;border:1px solid var(--color-divider);background:{{ ins.btnBg }};color:var(--color-text);font-size:13px;font-weight:600;cursor:pointer">{{ ins.btn }}</button>
+                    </div>
+                    <div style="height:104px;padding:14px;box-sizing:border-box;background:linear-gradient(#EEF2F6,#D8E0E8);color:#162230;display:flex;flex-direction:column;align-items:flex-end">
+                      <span style="font:600 11px var(--font-mono);letter-spacing:.1em">{{ ins.solidLabel }}</span>
+                      <span style="font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.15">{{ ins.solid }} <span style="font-size:12px;font-weight:600">{{ ins.solidUnit }}</span></span>
+                    </div>
+                    <div style="position:relative;height:120px;padding:18px 14px 12px;box-sizing:border-box;background:linear-gradient(#72D6FF,#1668B8 70%);color:#fff;display:flex;flex-direction:column;justify-content:flex-end">
+                      {{ wave }}
+                      <span style="position:relative;font:600 11px var(--font-mono);letter-spacing:.1em">{{ ins.liquidLabel }}</span>
+                      <span style="position:relative;font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1">{{ ins.liquid }} <span style="font-size:14px;font-weight:600">{{ ins.liquidUnit }}</span></span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;gap:8px;padding:10px 14px;font-size:12px;color:var(--color-text-muted)"><span>{{ ins.foot }}</span><span>líquido / sólido</span></div>
+                  </div>
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;overflow:hidden">
+                    <div style="padding:12px 14px;font-size:15px;font-weight:600">Histórico de coletas · POS</div>
+                    <sc-for list="{{ history }}" as="h" hint-placeholder-count="6">
+                      <button onClick="{{ h.onClick }}" style="width:100%;min-height:48px;border:0;border-top:1px solid var(--color-divider);background:transparent;cursor:pointer;display:grid;grid-template-columns:minmax(0,1.5fr) 1fr 1fr;gap:8px;align-items:center;padding:6px 14px;font-size:13px;text-align:left;color:var(--color-text);font-variant-numeric:tabular-nums" style-hover="background:var(--accent)"><span style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ h.name }}</span><span>óleo {{ h.oil }}</span><span>TAIFA {{ h.taifa }}</span></button>
+                    </sc-for>
+                  </div>
+                  <div style="font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">Operações</div>
+                  <div role="tablist" style="display:flex;gap:8px;overflow-x:auto">
+                    <sc-for list="{{ opTabs }}" as="t" hint-placeholder-count="2">
+                      <button role="tab" onClick="{{ t.onClick }}" aria-selected="{{ t.sel }}" style="flex:1 0 auto;min-height:48px;padding:0 12px;border-radius:10px;border:1px solid {{ t.border }};background:{{ t.bg }};color:{{ t.color }};font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">{{ t.label }}</button>
+                    </sc-for>
+                  </div>
+                  <button onClick="{{ openOp }}" style="text-align:left;cursor:pointer;background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;color:var(--color-text)" style-hover="border-color:var(--color-accent-300)">
+                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span style="font-size:16px;font-weight:600">{{ o.name }}</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:8px;font-size:12px;font-weight:600;background:{{ o.stBg }};white-space:nowrap"><span style="width:7px;height:7px;border-radius:50%;background:{{ o.stDot }}"></span>{{ o.st }}</span></div>
+                    <div style="font-size:13px;color:var(--color-text-muted);font-variant-numeric:tabular-nums">IMO {{ o.imo }} · {{ o.line }}</div>
+                    <div style="height:6px;border-radius:6px;background:var(--color-surface);overflow:hidden"><div style="height:100%;width:{{ o.pct }};background:var(--color-accent-600);transition:width 250ms"></div></div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px"><span>{{ o.pct }} · {{ o.doneLabel }}</span><span style="font-weight:600;color:var(--color-accent-700)">Abrir operação</span></div>
+                  </button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.ops }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M15 Operações" style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;gap:6px">
+                    <sc-for list="{{ opFilters }}" as="m" hint-placeholder-count="3">
+                      <button onClick="{{ m.onClick }}" aria-pressed="{{ m.sel }}" style="flex:1;min-height:48px;border-radius:8px;border:1px solid {{ m.border }};background:{{ m.bg }};color:{{ m.color }};font-size:13px;font-weight:600;cursor:pointer">{{ m.label }}</button>
+                    </sc-for>
+                  </div>
+                  <sc-for list="{{ opList }}" as="x" hint-placeholder-count="2">
+                    <button onClick="{{ x.onClick }}" style="text-align:left;cursor:pointer;background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px;color:var(--color-text)">
+                      <div style="display:flex;justify-content:space-between;gap:8px"><span style="font-size:15px;font-weight:600">{{ x.name }}</span><span style="font-size:12px;font-weight:600">{{ x.st }}</span></div>
+                      <div style="font-size:13px;color:var(--color-text-muted)">{{ x.date }} · {{ x.line }}</div>
+                      <div style="font-size:13px">{{ x.pct }} · {{ x.doneLabel }}</div>
+                    </button>
+                  </sc-for>
+                  <sc-if value="{{ opListEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:32px 16px;text-align:center;font-size:14px;line-height:1.5;color:var(--color-text-muted)">Nenhuma operação neste filtro. Toque em + para abrir uma (Comercial ou Gestor).</div></sc-if>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.op }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M02 Operação" style="display:flex;flex-direction:column;gap:12px">
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span style="font-size:18px;font-weight:700">{{ o.name }}</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:8px;font-size:12px;font-weight:600;background:{{ o.stBg }};white-space:nowrap"><span style="width:7px;height:7px;border-radius:50%;background:{{ o.stDot }}"></span>{{ o.st }}</span></div>
+                    <div style="font-size:13px;color:var(--color-text-muted);font-variant-numeric:tabular-nums">IMO {{ o.imo }} · {{ o.line }}</div>
+                    <sc-if value="{{ o.sim }}" hint-placeholder-val="{{ false }}"><div><span style="font:600 10px var(--font-mono);letter-spacing:.06em;padding:3px 6px;border-radius:4px;background:oklch(0.94 0.04 300);color:oklch(0.4 0.14 300)">SIMULADO</span></div></sc-if>
+                  </div>
+                  <sc-for list="{{ o.alerts }}" as="a" hint-placeholder-count="1">
+                    <div role="alert" style="display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;background:color-mix(in srgb, var(--color-warning) 14%, var(--color-bg));border:1px solid color-mix(in srgb, var(--color-warning) 45%, transparent);font-size:13px;line-height:1.4"><span style="font-weight:700">!</span><span style="flex:1">{{ a.text }}</span><sc-if value="{{ a.hasAction }}" hint-placeholder-val="{{ true }}"><button onClick="{{ a.onClick }}" style="min-height:44px;padding:0 10px;border:1px solid var(--color-text);background:transparent;color:var(--color-text);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">{{ a.action }}</button></sc-if></div>
+                  </sc-for>
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px">
+                    <div style="display:flex;justify-content:space-between;font-size:13px"><span style="font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">Progresso</span><span style="font-weight:600;font-variant-numeric:tabular-nums">{{ o.pct }} · {{ o.doneLabel }}</span></div>
+                    <div style="height:8px;border-radius:8px;background:var(--color-surface);overflow:hidden"><div style="height:100%;width:{{ o.pct }};background:var(--color-accent-600);transition:width 250ms"></div></div>
+                    <button onClick="{{ goFluxo }}" aria-label="Ver fluxo das 17 etapas" style="border:0;background:transparent;cursor:pointer;display:flex;align-items:center;min-height:48px;padding:0;color:var(--color-text)">
+                      <sc-for list="{{ o.phases }}" as="p" hint-placeholder-count="5">
+                        <span style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:{{ p.bg }};color:{{ p.fg }};border:1.5px solid {{ p.border }}">{{ p.mark }}</span><span style="font-size:10px;color:var(--color-text-muted)">{{ p.short }}</span></span>
+                      </sc-for>
+                    </button>
+                    <sc-if value="{{ o.hasNext }}" hint-placeholder-val="{{ true }}">
+                      <div style="display:flex;align-items:center;gap:10px;border-top:1px solid var(--color-divider);padding-top:10px">
+                        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:var(--color-text-muted)">Próxima · {{ o.nextOwner }}</span><span style="font-size:15px;font-weight:600">{{ o.nextCode }} {{ o.nextName }}</span></div>
+                        <button onClick="{{ o.onComplete }}" style="min-height:48px;padding:0 16px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap">{{ o.nextBtn }}</button>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <button onClick="{{ goMed }}" style="text-align:left;cursor:pointer;background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;color:var(--color-text)">
+                    <span style="font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">Medição · Sludge</span>
+                    <span style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+                      <sc-for list="{{ o.triad }}" as="c" hint-placeholder-count="3">
+                        <span style="display:flex;flex-direction:column;gap:2px;padding:8px;border-radius:8px;border:1.5px solid {{ c.border }};background:{{ c.bg }}"><span style="font-size:11px;font-weight:600;color:var(--color-text-muted)">{{ c.k }}</span><span style="font-size:17px;font-weight:700;font-variant-numeric:tabular-nums">{{ c.v }}</span></span>
+                      </sc-for>
+                    </span>
+                    <span style="font-size:13px">{{ o.valeLine }}</span>
+                  </button>
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;overflow:hidden">
+                    <button onClick="{{ goNavio }}" style="width:100%;min-height:56px;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 14px;text-align:left;color:var(--color-text)" style-hover="background:var(--accent)"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">Navio · ETA {{ o.eta }}</span><span style="font-size:12px;color:var(--color-text-muted)">{{ o.etaSrc }}</span></span><span style="font:600 10px var(--font-mono);letter-spacing:.06em;padding:3px 6px;border-radius:4px;background:oklch(0.94 0.04 300);color:oklch(0.4 0.14 300)">SIMULADO</span></button>
+                    <button onClick="{{ goNavio }}" style="width:100%;min-height:56px;border:0;border-top:1px solid var(--color-divider);background:transparent;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 14px;text-align:left;color:var(--color-text)" style-hover="background:var(--accent)"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">Clima · {{ wx.short }}</span><span style="font-size:12px;color:var(--color-text-muted)">Open-Meteo (exemplo) · estimativa</span></span><span style="font:600 10px var(--font-mono);letter-spacing:.06em;padding:3px 6px;border-radius:4px;background:oklch(0.94 0.04 300);color:oklch(0.4 0.14 300)">SIMULADO</span></button>
+                    <button onClick="{{ goDocs }}" style="width:100%;min-height:56px;border:0;border-top:1px solid var(--color-divider);background:transparent;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 14px;text-align:left;color:var(--color-text)" style-hover="background:var(--accent)"><span style="flex:1;font-size:14px;font-weight:600">Documentos D1–D4</span><span style="font-size:13px;font-variant-numeric:tabular-nums">{{ o.docsLabel }}</span></button>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                    <button onClick="{{ goMob }}" style="min-height:48px;border:1px solid var(--color-divider);border-radius:10px;background:var(--color-bg);color:var(--color-text);font-size:15px;font-weight:600;cursor:pointer">Mobilizar</button>
+                    <button onClick="{{ goChat }}" style="min-height:48px;border:1px solid var(--color-divider);border-radius:10px;background:var(--color-bg);color:var(--color-text);font-size:15px;font-weight:600;cursor:pointer">Chat</button>
+                    <button onClick="{{ goFechar }}" style="grid-column:1 / -1;min-height:48px;border:1px solid var(--color-text);border-radius:10px;background:var(--color-bg);color:var(--color-text);font-size:15px;font-weight:600;cursor:pointer">Fechar operação</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.fluxo }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M04 Fluxo" style="display:flex;flex-direction:column;gap:10px">
+                  <div style="font-size:13px;color:var(--color-text-muted)">{{ o.ctx }} · {{ o.doneLabel }}</div>
+                  <sc-for list="{{ flow }}" as="p" hint-placeholder-count="5">
+                    <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;overflow:hidden">
+                      <button onClick="{{ p.onToggle }}" aria-expanded="{{ p.open }}" style="width:100%;min-height:52px;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 14px;text-align:left;color:var(--color-text)"><span style="width:26px;height:26px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:{{ p.bg }};color:{{ p.fg }};border:1.5px solid {{ p.border }}">{{ p.mark }}</span><span style="flex:1;font-size:15px;font-weight:600">{{ p.name }}</span><span style="font-size:12px;color:var(--color-text-muted)">{{ p.count }}</span></button>
+                      <sc-if value="{{ p.open }}" hint-placeholder-val="{{ true }}">
+                        <sc-for list="{{ p.steps }}" as="s" hint-placeholder-count="3">
+                          <div style="display:flex;gap:10px;align-items:center;min-height:48px;padding:6px 14px;border-top:1px solid var(--color-divider)">
+                            <span style="font:600 12px var(--font-mono);width:30px;flex:none">{{ s.code }}</span>
+                            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:{{ s.weight }}">{{ s.name }}</span><span style="font-size:12px;color:var(--color-text-muted)">{{ s.owner }}<sc-if value="{{ s.tbd }}" hint-placeholder-val="{{ false }}"> · <span style="padding:1px 6px;border-radius:4px;background:var(--color-surface);border:1px solid var(--color-divider)">A definir</span></sc-if></span></span>
+                            <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:8px;font-size:12px;font-weight:600;background:{{ s.bg }};white-space:nowrap"><span style="width:7px;height:7px;border-radius:50%;background:{{ s.dot }}"></span>{{ s.st }}</span>
+                          </div>
+                        </sc-for>
+                        <sc-if value="{{ p.hasGate }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin:8px 14px 14px;padding:10px 12px;border:1.5px dashed var(--color-text-muted);border-radius:10px;font-size:13px;line-height:1.45"><strong>G-01 · Chegada confirmada?</strong><br>Sim: libera S11. Não: retorna a S07 (retorno inferido, a validar com o cliente).</div>
+                        </sc-if>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.med }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M05 Medições" style="display:flex;flex-direction:column;gap:12px">
+                  <div style="font-size:13px;color:var(--color-text-muted)">{{ o.ctx }} · Sludge · m³</div>
+                  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+                    <sc-for list="{{ o.triad }}" as="c" hint-placeholder-count="3">
+                      <div style="display:flex;flex-direction:column;gap:3px;padding:10px;border-radius:12px;border:1.5px solid {{ c.border }};background:{{ c.bg }}">
+                        <span style="font-size:11px;font-weight:700;letter-spacing:.04em">{{ c.k }}</span>
+                        <span style="font-size:22px;font-weight:700;font-variant-numeric:tabular-nums">{{ c.v }}</span>
+                        <span style="font-size:12px">{{ c.who }}</span>
+                        <span style="font-size:11px;color:var(--color-text-muted)">{{ c.when }}</span>
+                        <sc-if value="{{ c.vale }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;margin-top:2px;padding:2px 8px;border-radius:6px;background:var(--color-accent-600);color:#fff;font-size:11px;font-weight:700">VALE</span></sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="font-size:13px;line-height:1.45">{{ o.valeLine }} Regra: POS prevalece; sem POS vale o DURANTE; sem DURANTE vale o PRE.</div>
+                  <sc-if value="{{ o.hasDiv }}" hint-placeholder-val="{{ false }}">
+                    <div role="alert" style="padding:10px 12px;border-radius:10px;background:color-mix(in srgb, var(--color-warning) 14%, var(--color-bg));border:1px solid color-mix(in srgb, var(--color-warning) 45%, transparent);font-size:13px;line-height:1.4"><strong>!</strong> {{ o.divText }}</div>
+                  </sc-if>
+                  <sc-if value="{{ o.hasCmp }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;overflow:hidden">
+                      <sc-for list="{{ o.cmp }}" as="r" hint-placeholder-count="3">
+                        <div style="display:flex;gap:10px;min-height:48px;align-items:center;padding:6px 14px;border-bottom:1px solid var(--color-divider);font-size:13px"><span style="width:70px;font-weight:600">{{ r.k }}</span><span style="flex:1">{{ r.v }}</span><strong>!</strong></div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px">
+                    <div style="font-size:15px;font-weight:600">{{ mf.title }}</div>
+                    <sc-if value="{{ mf.can }}" hint-placeholder-val="{{ true }}">
+                      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px">Volume de sludge (m³)
+                        <input inputmode="decimal" value="{{ mf.v }}" onChange="{{ mf.onChange }}" placeholder="ex.: 14" style="height:48px;border:1px solid {{ mf.border }};border-radius:8px;padding:0 12px;font-size:16px;background:var(--color-bg);color:var(--color-text);box-sizing:border-box;width:100%">
+                      </label>
+                      <sc-if value="{{ mf.hasErr }}" hint-placeholder-val="{{ false }}"><div aria-live="polite" style="font-size:13px;font-weight:600;color:var(--color-danger)">{{ mf.err }}</div></sc-if>
+                      <button onClick="{{ mf.onSave }}" style="min-height:48px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:15px;font-weight:600;cursor:pointer">{{ mf.btn }}</button>
+                    </sc-if>
+                    <sc-if value="{{ mf.cannot }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;line-height:1.45;color:var(--color-text-muted)">Seu papel só lê medições. PRE: Comercial. DURANTE: João ou Marcos. POS: Marcos.</div></sc-if>
+                  </div>
+                  <div style="font-size:12px;line-height:1.5;color:var(--color-text-muted)">Exemplo real da regra · ULUSOY-17: PRE 20 · DURANTE 25 · POS 14 m³. Vale 14 m³.</div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.navio }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M06 Navio" style="display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div style="font-size:13px;color:var(--color-text-muted)">{{ o.ctx }}</div><button onClick="{{ nv.refresh }}" style="min-height:48px;padding:0 14px;border:1px solid var(--color-divider);border-radius:10px;background:var(--color-bg);color:var(--color-text);font-size:14px;font-weight:600;cursor:pointer">{{ nv.refreshLabel }}</button></div>
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px">
+                    <div style="display:flex;flex-direction:column;gap:4px">
+                      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">Posição AIS</span><span style="font:600 10px var(--font-mono);letter-spacing:.06em;padding:3px 6px;border-radius:4px;background:oklch(0.94 0.04 300);color:oklch(0.4 0.14 300)">SIMULADO</span></div>
+                      <div style="font-size:16px;font-weight:600">Ao largo de Santos</div>
+                      <div style="font-size:12px;color:var(--color-text-muted)">MarineTraffic (exemplo) · {{ nv.posWhen }} · <span style="padding:1px 6px;border-radius:4px;background:color-mix(in srgb, var(--color-warning) 18%, transparent);color:var(--color-text);font-weight:600">ESTIMATIVA</span></div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--color-divider);padding-top:12px">
+                      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">ETA</span><span style="font:600 10px var(--font-mono);letter-spacing:.06em;padding:3px 6px;border-radius:4px;background:oklch(0.94 0.04 300);color:oklch(0.4 0.14 300)">SIMULADO</span></div>
+                      <div style="font-size:22px;font-weight:700;font-variant-numeric:tabular-nums">{{ o.eta }}</div>
+                      <div style="font-size:12px;color:var(--color-text-muted)">{{ o.etaSrc }}</div>
+                    </div>
+                  </div>
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px">
+                    <div style="display:flex;justify-content:space-between;align-items:center"><span style="font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">Clima · Open-Meteo (exemplo)</span><span style="font:600 10px var(--font-mono);letter-spacing:.06em;padding:3px 6px;border-radius:4px;background:oklch(0.94 0.04 300);color:oklch(0.4 0.14 300)">SIMULADO</span></div>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+                      <sc-for list="{{ wx.cells }}" as="w" hint-placeholder-count="4">
+                        <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:18px;font-weight:700;font-variant-numeric:tabular-nums">{{ w.v }}</span><span style="font-size:11px;color:var(--color-text-muted)">{{ w.k }}</span></div>
+                      </sc-for>
+                    </div>
+                    <div style="font-size:12px;color:var(--color-text-muted)">Atualizado às {{ nv.posWhen }} · estimativa; não substitui avisos náuticos oficiais.</div>
+                  </div>
+                  <sc-if value="{{ delay }}" hint-placeholder-val="{{ false }}">
+                    <div role="alert" style="display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;background:color-mix(in srgb, var(--color-warning) 14%, var(--color-bg));border:1px solid color-mix(in srgb, var(--color-warning) 45%, transparent);font-size:13px;line-height:1.4"><span style="flex:1"><strong>!</strong> Atraso climático provável. Sugestão: reprogramar a janela.</span><button onClick="{{ nv.resched }}" style="min-height:44px;padding:0 10px;border:1px solid var(--color-text);background:transparent;color:var(--color-text);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">Reprogramar</button></div>
+                  </sc-if>
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px">
+                    <div style="font-size:15px;font-weight:600">Fontes sem API</div>
+                    <div style="font-size:12px;color:var(--color-text-muted)">Abre o site da fonte. Nada é copiado automaticamente.</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                      <sc-for list="{{ nv.links }}" as="l" hint-placeholder-count="4">
+                        <button onClick="{{ l.onClick }}" style="min-height:48px;border:1px solid var(--color-divider);border-radius:10px;background:var(--color-bg);color:var(--color-text);font-size:14px;font-weight:600;cursor:pointer">{{ l.label }} ↗</button>
+                      </sc-for>
+                    </div>
+                    <sc-if value="{{ nv.canEta }}" hint-placeholder-val="{{ true }}">
+                      <div style="display:flex;gap:8px;border-top:1px solid var(--color-divider);padding-top:10px">
+                        <input aria-label="ETA manual" value="{{ nv.etaIn }}" onChange="{{ nv.onEtaIn }}" placeholder="dd/mm hh:mm" style="flex:1;min-width:0;height:48px;border:1px solid var(--color-divider);border-radius:8px;padding:0 12px;font-size:16px;background:var(--color-bg);color:var(--color-text);box-sizing:border-box">
+                        <button onClick="{{ nv.saveEta }}" style="min-height:48px;padding:0 14px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Lançar ETA</button>
+                      </div>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.docs }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M07 Documentos" style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--color-text-muted)"><span>{{ o.ctx }}</span><span>{{ o.docsLabel }}</span></div>
+                  <sc-for list="{{ docs }}" as="d" hint-placeholder-count="4">
+                    <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px">
+                      <div style="display:flex;gap:10px;align-items:flex-start">
+                        <span style="width:40px;height:48px;flex:none;border-radius:6px;display:grid;place-items:center;font:700 13px var(--font-mono);background:{{ d.thumbBg }};border:1px {{ d.thumbBorder }} var(--color-text-muted)">{{ d.id }}</span>
+                        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600;line-height:1.3">{{ d.name }}</span><span style="font-size:12px;color:var(--color-text-muted)">{{ d.method }} · {{ d.who }}</span></span>
+                        <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:8px;font-size:12px;font-weight:600;background:{{ d.bg }};white-space:nowrap"><span style="width:7px;height:7px;border-radius:50%;background:{{ d.dot }}"></span>{{ d.st }}</span>
+                      </div>
+                      <sc-if value="{{ d.canAttach }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button onClick="{{ d.onAttach }}" style="min-height:48px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:14px;font-weight:600;cursor:pointer">Câmera</button><button onClick="{{ d.onAttach }}" style="min-height:48px;border:1px solid var(--color-divider);border-radius:10px;background:var(--color-bg);color:var(--color-text);font-size:14px;font-weight:600;cursor:pointer">Arquivo</button></div>
+                      </sc-if>
+                      <sc-if value="{{ d.canValidate }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button onClick="{{ d.onOk }}" style="min-height:48px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:14px;font-weight:600;cursor:pointer">Validar</button><button onClick="{{ d.onNo }}" style="min-height:48px;border:1px solid var(--color-divider);border-radius:10px;background:var(--color-bg);color:var(--color-text);font-size:14px;font-weight:600;cursor:pointer">Reprovar</button></div>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                  <div style="font-size:12px;line-height:1.5;color:var(--color-text-muted)">Anexa: Felipe, Marcos, João. Valida: Felipe, Marcos. A captura de câmera é simulada.</div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.mob }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M10 Mobilização" style="display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px"><span style="color:var(--color-text-muted)">{{ o.ctx }} · janela 14/11 manhã</span><span style="font:600 10px var(--font-mono);letter-spacing:.06em;padding:3px 6px;border-radius:4px;background:oklch(0.94 0.04 300);color:oklch(0.4 0.14 300)">SIMULADO</span></div>
+                  <sc-if value="{{ mb.isDriver }}" hint-placeholder-val="{{ false }}">
+                    <sc-if value="{{ mb.sent }}" hint-placeholder-val="{{ false }}">
+                      <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px">
+                        <div style="font-size:18px;font-weight:700">Convocação · {{ o.name }}</div>
+                        <div style="font-size:15px;line-height:1.45">{{ o.term }} · 14/11 pela manhã. Enviada por Felipe.</div>
+                        <div style="font-size:14px;font-weight:600">Sua resposta: {{ mb.pauloSt }}</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button onClick="{{ mb.yes }}" style="min-height:56px;border:0;border-radius:12px;background:var(--color-accent-600);color:#fff;font-size:17px;font-weight:700;cursor:pointer">Confirmo</button><button onClick="{{ mb.no }}" style="min-height:56px;border:1px solid var(--color-text);border-radius:12px;background:var(--color-bg);color:var(--color-text);font-size:17px;font-weight:700;cursor:pointer">Não posso</button></div>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ mb.notSent }}" hint-placeholder-val="{{ false }}"><div style="padding:40px 16px;text-align:center;font-size:14px;line-height:1.5;color:var(--color-text-muted)">Nenhuma convocação. Felipe envia a convocação pela tela Mobilização; ela aparece aqui.</div></sc-if>
+                  </sc-if>
+                  <sc-if value="{{ mb.notDriver }}" hint-placeholder-val="{{ true }}">
+                    <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;overflow:hidden">
+                      <div style="padding:12px 14px;font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">Motoristas</div>
+                      <sc-for list="{{ mb.drivers }}" as="d" hint-placeholder-count="2">
+                        <button onClick="{{ d.onToggle }}" role="checkbox" aria-checked="{{ d.on }}" style="width:100%;min-height:56px;border:0;border-top:1px solid var(--color-divider);background:transparent;cursor:pointer;display:flex;align-items:center;gap:12px;padding:8px 14px;text-align:left;color:var(--color-text)"><span style="width:24px;height:24px;flex:none;border-radius:6px;border:1.5px solid var(--color-accent-600);background:{{ d.boxBg }};color:#fff;display:grid;place-items:center;font-size:14px;font-weight:700">{{ d.mark }}</span><span style="flex:1;font-size:15px;font-weight:600">{{ d.name }}</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:8px;font-size:12px;font-weight:600;background:{{ d.bg }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ d.dot }}"></span>{{ d.st }}</span></button>
+                      </sc-for>
+                      <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-top:1px solid var(--color-divider)"><span style="flex:1;display:flex;flex-direction:column"><span style="font-size:15px;font-weight:600">Marcos</span><span style="font-size:12px;color:var(--color-text-muted)">Deslocamento (S12): {{ mb.marcosSt }}</span></span><sc-if value="{{ mb.canMarcos }}" hint-placeholder-val="{{ false }}"><button onClick="{{ mb.marcosGo }}" style="min-height:44px;padding:0 12px;border:1px solid var(--color-divider);border-radius:8px;background:var(--color-bg);color:var(--color-text);font-size:13px;font-weight:600;cursor:pointer">Informar</button></sc-if></div>
+                    </div>
+                    <sc-if value="{{ mb.canSend }}" hint-placeholder-val="{{ true }}"><button onClick="{{ mb.send }}" style="min-height:48px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Enviar convocação</button></sc-if>
+                    <sc-if value="{{ mb.readOnly }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--color-text-muted)">Só Felipe convoca motoristas. Você acompanha o status.</div></sc-if>
+                    <div style="font-size:12px;line-height:1.5;color:var(--color-text-muted)">Para responder como motorista, troque para Paulo em "Ver como". Prazo de resposta: a definir.</div>
+                  </sc-if>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.nova }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M03 Nova operação" style="display:flex;flex-direction:column;gap:12px">
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px">
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Navio · buscar por nome ou IMO
+                      <input value="{{ f.q }}" onChange="{{ f.onQ }}" placeholder="ex.: STAR" style="height:48px;border:1px solid var(--color-divider);border-radius:8px;padding:0 12px;font-size:16px;background:var(--color-bg);color:var(--color-text);box-sizing:border-box;width:100%">
+                    </label>
+                    <sc-for list="{{ f.matches }}" as="v" hint-placeholder-count="0">
+                      <button onClick="{{ v.onClick }}" style="min-height:48px;border:1px solid var(--color-divider);border-radius:8px;background:var(--color-surface);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 12px;text-align:left;color:var(--color-text);font-size:14px"><span><strong>{{ v.name }}</strong> · {{ v.imo }}</span><span style="font-size:12px;font-weight:600">{{ v.tag }}</span></button>
+                    </sc-for>
+                    <sc-if value="{{ f.noMatch }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--color-text-muted)">Novo navio. Preencha os dados.</div></sc-if>
+                    <sc-if value="{{ f.picked }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px"><span>IMO {{ f.imo }} · {{ f.tag }}</span><button onClick="{{ f.goHist }}" style="min-height:44px;padding:0 10px;border:0;background:transparent;color:var(--color-accent-700);font-size:14px;font-weight:600;cursor:pointer">Ver histórico</button></div>
+                    </sc-if>
+                    <sc-if value="{{ f.hasWarn }}" hint-placeholder-val="{{ false }}"><div role="alert" style="padding:10px 12px;border-radius:10px;background:color-mix(in srgb, var(--color-warning) 14%, var(--color-bg));border:1px solid color-mix(in srgb, var(--color-warning) 45%, transparent);font-size:13px;line-height:1.4"><strong>!</strong> {{ f.warn }}</div></sc-if>
+                  </div>
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <sc-for list="{{ f.fields }}" as="x" hint-placeholder-count="7">
+                      <label style="grid-column:{{ x.col }};display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">{{ x.label }}
+                        <input value="{{ x.v }}" onChange="{{ x.onChange }}" style="height:48px;border:1px solid {{ x.border }};border-radius:8px;padding:0 12px;font-size:16px;background:var(--color-bg);color:var(--color-text);box-sizing:border-box;width:100%;min-width:0">
+                      </label>
+                    </sc-for>
+                    <sc-if value="{{ f.hasErr }}" hint-placeholder-val="{{ false }}"><div aria-live="polite" style="grid-column:1 / -1;font-size:13px;font-weight:600;color:var(--color-danger)">{{ f.err }}</div></sc-if>
+                    <sc-for list="{{ f.toggles }}" as="t" hint-placeholder-count="2">
+                      <button onClick="{{ t.onClick }}" role="switch" aria-checked="{{ t.on }}" style="grid-column:1 / -1;min-height:48px;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:0;color:var(--color-text);font-size:14px;font-weight:600">{{ t.label }}<span style="padding:4px 12px;border-radius:8px;background:{{ t.bg }};color:{{ t.fg }};font-size:13px">{{ t.val }}</span></button>
+                    </sc-for>
+                    <div style="grid-column:1 / -1;font-size:12px;color:var(--color-text-muted)">Garbage: unidade a confirmar. Campos seguem as colunas da planilha.</div>
+                  </div>
+                  <button onClick="{{ f.submit }}" style="min-height:52px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:16px;font-weight:600;cursor:pointer">Abrir operação</button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.cliente }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M11 Cliente" style="display:flex;flex-direction:column;gap:12px">
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:4px"><div style="font-size:18px;font-weight:700">{{ cl.name }}</div><div style="font-size:13px;color:var(--color-text-muted);font-variant-numeric:tabular-nums">IMO {{ cl.imo }} · {{ cl.tag }}</div></div>
+                  <sc-if value="{{ cl.hasNote }}" hint-placeholder-val="{{ false }}"><div role="alert" style="padding:10px 12px;border-radius:10px;background:color-mix(in srgb, var(--color-warning) 14%, var(--color-bg));border:1px solid color-mix(in srgb, var(--color-warning) 45%, transparent);font-size:13px;line-height:1.4"><strong>!</strong> {{ cl.note }}</div></sc-if>
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;overflow:hidden">
+                    <div style="padding:12px 14px;font-size:15px;font-weight:600">Histórico na planilha</div>
+                    <sc-for list="{{ cl.hist }}" as="h" hint-placeholder-count="2">
+                      <div style="display:flex;gap:12px;padding:12px 14px;border-top:1px solid var(--color-divider);font-size:13px;line-height:1.45"><span style="font:600 12px var(--font-mono);width:44px;flex:none">{{ h.when }}</span><span>{{ h.text }}</span></div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.navios }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="Navios e clientes" style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;overflow:hidden">
+                  <sc-for list="{{ vessels }}" as="v" hint-placeholder-count="7">
+                    <button onClick="{{ v.onClick }}" style="width:100%;min-height:56px;border:0;border-bottom:1px solid var(--color-divider);background:transparent;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 14px;text-align:left;color:var(--color-text)" style-hover="background:var(--accent)"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">{{ v.name }}</span><span style="font-size:12px;color:var(--color-text-muted);font-variant-numeric:tabular-nums">IMO {{ v.imo }} · {{ v.ag }}</span></span><span style="font-size:12px;font-weight:600">{{ v.tag }}</span></button>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.chat }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M08 Chat" style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--color-text-muted)"><span>Conversa da operação · {{ o.name }}</span><span style="font:600 10px var(--font-mono);letter-spacing:.06em;padding:3px 6px;border-radius:4px;background:oklch(0.94 0.04 300);color:oklch(0.4 0.14 300)">SIMULADO</span></div>
+                  <sc-for list="{{ chat.msgs }}" as="m" hint-placeholder-count="3">
+                    <div style="align-self:{{ m.align }};max-width:84%;display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;background:{{ m.bg }};border:1px solid var(--color-divider)">
+                      <span style="font-size:12px;font-weight:600">{{ m.who }} · {{ m.role }}</span>
+                      <span style="font-size:14px;line-height:1.45">{{ m.text }}</span>
+                      <span style="font-size:11px;color:var(--color-text-muted)">{{ m.meta }}</span>
+                    </div>
+                  </sc-for>
+                  <div style="position:sticky;bottom:0;display:flex;gap:8px;padding:8px 0;background:var(--color-surface)">
+                    <input aria-label="Mensagem" value="{{ chat.v }}" onChange="{{ chat.onChange }}" onKeyDown="{{ chat.onKey }}" placeholder="Mensagem para a equipe" style="flex:1;min-width:0;height:48px;border:1px solid var(--color-divider);border-radius:10px;padding:0 12px;font-size:16px;background:var(--color-bg);color:var(--color-text);box-sizing:border-box">
+                    <button onClick="{{ chat.send }}" style="min-height:48px;padding:0 16px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Enviar</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.ai }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M09 Ask AI" style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--color-text-muted)"><span>Somente leitura · confira os registros</span><span style="font:600 10px var(--font-mono);letter-spacing:.06em;padding:3px 6px;border-radius:4px;background:oklch(0.94 0.04 300);color:oklch(0.4 0.14 300)">SIMULADO</span></div>
+                  <sc-for list="{{ ai.sugs }}" as="q" hint-placeholder-count="3">
+                    <button onClick="{{ q.onClick }}" style="min-height:48px;border:1px solid var(--color-divider);border-radius:10px;background:var(--color-bg);color:var(--color-text);font-size:14px;cursor:pointer;text-align:left;padding:8px 14px" style-hover="border-color:var(--color-accent-300)">{{ q.label }}</button>
+                  </sc-for>
+                  <sc-for list="{{ ai.msgs }}" as="m" hint-placeholder-count="0">
+                    <div style="align-self:{{ m.align }};max-width:88%;display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:12px;background:{{ m.bg }};border:1px solid var(--color-divider)">
+                      <span style="font-size:14px;line-height:1.5">{{ m.text }}</span>
+                      <sc-if value="{{ m.hasSrc }}" hint-placeholder-val="{{ false }}">
+                        <span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"><span style="font-size:12px;color:var(--color-text-muted)">Fontes</span>
+                          <sc-for list="{{ m.src }}" as="c" hint-placeholder-count="2"><button onClick="{{ c.onClick }}" style="min-height:44px;padding:0 10px;border:1px solid var(--color-divider);border-radius:8px;background:var(--color-surface);color:var(--color-text);font-size:12px;font-weight:600;cursor:pointer">{{ c.label }}</button></sc-for>
+                        </span>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ ai.busy }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--color-text-muted)">Respondendo…</div></sc-if>
+                  <div style="position:sticky;bottom:0;display:flex;gap:8px;padding:8px 0;background:var(--color-surface)">
+                    <input aria-label="Pergunta" value="{{ ai.v }}" onChange="{{ ai.onChange }}" onKeyDown="{{ ai.onKey }}" placeholder="Pergunte sobre operações" style="flex:1;min-width:0;height:48px;border:1px solid var(--color-divider);border-radius:10px;padding:0 12px;font-size:16px;background:var(--color-bg);color:var(--color-text);box-sizing:border-box">
+                    <button onClick="{{ ai.send }}" style="min-height:48px;padding:0 16px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Enviar</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.fechar }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M12 Fechamento" style="display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--color-text-muted)"><span>{{ o.ctx }}</span><span>{{ fc.count }}</span></div>
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;overflow:hidden">
+                    <sc-for list="{{ fc.checks }}" as="c" hint-placeholder-count="6">
+                      <div style="display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 14px;border-bottom:1px solid var(--color-divider)"><span style="width:24px;height:24px;flex:none;border-radius:6px;border:1.5px solid {{ c.border }};background:{{ c.bg }};color:#fff;display:grid;place-items:center;font-size:14px;font-weight:700">{{ c.mark }}</span><span style="flex:1;font-size:14px;line-height:1.35">{{ c.label }}</span><sc-if value="{{ c.hasGo }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onGo }}" style="min-height:44px;padding:0 10px;border:1px solid var(--color-divider);border-radius:8px;background:var(--color-bg);color:var(--color-text);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">{{ c.go }}</button></sc-if></div>
+                    </sc-for>
+                  </div>
+                  <div aria-live="polite" style="padding:10px 12px;border-radius:10px;background:{{ fc.msgBg }};border:1px solid var(--color-divider);font-size:13px;line-height:1.45">{{ fc.msg }}</div>
+                  <button onClick="{{ fc.submit }}" disabled="{{ fc.submitOff }}" style="min-height:52px;border:0;border-radius:10px;background:{{ fc.submitBg }};color:{{ fc.submitFg }};font-size:16px;font-weight:600;cursor:pointer">Submeter certificados (S16)</button>
+                  <button onClick="{{ fc.close }}" disabled="{{ fc.closeOff }}" style="min-height:52px;border:1px solid var(--color-divider);border-radius:10px;background:{{ fc.closeBg }};color:{{ fc.closeFg }};font-size:16px;font-weight:600;cursor:pointer">Encerrar operação (S17)</button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.fila }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M13 Fila de envio" style="display:flex;flex-direction:column;gap:12px">
+                  <div style="font-size:14px;line-height:1.5">{{ fila.head }}</div>
+                  <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;overflow:hidden">
+                    <sc-for list="{{ fila.items }}" as="q" hint-placeholder-count="0">
+                      <div style="display:flex;justify-content:space-between;gap:10px;min-height:48px;align-items:center;padding:6px 14px;border-bottom:1px solid var(--color-divider);font-size:14px"><span>{{ q.label }}</span><span style="font-size:12px;font-weight:600;white-space:nowrap">pendente de envio</span></div>
+                    </sc-for>
+                    <sc-if value="{{ fila.empty }}" hint-placeholder-val="{{ true }}"><div style="padding:28px 16px;text-align:center;font-size:14px;line-height:1.5;color:var(--color-text-muted)">Fila vazia. Medições, fotos e mensagens feitas sem sinal aparecem aqui.</div></sc-if>
+                  </div>
+                  <button onClick="{{ fila.retry }}" style="min-height:48px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:15px;font-weight:600;cursor:pointer">Tentar agora</button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.notif }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="M14 Notificações" style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;overflow:hidden">
+                  <sc-for list="{{ notifs }}" as="n" hint-placeholder-count="3">
+                    <div style="display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid var(--color-divider);font-size:14px;line-height:1.45"><span style="font:600 12px var(--font-mono);width:42px;flex:none;color:var(--color-text-muted)">{{ n.when }}</span><span>{{ n.text }}</span></div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ is.config }}" hint-placeholder-val="{{ false }}">
+                <div data-screen-label="Configurações" style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:12px;overflow:hidden">
+                  <div style="padding:12px 14px;font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">Modo demonstração</div>
+                  <sc-for list="{{ switches }}" as="w" hint-placeholder-count="3">
+                    <button onClick="{{ w.onClick }}" role="switch" aria-checked="{{ w.on }}" style="width:100%;min-height:56px;border:0;border-top:1px solid var(--color-divider);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 14px;color:var(--color-text);font-size:15px;text-align:left">{{ w.label }}<span style="width:44px;height:26px;flex:none;border-radius:13px;background:{{ w.bg }};position:relative;transition:background 150ms"><span style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transform:{{ w.tf }};transition:transform 150ms"></span></span></button>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+
+          <nav aria-label="Ações" style="flex:none;height:68px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;background:var(--color-bg);border-top:1px solid var(--color-divider)">
+            <button onClick="{{ goAi }}" style="height:100%;border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:{{ aiColor }};font-size:12px;font-weight:600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16v4M17 18h4"></path></svg>Ask AI</button>
+            <button onClick="{{ openPlus }}" aria-label="Ações rápidas" style="width:52px;height:52px;border:0;border-radius:16px;background:var(--color-accent-600);color:#fff;cursor:pointer;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,113,227,.35)" style-active="transform:scale(.96)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></button>
+            <button onClick="{{ goChat }}" style="height:100%;border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:{{ chatColor }};font-size:12px;font-weight:600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"></path></svg>Chat</button>
+          </nav>
+
+          <div onClick="{{ closeAll }}" aria-hidden="true" style="position:absolute;inset:0;z-index:20;background:var(--color-scrim);opacity:{{ scrimOp }};pointer-events:{{ scrimPE }};transition:opacity 200ms"></div>
+
+          <nav aria-label="Navegação" style="position:absolute;top:0;bottom:0;left:0;z-index:30;width:296px;background:var(--color-bg);transform:{{ drawerTf }};visibility:{{ drawerVis }};transition:transform 240ms cubic-bezier(.2,0,0,1);display:flex;flex-direction:column;box-shadow:{{ drawerShadow }}">
+            <div style="display:flex;align-items:center;gap:8px;padding:16px 8px 14px 20px;border-bottom:1px solid var(--color-divider)">
+              <div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">{{ me.name }}</div><div style="font-size:13px;color:var(--color-text-muted)">{{ me.role }}</div></div>
+              <button onClick="{{ closeAll }}" aria-label="Fechar navegação" style="width:48px;height:48px;border:0;background:transparent;color:var(--color-text-muted);border-radius:10px;cursor:pointer;display:grid;place-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+            </div>
+            <div style="flex:1;overflow-y:auto;padding:8px 0;display:flex;flex-direction:column">
+              <sc-for list="{{ drawerItems }}" as="d" hint-placeholder-count="8">
+                <button onClick="{{ d.onClick }}" style="margin:1px 8px;min-height:48px;border:0;cursor:pointer;display:flex;align-items:center;gap:14px;padding:0 12px;border-radius:8px;background:{{ d.bg }};color:{{ d.color }};font-size:15px;font-weight:{{ d.weight }};text-align:left" style-hover="background:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="{{ d.icon }}"></path></svg>{{ d.label }}</button>
+              </sc-for>
+              <div style="flex:1"></div>
+              <button onClick="{{ logout }}" style="margin:8px;min-height:48px;border:1px solid var(--color-divider);border-radius:8px;background:transparent;color:var(--color-text);font-size:15px;cursor:pointer">Sair</button>
+            </div>
+          </nav>
+
+          <div role="dialog" aria-label="Ações rápidas" style="position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--color-bg);border-radius:16px 16px 0 0;padding:16px;display:flex;flex-direction:column;gap:8px;transform:{{ plusTf }};visibility:{{ plusVis }};transition:transform 200ms cubic-bezier(.2,0,0,1)">
+            <div style="font-size:15px;font-weight:600;padding:0 4px 4px">Ações rápidas</div>
+            <sc-for list="{{ plusItems }}" as="p" hint-placeholder-count="4">
+              <button onClick="{{ p.onClick }}" style="min-height:52px;border:1px solid var(--color-divider);border-radius:10px;background:var(--color-bg);color:var(--color-text);font-size:15px;font-weight:600;cursor:pointer;text-align:left;padding:0 14px" style-hover="background:var(--accent)">{{ p.label }}</button>
+            </sc-for>
+          </div>
+
+          <div role="dialog" aria-label="Confirmação" style="position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--color-bg);border-radius:16px 16px 0 0;padding:20px 16px 16px;display:flex;flex-direction:column;gap:10px;transform:{{ cfTf }};visibility:{{ cfVis }};transition:transform 200ms cubic-bezier(.2,0,0,1)">
+            <div style="font-size:17px;font-weight:700">{{ cf.title }}</div>
+            <sc-for list="{{ cf.lines }}" as="l" hint-placeholder-count="3"><div style="font-size:14px;line-height:1.45">{{ l }}</div></sc-for>
+            <button onClick="{{ cf.onOk }}" style="min-height:52px;border:0;border-radius:10px;background:var(--color-accent-600);color:#fff;font-size:16px;font-weight:600;cursor:pointer;margin-top:6px">{{ cf.ok }}</button>
+            <button onClick="{{ cf.onCancel }}" style="min-height:48px;border:1px solid var(--color-divider);border-radius:10px;background:var(--color-bg);color:var(--color-text);font-size:15px;font-weight:600;cursor:pointer">{{ cf.cancel }}</button>
+          </div>
+
+          <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+            <div role="status" aria-live="polite" style="position:absolute;left:16px;right:16px;bottom:80px;z-index:40;padding:12px 14px;border-radius:10px;background:var(--color-text);color:var(--color-bg);font-size:14px;line-height:1.4;box-shadow:0 6px 20px rgba(0,0,0,.25)">{{ toast }}</div>
+          </sc-if>
+        </sc-if>
+      </div>
+      <div style="font:12px var(--font-mono);color:var(--color-text-muted)">{{ screenLabel }} · {{ me.name }} ({{ me.role }}) · estado: {{ o.state }}</div>
+    </div>
+
+    <div style="flex:1 1 320px;min-width:0;max-width:560px;display:flex;flex-direction:column;gap:16px">
+      <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">Ver como</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <sc-for list="{{ roles }}" as="r" hint-placeholder-count="5">
+            <button onClick="{{ r.onClick }}" aria-pressed="{{ r.sel }}" style="border:1px solid var(--color-divider);cursor:pointer;padding:8px 14px;border-radius:980px;font-size:13px;font-weight:500;background:{{ r.bg }};color:{{ r.color }}">{{ r.name }} <span style="font-size:11px">· {{ r.role }}</span></button>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column">
+          <sc-for list="{{ switches }}" as="w" hint-placeholder-count="3">
+            <button onClick="{{ w.onClick }}" role="switch" aria-checked="{{ w.on }}" style="min-height:40px;border:0;border-top:1px solid var(--color-divider);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0;color:var(--color-text);font-size:14px;text-align:left">{{ w.label }}<span style="width:40px;height:24px;flex:none;border-radius:12px;background:{{ w.bg }};position:relative;transition:background 150ms"><span style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transform:{{ w.tfS }};transition:transform 150ms"></span></span></button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted)">Roteiro de demonstração</div>
+        <sc-for list="{{ roteiro }}" as="s" hint-placeholder-count="12">
+          <button onClick="{{ s.onClick }}" style="border:0;background:transparent;cursor:pointer;display:flex;gap:10px;align-items:baseline;padding:6px 8px;border-radius:8px;text-align:left;color:var(--color-text);font-size:14px;line-height:1.4" style-hover="background:var(--accent)"><span style="font:600 12px var(--font-mono);color:var(--color-text-muted);width:20px;flex:none">{{ s.n }}</span><span><strong>{{ s.label }}</strong> <span style="color:var(--color-text-muted)">{{ s.note }}</span></span></button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <div style="font-family:var(--font-heading);font-weight:600;font-size:20px">Wireflow</div>
+    <div style="font-size:13px;color:var(--color-text-muted);max-width:720px;line-height:1.5">Cada nó é uma tela; as linhas listam o gatilho (INT) e o destino. Clique para abrir a tela no protótipo. Para ver os wireframes em baixa fidelidade, mude "fidelity" para wireframe nos Tweaks.</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+      <sc-for list="{{ wf }}" as="n" hint-placeholder-count="16">
+        <button onClick="{{ n.onClick }}" style="text-align:left;cursor:pointer;background:var(--color-bg);border:1.5px solid {{ n.border }};border-radius:var(--radius-md);padding:12px 14px;display:flex;flex-direction:column;gap:6px;color:var(--color-text)" style-hover="border-color:var(--color-accent-300)">
+          <span style="display:flex;gap:8px;align-items:baseline"><span style="font:600 11px var(--font-mono);color:var(--color-accent-700)">{{ n.id }}</span><span style="font-size:14px;font-weight:600">{{ n.name }}</span></span>
+          <sc-for list="{{ n.outs }}" as="x" hint-placeholder-count="2"><span style="font:12px/1.4 var(--font-mono);color:var(--color-text-muted)">{{ x }}</span></sc-for>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <div style="font-family:var(--font-heading);font-weight:600;font-size:20px">Máquina de estados · {{ o.name }}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+      <sc-for list="{{ machine }}" as="m" hint-placeholder-count="9">
+        <span style="font:600 12px var(--font-mono);padding:6px 10px;border-radius:8px;border:1px solid var(--color-divider);background:{{ m.bg }};color:{{ m.color }}">{{ m.label }}</span>
+      </sc-for>
+    </div>
+    <div style="font-size:13px;color:var(--color-text-muted)">Desvios: monitoring ⇢ rescheduled (atraso) ⇢ monitoring · opened / standby / monitoring ⇢ cancelled.</div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <div style="font-family:var(--font-heading);font-weight:600;font-size:20px">Permissões por papel</div>
+    <div style="overflow-x:auto;background:var(--color-bg);border:1px solid var(--color-divider);border-radius:var(--radius-md);max-width:820px">
+      <div style="min-width:560px">
+        <div style="display:grid;grid-template-columns:minmax(0,2.2fr) repeat(5,1fr);padding:10px 14px;font-size:12px;font-weight:600;border-bottom:1px solid var(--color-divider)"><span>Tela / ação</span>
+          <sc-for list="{{ permHead }}" as="h" hint-placeholder-count="5"><span style="text-align:center;color:{{ h.color }}">{{ h.label }}</span></sc-for>
+        </div>
+        <sc-for list="{{ perms }}" as="p" hint-placeholder-count="12">
+          <div style="display:grid;grid-template-columns:minmax(0,2.2fr) repeat(5,1fr);padding:8px 14px;font-size:13px;border-bottom:1px solid var(--color-divider)"><span>{{ p.label }}</span>
+            <sc-for list="{{ p.cells }}" as="c" hint-placeholder-count="5"><span style="text-align:center;font:600 13px var(--font-mono);background:{{ c.bg }}">{{ c.v }}</span></sc-for>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--color-text-muted)">E = edita · L = lê · — = sem acesso (vê "Acesso negado"). Proposta a confirmar com o cliente.</div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;fidelity&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;alta&quot;,&quot;wireframe&quot;],&quot;default&quot;:&quot;alta&quot;,&quot;tsType&quot;:&quot;'alta'|'wireframe'&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;},&quot;reduceMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const P = { felipe: ['Felipe', 'Gestor', 'Painel com pendências'], cecilia: ['Cecília', 'Gerente comercial', 'Nova operação'], marcos: ['Marcos', 'Gerente operacional', 'Operações em campo'], joao: ['João', 'Visitador de bordo', 'Fila de hoje'], paulo: ['Paulo', 'Motorista', 'Convocações'] };
+const RK = Object.keys(P);
+const CAN = { pre: ['felipe', 'cecilia'], dur: ['joao'], pos: ['marcos'], attach: ['felipe', 'marcos', 'joao'], validate: ['felipe', 'marcos'], dispatch: ['felipe'], close: ['felipe'], ai: ['felipe', 'cecilia'], eta: ['felipe', 'marcos', 'joao'], nova: ['felipe', 'cecilia'] };
+const STEPS = [
+  ['S01', 'Contato do cliente', 1, 'Comercial', 'cecilia'], ['S02', 'Fechar venda e acionar fluxo', 1, 'Comercial', 'cecilia'], ['S03', 'Registrar informações', 1, 'Cecília', 'cecilia', 1], ['S04', 'Comunicar venda', 1, 'Cecília', 'cecilia'],
+  ['S05', 'Preparar documentação', 2, 'Marcos', 'marcos', 1], ['S06', 'Sobreaviso', 2, 'Marcos', 'marcos'], ['S07', 'Monitorar navio', 2, 'João', 'joao'], ['S08', 'Acompanhar variáveis V1–V3', 2, 'João', 'joao', 1], ['S09', 'Estimar chegada', 2, 'Marcos', 'marcos'], ['S10', 'Confirmar chegada', 2, 'Marcos', 'marcos'],
+  ['S11', 'Mobilizar motoristas', 3, 'Felipe', 'felipe'], ['S12', 'Deslocar Marcos', 3, 'Marcos', 'marcos', 1], ['S13', 'Preparar formulários', 3, 'João', 'joao'],
+  ['S14', 'Executar operação', 4, 'Marcos', 'marcos'], ['S15', 'Recolher evidências', 4, 'João', 'joao'],
+  ['S16', 'Submeter certificados', 5, 'Felipe', 'felipe'], ['S17', 'Encerrar operação', 5, 'Felipe', 'felipe']
+];
+const PH = [['Entrada comercial', 'Entrada'], ['Preparação e monitoramento', 'Preparo'], ['Mobilização', 'Mobiliz.'], ['Execução e evidências', 'Execução'], ['Controle e fechamento', 'Fecham.']];
+const DOCDEF = { D1: ['CETESB · Manifesto de Transporte (MTR)', 'Impresso', 'João'], D2: ['Terrestre Ambiental · Manifesto de Carga', 'Manuscrito', 'João'], D3: ['Premium Ambiental · Certificado MARPOL', 'Manuscrito', 'João'], D4: ['Premium Ambiental · Certificado de coleta', 'Manuscrito', 'João'] };
+const VESSELS = [
+  { name: 'STAR GENESIS', imo: '9457464', ag: 'CARGONAVE', term: '12A', n: 2, hist: [['26/08', 'CARGONAVE · berço 12A · PRE sludge 15 m³, garbage 5'], ['04/09', 'CARGONAVE-CLEAN SEA · berço 12A · PRE sludge 15 m³'], ['05/09', 'DURANTE · berço 13/14 · sludge 16 m³ · TAIFA 6 m³']] },
+  { name: 'ANADOLU S', imo: '9667758', ag: 'ORION', term: 'Saboo III', n: 2, hist: [['06/07', 'WORLDSHIPPING · berço 32 · PRE 11 m³ · DURANTE 14 m³'], ['05/11', 'ORION · Saboo III · PRE 15 m³ · DURANTE 18 m³']] },
+  { name: 'ILENAO', imo: '9524683', ag: 'MARTIN SHIPPING', term: 'TEAG', n: 2, hist: [['25/08', 'MARTIN/WILSON · Ilha Barnabé · PRE sludge 12 m³'], ['09/09', 'MARTIN SHIPPING · TEAG · sem sludge, só garbage']] },
+  { name: 'PERSEAS', imo: '9650638', ag: 'MARTIN SHIPPING', term: 'TGG', n: 1, note: 'Restrição de terminal: TGG não permite a coleta de sludge.', hist: [['20/10', 'MARTIN SHIPPING · TGG · só garbage · cobrança USD 700']] },
+  { name: 'LMZ ATLAS', imo: '9741293', ag: 'ALPHAMAR', term: '20/21', n: 1, note: 'IMO 9741293 também aparece como LEMESSOS NAPA no PRE. Confirme o vínculo antes de salvar.', hist: [['29/06', 'ALPHAMAR · 20/21 · sem sludge, só garbage · USD 500 a bordo']] },
+  { name: 'ULUSOY-17', imo: '9734733', ag: 'CARGILL', term: '38', n: 1, hist: [['01/07', 'CARGILL · berço 38 · PRE 20 · DURANTE 25 · POS 14 m³']] },
+  { name: 'LEADER', imo: '9591973', ag: 'WILSON SONS', term: '20/21', n: 1, hist: [['25/06', 'WILSON SONS · 20/21 · PRE 12 · DURANTE 12 · POS 15 m³']] }
+];
+const HISTORY = [['LEMESSOS NAPA', '11 m³', '3 m³', 'LMZ ATLAS'], ['LEADER', '15 m³', '7 m³'], ['LMZ FRANCISCO', '23 m³', '1 m³'], ['ULUSOY-17', '14 m³', '3 m³'], ['STALO', '18 m³', '7 m³'], ['LMZ ATLAS', '—', '6 m³']];
+const MONTHS = { jun: ['26', '10', 'Coletado (POS) · junho'], jul: ['55', '17', 'Coletado (POS) · julho'], ago: null, set: null, out: null, nov: ['133', '37', 'Previsto (PRE) · 7 operações · aguardando POS'] };
+const AIQ = [
+  ['Quanto sludge está previsto para novembro?', '133 m³ (PRE) em 7 operações com ETB em novembro: Bulk Antigua 15, Diamond Trader 20, Arsinoe 30, Kypros Land 12, Pyrros 26, Anadolu S 15 e Fraternelle 15.', [['Anadolu S', 'ANADOLU S'], ['Planilha PRE · nov', null]]],
+  ['O ANADOLU S já operou com a gente?', 'Sim, 2 registros: julho (agência Worldshipping, berço 32) e novembro (Orion, Saboo III).', [['ANADOLU S · 06/07', 'ANADOLU S'], ['ANADOLU S · 05/11', 'ANADOLU S']]],
+  ['Alguma operação com restrição de terminal?', 'PERSEAS: o terminal TGG não permite a coleta de sludge. A operação teve só garbage.', [['PERSEAS · 20/10', 'PERSEAS']]]
+];
+const TITLES = { painel: ['CLEANSEA', 'Operational workspace'], ops: ['Operações', 'Lista'], op: ['Operação', ''], fluxo: ['Fluxo', '17 etapas · 5 fases'], med: ['Medições', 'PRE · DURANTE · POS'], navio: ['Navio', 'Posição · ETA · clima'], docs: ['Documentos', 'D1–D4'], mob: ['Mobilização', 'Motoristas e equipe'], nova: ['Nova operação', 'Formulário PRE'], cliente: ['Cliente recorrente', 'Histórico'], navios: ['Navios e clientes', 'Planilha de controle'], chat: ['Chat', 'Equipe da operação'], ai: ['Ask AI', 'Somente leitura'], fechar: ['Fechamento', 'S16 · S17'], fila: ['Fila de envio', 'Sincronização'], notif: ['Notificações', ''], config: ['Configurações', 'Demonstração'] };
+const LABELS = { login: 'M00 Login', painel: 'M01 Painel', ops: 'M15 Operações', op: 'M02 Operação', nova: 'M03 Nova operação', fluxo: 'M04 Fluxo', med: 'M05 Medições', navio: 'M06 Navio', docs: 'M07 Documentos', chat: 'M08 Chat', ai: 'M09 Ask AI', mob: 'M10 Mobilização', cliente: 'M11 Cliente', fechar: 'M12 Fechamento', fila: 'M13 Sem sinal', notif: 'M14 Notificações', navios: 'Navios', config: 'Configurações' };
+const WF = [
+  ['M00', 'login', 'Login e papel', ['→ M01 home por papel']], ['M01', 'painel', 'Painel', ['INT-03 aba → M02', 'INT-05 + → ações rápidas', 'INT-19 → M09 · INT-20 → M08']], ['M15', 'ops', 'Lista de operações', ['→ M02']], ['M03', 'nova', 'Nova operação (PRE)', ['INT-07 busca → M11', 'INT-06 abrir → M02']],
+  ['M02', 'op', 'Operação', ['INT-08 → M04 · INT-10 → M05', 'INT-11 → M06 · INT-15 → M07', 'INT-13 → M10 · INT-17 → M12']], ['M04', 'fluxo', 'Fluxo 17 etapas', ['G-01 não ⇢ S07 (a validar)']], ['M05', 'med', 'Medições', ['INT-10 registrar', 'sem sinal ⇢ M13']], ['M06', 'navio', 'Navio · ETA · clima', ['INT-11 atualizar', 'INT-23 → site externo', 'INT-24 reprogramar']],
+  ['M07', 'docs', 'Documentos D1–D4', ['INT-15 anexar · INT-16 validar', 'sem sinal ⇢ M13']], ['M10', 'mob', 'Mobilização', ['INT-13 convocar', 'INT-14 resposta do motorista']], ['M12', 'fechar', 'Fechamento', ['bloqueado → M07 / M05', 'INT-18 submeter · INT-17 fechar']], ['M08', 'chat', 'Chat da operação', ['INT-20 enviar']],
+  ['M09', 'ai', 'Ask AI', ['chip de fonte → M11']], ['M11', 'cliente', 'Cliente recorrente', ['→ volta a M03']], ['M13', 'fila', 'Sem sinal · fila', ['INT-21 sincroniza']], ['M14', 'notif', 'Notificações', ['push das ações']]
+];
+const PERMS = [['M01 Painel', 'ELLL—'], ['M03 Nova operação (PRE)', 'EEL——'], ['M05 DURANTE', 'LLEE—'], ['M05 POS', 'LLE——'], ['M06 ETA manual', 'ELEE—'], ['M07 Anexar documento', 'E—EE—'], ['M07 Validar documento', 'E—E——'], ['M10 Convocar motoristas', 'E—L——'], ['M10 Confirmar disponibilidade', 'L———E'], ['M12 Fechar operação', 'E—L——'], ['M09 Ask AI', 'EE———'], ['M08 Chat', 'EEEEE']];
+const MACHINE = ['draft', 'opened', 'standby', 'monitoring', 'confirmed', 'in_execution', 'evidence_collection', 'submitted', 'closed'];
+const IC = { grid: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z', checks: 'M10 6h10M10 12h10M10 18h10M4 6l1.2 1.2L7.5 5M4 12l1.2 1.2L7.5 11M4 18l1.2 1.2L7.5 17', ship: 'M3 17l2 3h14l2-3M5 17V9h14v8M9 9V5h6v4', users: 'M9 11a3.5 3.5 0 1 0 0-7a3.5 3.5 0 0 0 0 7zM3 20c0-3.3 2.7-6 6-6s6 2.7 6 6', doc: 'M6 3h9l4 4v14H6zM14 3v5h5', clock: 'M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18zM12 7v5l3 2', up: 'M12 15V3M7 8l5-5 5 5M4 15v6h16v-6', gear: 'M12 9a3 3 0 1 0 0 6a3 3 0 0 0 0-6zM12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3' };
+const mix = v => `color-mix(in srgb, var(${v}) 16%, var(--color-bg))`;
+const T = { ok: [mix('--color-success'), 'var(--color-success)'], warn: [mix('--color-warning'), 'var(--color-warning)'], bad: [mix('--color-danger'), 'var(--color-danger)'], info: ['var(--color-accent-100)', 'var(--color-accent-600)'], mute: ['var(--color-surface)', 'var(--color-text-muted)'] };
+const now = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+const dm = s => { const m = /^(\d{1,2})\/(\d{1,2})$/.exec((s || '').trim()); return m ? +m[2] * 100 + +m[1] : null; };
+const opState = o => o.done >= 17 ? 'closed' : o.done >= 16 ? 'submitted' : o.done >= 14 ? 'evidence_collection' : o.done >= 13 ? 'in_execution' : o.done >= 10 ? 'confirmed' : o.done >= 6 ? 'monitoring' : o.done >= 4 ? 'standby' : 'opened';
+const mkOp = (id, x) => ({ id, docs: { D1: 'faltando', D2: 'faltando', D3: 'faltando', D4: 'faltando' }, m: { pre: null, dur: null, pos: null }, disp: { sent: false, paulo: '—', helio: '—', selP: true, selH: true, marcos: false }, msgs: [], eta: { v: '14/11 15:40', src: 'MarineTraffic (exemplo)', when: '07:40' }, cmp: [], ...x });
+
+class Component extends DCLogic {
+  state = {
+    role: 'felipe', stack: ['login'], opId: 'a', drawer: false, plus: false, confirm: null, toast: '', offline: false, delay: false, conflict: false,
+    queue: [], month: 'nov', hist: false, openPhase: 3, opFilter: 'todas', mv: '', merr: '', etaIn: '', refreshing: false, chatV: '', aiV: '', aiMsgs: [], aiBusy: false, client: 'STAR GENESIS', seen: 0,
+    notifs: [['07:35', 'ANADOLU S: ETC informado pelo navio (12/11) difere do comercial (14/11).'], ['07:20', 'João registrou DURANTE: sludge 18 m³.'], ['07:02', 'Cecília abriu a operação STAR GENESIS · 17 NOV (simulado).']],
+    f: { q: '', vessel: null, name: '', ag: '', term: '', etb: '16/11', etc: '17/11', sludge: '15', garbage: '5', vaz: '5', aq: false, cob: false, err: '' },
+    ops: [
+      mkOp('a', { date: '14 NOV', name: 'ANADOLU S', imo: '9667758', ag: 'ORION', term: 'Saboo III', etb: '05/11', etc: '14/11', done: 11, sim: false, docs: { D1: 'validado', D2: 'faltando', D3: 'faltando', D4: 'faltando' },
+        m: { pre: { v: 15, who: 'Cecília', when: '05/11 08:18' }, dur: { v: 18, who: 'João', when: '07/11 13:35' }, pos: null },
+        cmp: [['Aquecido', 'PRE Não · DURANTE Sim'], ['Vazão', 'PRE 5 · DURANTE 2 m³/h'], ['ETC', 'PRE 14/11 · DURANTE 12/11 00:00']],
+        msgs: [['Cecília', 'Gerente comercial', 'Venda fechada: ANADOLU S, agência ORION, Saboo III. Sludge 15 m³ e garbage 5 previstos. Sem cobrança.', '05/11 08:20'], ['João', 'Visitador de bordo', 'A bordo informaram 18 m³, produto aquecido e bomba a 2 m³/h. Fonte: Chief Engineer e 2nd Officer.', '07/11 13:40'], ['Marcos', 'Gerente operacional', 'ETC pelo navio é 12/11. Vou ajustar a janela.', '07/11 14:05']] }),
+      mkOp('b', { date: '17 NOV', name: 'STAR GENESIS', imo: '9457464', ag: 'CARGONAVE', term: '12A', etb: '16/11', etc: '17/11', done: 6, sim: true, m: { pre: { v: 15, who: 'Cecília', when: '13/11 09:10' }, dur: null, pos: null }, eta: { v: '16/11 22:10', src: 'MarineTraffic (exemplo)', when: '07:40' },
+        msgs: [['Cecília', 'Gerente comercial', 'STAR GENESIS confirmado para 17/11, mesmo berço 12A. Cliente recorrente.', '13/11 09:12']] })
+    ]
+  };
+  componentDidMount() { this.onKey = e => { if (e.key === 'Escape') this.closeAll(); }; document.addEventListener('keydown', this.onKey); }
+  componentWillUnmount() { document.removeEventListener('keydown', this.onKey); clearTimeout(this.tt); }
+
+  me() { return P[this.state.role][0]; }
+  can(k) { return CAN[k].includes(this.state.role); }
+  home(r) { return (r || this.state.role) === 'paulo' ? 'mob' : 'painel'; }
+  op() { return this.state.ops.find(o => o.id === this.state.opId) || this.state.ops[0]; }
+  setOp(id, fn) { this.setState(s => ({ ops: s.ops.map(o => o.id === id ? fn(o) : o) })); }
+  toast(t) { this.setState({ toast: t }); clearTimeout(this.tt); this.tt = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  note(t) { this.setState(s => ({ notifs: [[now(), t], ...s.notifs] })); }
+  go(k, extra) { this.setState(s => ({ stack: [...s.stack, k], drawer: false, plus: false, ...(k === 'notif' ? { seen: s.notifs.length } : {}), ...extra })); }
+  root(k, extra) { const h = this.home(); this.setState({ stack: k === h ? [h] : [h, k], drawer: false, plus: false, ...extra }); }
+  jump(k) {
+    if (k === 'login') return this.setState({ stack: ['login'], drawer: false, plus: false, confirm: null });
+    const sub = ['fluxo', 'med', 'navio', 'docs', 'mob', 'fechar'].includes(k), h = this.home();
+    this.setState({ stack: k === h ? [h] : sub && h === 'painel' ? [h, 'op', k] : [h, k], drawer: false, plus: false, confirm: null });
+  }
+  back = () => this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack }));
+  closeAll = () => this.setState({ drawer: false, plus: false, confirm: null });
+  setRole(r, stack) { this.setState({ role: r, stack: stack || [this.home(r)], drawer: false, plus: false, confirm: null }); this.toast(`Visualizando como ${P[r][0]} · ${P[r][1]}`); }
+  act(label, fn) {
+    if (this.state.offline) { this.setState(s => ({ queue: [...s.queue, { label, fn }] })); this.toast('Sem sinal. Guardado na fila: pendente de envio.'); }
+    else fn();
+  }
+  setOffline(v) {
+    if (v) return this.setState({ offline: true });
+    const q = this.state.queue;
+    this.setState({ offline: false, queue: [] }, () => { q.forEach(i => i.fn()); if (q.length) setTimeout(() => this.toast(`Sinal voltou. Enviado ${q.length} de ${q.length}.`), 50); });
+  }
+  complete(o) {
+    const st = STEPS[o.done]; if (!st) return;
+    if (o.done >= 15) return this.go('fechar');
+    if (this.state.role !== 'felipe' && st[4] !== this.state.role) return this.toast(`Acesso negado: ${st[0]} é responsabilidade de ${st[3]}.`);
+    const adv = () => this.act(`Etapa ${st[0]} concluída · ${o.name}`, () => { this.setOp(o.id, x => ({ ...x, done: x.done + 1 })); this.toast(`${st[0]} ${st[1]}: concluída`); this.note(`${o.name}: ${st[0]} concluída por ${this.me()}.`); });
+    if (o.done === 9) return this.setState({ confirm: { title: 'G-01 · Chegada confirmada?', lines: [`ETA ${o.eta.v} · ${o.eta.src} · ${o.eta.when} (simulado)`, 'Clima: ' + this.wx().short + ' · Open-Meteo (exemplo)', 'Critério formal de confirmação: a definir.'], ok: 'Sim, confirmar chegada', cancel: 'Não · voltar a S07', onOk: () => { this.closeAll(); adv(); }, onCancel: () => { this.closeAll(); this.setOp(o.id, x => ({ ...x, done: 6 })); this.toast('Operação voltou ao monitoramento (S07).'); } } });
+    adv();
+  }
+  wx() { const d = this.state.delay; return { short: d ? 'vento 28 kn · chuva 80%' : 'vento 14 kn · chuva 10%', cells: (d ? [['28 kn', 'vento'], ['41 kn', 'rajada'], ['80%', 'chuva'], ['2,6 m', 'onda · 9 s']] : [['14 kn', 'vento'], ['22 kn', 'rajada'], ['10%', 'chuva'], ['1,2 m', 'onda · 8 s']]).map(([v, k]) => ({ v, k })) }; }
+  saveMeasure(o, key, lab) {
+    const raw = this.state.mv.trim();
+    if (!/^\d+([.,]\d+)?$/.test(raw) || +raw.replace(',', '.') <= 0) return this.setState({ merr: 'Informe um número maior que zero, em m³. O que você digitou foi mantido.' });
+    const v = +raw.replace(',', '.'), who = this.me();
+    this.setState({ mv: '', merr: '' });
+    this.act(`Medição ${lab} · Sludge ${raw} m³ · ${o.name}`, () => { this.setOp(o.id, x => ({ ...x, m: { ...x.m, [key]: { v, who, when: '14/11 ' + now() } } })); this.toast(`Medição ${lab} salva. Valor efetivo recalculado.`); this.note(`${o.name}: ${who} registrou ${lab} · sludge ${raw} m³.`); });
+  }
+  setDoc(o, id, st, msg) { this.setOp(o.id, x => ({ ...x, docs: { ...x.docs, [id]: st } })); this.toast(msg); }
+  sendChat(o) {
+    const text = this.state.chatV.trim(); if (!text) return;
+    const off = this.state.offline, key = Date.now();
+    this.setState({ chatV: '' });
+    this.setOp(o.id, x => ({ ...x, msgs: [...x.msgs, [this.me(), P[this.state.role][1], text, '14/11 ' + now(), off ? key : 0]] }));
+    if (off) this.act('Mensagem no chat · ' + o.name, () => this.setOp(o.id, x => ({ ...x, msgs: x.msgs.map(m => m[4] === key ? [m[0], m[1], m[2], m[3], 0] : m) })));
+  }
+  ask(q) {
+    const text = (q || this.state.aiV).trim(); if (!text) return;
+    const hit = AIQ.find(a => a[0] === text);
+    this.setState(s => ({ aiV: '', aiBusy: true, aiMsgs: [...s.aiMsgs, { me: true, text }] }));
+    setTimeout(() => this.setState(s => ({ aiBusy: false, aiMsgs: [...s.aiMsgs, hit ? { text: hit[1], src: hit[2] } : { text: 'Não encontrei registros que respondam a essa pergunta.' }] })), 700);
+  }
+  submitNova() {
+    const f = this.state.f, a = dm(f.etb), b = dm(f.etc), name = (f.vessel ? f.vessel.name : f.q).trim().toUpperCase();
+    const err = !name ? 'Informe o navio.' : a == null || b == null ? 'Datas no formato dd/mm.' : b < a ? 'O ETC deve ser igual ou depois do ETB.' : !/^\d+([.,]\d+)?$/.test(f.sludge.trim()) ? 'Sludge previsto: informe um número em m³.' : '';
+    if (err) return this.setState({ f: { ...f, err } });
+    const id = 'n' + Date.now(), who = this.me(), mo = ['', 'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'][b / 100 | 0] || '';
+    const o = mkOp(id, { date: `${String(b % 100).padStart(2, '0')} ${mo}`, name, imo: f.vessel ? f.vessel.imo : 'a informar', ag: f.ag || '—', term: f.term || '—', etb: f.etb, etc: f.etc, done: 4, sim: true, m: { pre: { v: +f.sludge.replace(',', '.'), who, when: '14/11 ' + now() }, dur: null, pos: null }, msgs: [[who, P[this.state.role][1], `Venda fechada: ${name}, ${f.ag || 'agência a informar'}, ${f.term || 'terminal a informar'}. ETB ${f.etb} · ETC ${f.etc}. Sludge ${f.sludge} m³ e garbage ${f.garbage} previstos.`, '14/11 ' + now(), 0]] });
+    this.act('Nova operação · ' + name, () => {
+      this.setState(s => ({ ops: [...s.ops, o], opId: id, stack: [this.home(), 'op'], f: { ...s.f, q: '', vessel: null, err: '' } }));
+      this.toast('Operação aberta. Marcos, João e Felipe notificados.'); this.note(`${who} abriu a operação ${name} (simulado). S01–S04 concluídas.`);
+    });
+  }
+
+  renderVals() {
+    const s = this.state, role = s.role, scr = s.stack[s.stack.length - 1], o = this.op(), me = this.me(), wx = this.wx();
+    const reduce = this.props.reduceMotion ?? false;
+    const denied = (scr === 'nova' && !this.can('nova')) || (scr === 'ai' && !this.can('ai')) || (scr === 'painel' && role === 'paulo');
+    const is = { login: scr === 'login', app: scr !== 'login', denied }; if (!denied) is[scr] = true;
+    const chip = (k, st) => ({ st, bg: T[k][0], dot: T[k][1] });
+    const seg = a => ({ sel: a, bg: a ? 'var(--color-accent-100)' : 'var(--color-bg)', color: a ? 'var(--color-accent-700)' : 'var(--color-text)', border: a ? 'var(--color-accent-600)' : 'var(--color-divider)' });
+
+    if (!this.wave || this.waveR !== reduce) {
+      const p = 'M0 20 Q 97 4 195 20 T 390 20 T 585 20 T 780 20 V40 H0Z', h = React.createElement;
+      const anim = d => reduce ? null : h('animateTransform', { attributeName: 'transform', type: 'translate', from: '0 0', to: '-390 0', dur: d, repeatCount: 'indefinite' });
+      this.waveR = reduce;
+      this.wave = h('svg', { key: 'w' + reduce, 'aria-hidden': true, viewBox: '0 0 390 40', preserveAspectRatio: 'none', style: { position: 'absolute', left: 0, right: 0, top: -29, width: '100%', height: 30, overflow: 'hidden' } },
+        h('path', { d: p, fill: '#B9E9FF' }, anim('11s')), h('path', { d: p, fill: '#72D6FF', transform: 'translate(-120 4)' }, anim('7s')));
+    }
+
+    // operation view model
+    const st = opState(o), closed = o.done >= 17, cur = STEPS[o.done];
+    const eff = o.m.pos ? 'pos' : o.m.dur ? 'dur' : 'pre', effL = { pre: 'PRE', dur: 'DURANTE', pos: 'POS' }[eff];
+    const nDocs = Object.values(o.docs).filter(d => d !== 'faltando' && d !== 'reprovado').length;
+    const alerts = [];
+    if (o.id === 'a' && !closed) alerts.push({ text: 'ETC informado pelo navio: 12/11 00:00. Comercial registrou 14/11.', hasAction: true, action: 'Ver', onClick: () => this.go('med') });
+    if (s.delay && !closed) alerts.push({ text: 'Atraso climático provável (simulado). Sugestão: reprogramar a janela.', hasAction: true, action: 'Ver clima', onClick: () => this.go('navio') });
+    if (s.conflict && !closed) alerts.push({ text: 'Operações simultâneas: janelas e pessoas se sobrepõem com outra operação ativa. O app só alerta; a prioridade é decisão de Felipe (regra a definir).', hasAction: false });
+    if (o.resched) alerts.push({ text: 'Operação reprogramada. Convocações a reconfirmar.', hasAction: false });
+    const stChip = closed ? chip('ok', 'Fechada') : s.delay || o.resched ? chip('warn', 'Em risco') : chip('info', 'Em andamento');
+    const curPh = cur ? cur[2] : 6;
+    const phMark = n => n < curPh ? { mark: '✓', bg: 'var(--color-accent-600)', fg: '#fff', border: 'var(--color-accent-600)' } : n === curPh ? { mark: n, bg: 'var(--color-accent-100)', fg: 'var(--color-accent-700)', border: 'var(--color-accent-600)' } : { mark: n, bg: 'transparent', fg: 'var(--color-text-muted)', border: 'var(--color-divider)' };
+    const diff = o.m[eff] && o.m.pre ? o.m[eff].v - o.m.pre.v : 0;
+    const ov = {
+      name: o.name, imo: o.imo, term: o.term, sim: o.sim, state: o.resched && st === 'monitoring' ? 'rescheduled' : st, ctx: `${o.name} · ${o.date}`,
+      line: `${o.ag} · ${o.term} · ETB ${o.etb} · ETC ${o.etc}`, st: stChip.st, stBg: stChip.bg, stDot: stChip.dot,
+      pct: Math.round(o.done / 17 * 100) + '%', doneLabel: `${o.done} de 17 etapas`, alerts,
+      phases: PH.map((p, i) => ({ short: p[1], ...phMark(i + 1) })),
+      hasNext: !!cur, nextCode: cur ? cur[0] : '', nextName: cur ? cur[1] : '', nextOwner: cur ? cur[3] : '', nextBtn: o.done >= 15 ? 'Ir ao fechamento' : 'Concluir', onComplete: () => this.complete(o),
+      triad: ['pre', 'dur', 'pos'].map(k => { const m = o.m[k], v = k === eff && !!m; return { k: { pre: 'PRE', dur: 'DURANTE', pos: 'POS' }[k], v: m ? String(m.v).replace('.', ',') + ' m³' : '—', who: m ? m.who : { pre: 'Comercial', dur: 'João', pos: 'Marcos' }[k], when: m ? m.when : 'pendente', vale: v, border: v ? 'var(--color-accent-600)' : 'var(--color-divider)', bg: v ? 'var(--color-accent-100)' : 'var(--color-bg)' }; }),
+      valeLine: o.m[eff] ? `Vale: ${String(o.m[eff].v).replace('.', ',')} m³ (${effL}).` : 'Sem medição registrada.',
+      hasDiv: Math.abs(diff) > 2, divText: `Divergência PRE → ${effL}: ${diff > 0 ? '+' : ''}${String(diff).replace('.', ',')} m³. Margem ilustrativa de 2 m³; a margem real está a definir.`,
+      hasCmp: o.cmp.length > 0, cmp: o.cmp.map(c => ({ k: c[0], v: c[1] })),
+      eta: o.eta.v, etaSrc: `${o.eta.src} · ${o.eta.when}`, docsLabel: `${nDocs} de 4 anexados`
+    };
+
+    const mKey = role === 'marcos' ? 'pos' : role === 'joao' ? 'dur' : this.can('pre') ? 'pre' : null, mLab = mKey && { pre: 'PRE', dur: 'DURANTE', pos: 'POS' }[mKey];
+    const docTone = { faltando: 'warn', anexado: 'info', validado: 'ok', reprovado: 'bad' };
+    const fset = p => this.setState(x => ({ f: { ...x.f, ...p, err: '' } }));
+    const f = s.f, q = f.q.trim().toUpperCase();
+    const matches = !f.vessel && q.length >= 3 ? VESSELS.filter(v => v.name.includes(q) || v.imo.includes(q)) : [];
+    const vTag = v => v.n > 1 ? `recorrente (${v.n}x)` : '1 operação';
+    const cl = VESSELS.find(v => v.name === s.client) || VESSELS[0];
+    const allDocs = Object.values(o.docs).every(d => d === 'validado');
+    const checks = [{ label: 'Etapas S01 a S15 concluídas', ok: o.done >= 15, go: 'Ir à operação', onGo: () => this.jump('op') }, { label: 'POS registrado (Marcos)', ok: !!o.m.pos, go: 'Ir às medições', onGo: () => this.jump('med') },
+      ...Object.keys(DOCDEF).map(id => ({ label: `${id} validado · ${DOCDEF[id][0].split(' · ')[0]}`, ok: o.docs[id] === 'validado', go: 'Ir ao documento', onGo: () => this.jump('docs') }))];
+    const nOk = checks.filter(c => c.ok).length, allOk = nOk === checks.length, isF = this.can('close');
+    const canSubmit = allOk && isF && o.done === 15, canClose = isF && o.done === 16;
+    const btn = on => on ? ['var(--color-accent-600)', '#fff'] : ['var(--color-surface)', 'var(--color-text-muted)'];
+    const dSt = v => v === '—' ? chip('mute', 'não convocado') : /confirmou/.test(v) ? chip('ok', v) : /recusou/.test(v) ? chip('bad', v) : chip('warn', v);
+    const sw = (label, on, fn) => ({ label, on, onClick: fn, bg: on ? 'var(--color-accent-600)' : 'var(--color-text-muted)', tf: on ? 'translateX(18px)' : 'none', tfS: on ? 'translateX(16px)' : 'none' });
+    const mo = MONTHS[s.month];
+    const ins = s.hist ? { head: 'Histórico', solid: '27', liquid: '81', foot: 'Coletado (POS) · jun–jul · 6 operações', alt: 'Histórico, coletado: 81 metros cúbicos de óleo e 27 de TAIFA.' }
+      : mo ? { head: s.month, solid: mo[1], liquid: mo[0], foot: mo[2], alt: `${s.month}: ${mo[0]} metros cúbicos de óleo e ${mo[1]} de sólidos.` } : { head: s.month, solid: '—', liquid: '—', foot: 'Sem dados de POS neste mês', alt: `${s.month}: sem dados.` };
+    const isPre = !s.hist && s.month === 'nov';
+    const R = (label, role2, stack, extra, note) => ({ label, note: note || '', onClick: () => { const off = !!(extra && extra.offline), rest = { ...extra }; delete rest.offline; this.setState({ opId: 'a', delay: false, conflict: false, ...rest }); if (off !== this.state.offline) this.setOffline(off); this.setRole(role2, stack); } });
+    const [ttl, sub] = TITLES[scr] || ['', ''];
+    const drawer = [['Painel', 'painel', IC.grid], ['Operações', 'ops', IC.checks], ['Navios', 'navios', IC.ship], ['Clientes', 'navios', IC.users], ['Documentos', 'docs', IC.doc], ['Histórico', 'hist', IC.clock], ['Fila de envio', 'fila', IC.up], ['Configurações', 'config', IC.gear]];
+
+    return {
+      theme: this.props.theme ?? 'light', phoneFilter: (this.props.fidelity ?? 'alta') === 'wireframe' ? 'grayscale(1) contrast(.92)' : 'none', wave: this.wave,
+      is, screenLabel: denied ? 'Acesso negado' : LABELS[scr] || scr, me: { name: me, role: P[role][1] }, o: ov, wx, delay: s.delay,
+      logins: RK.map(k => ({ name: P[k][0], role: P[k][1], home: P[k][2], ini: P[k][0][0], onClick: () => this.setRole(k) })),
+      title: scr === 'op' ? o.name : ttl, subtitle: scr === 'op' ? `${o.date} · ${ov.st}` : sub,
+      showBack: s.stack.length > 1, showMenu: s.stack.length <= 1, onBack: this.back, openDrawer: () => this.setState({ drawer: true }),
+      goNotif: () => this.go('notif'), unread: s.notifs.length - s.seen, hasUnread: s.notifs.length > s.seen,
+      offline: s.offline, queueCount: s.queue.length, goFila: () => this.go('fila'), goHome: () => this.jump(this.home()),
+      showOpTabs: !denied && ['op', 'chat', 'docs', 'med'].includes(scr),
+      opTabs: s.ops.map(x => ({ label: `${x.date} · ${x.name}`, onClick: () => this.setState({ opId: x.id }), ...seg(x.id === o.id) })),
+      openOp: () => this.go('op'), goFluxo: () => this.go('fluxo', { openPhase: Math.min(curPh, 5) }), goMed: () => this.go('med'), goNavio: () => this.go('navio'), goDocs: () => this.go('docs'), goMob: () => this.go('mob'), goFechar: () => this.go('fechar'),
+      goChat: () => scr === 'chat' ? null : this.go('chat'), goAi: () => scr === 'ai' ? null : this.go('ai'),
+      aiColor: scr === 'ai' ? 'var(--color-accent-700)' : 'var(--color-text)', chatColor: scr === 'chat' ? 'var(--color-accent-700)' : 'var(--color-text)',
+      home: { felipe: { title: 'Pendências de documentos', text: `${4 - Object.values(o.docs).filter(d => d === 'validado').length} documentos sem validação em ${o.name}.`, cta: 'Abrir documentos', onClick: () => this.go('docs') }, cecilia: { title: 'Vendas', text: 'Abra uma operação a partir do pedido do cliente. Navios recorrentes preenchem os dados.', cta: 'Nova operação', onClick: () => this.go('nova') }, marcos: { title: 'Operações em campo', text: `${o.name}: ${cur ? cur[0] + ' ' + cur[1] : 'fechada'}. POS ${o.m.pos ? 'registrado' : 'pendente'}.`, cta: 'Abrir operação', onClick: () => this.go('op') }, joao: { title: 'Fila de hoje', text: `${o.name} · ${o.term}: registrar DURANTE e preparar D1–D4.`, cta: 'Registrar medição', onClick: () => this.go('med') }, paulo: {} }[role],
+      months: Object.keys(MONTHS).map(k => ({ label: k, onClick: () => this.setState({ month: k, hist: false }), ...seg(!s.hist && k === s.month) })),
+      ins: { ...ins, isHist: s.hist, toggle: () => this.setState({ hist: !s.hist }), btn: s.hist ? 'Ver mês' : 'Histórico', btnBg: s.hist ? 'var(--color-accent-100)' : 'var(--color-bg)', solidLabel: isPre ? 'GARBAGE' : 'TAIFA', solidUnit: ins.solid === '—' ? '' : isPre ? 'unid. a confirmar' : 'm³', liquidLabel: isPre ? 'OIL · SLUDGE' : 'OIL · ÓLEO', liquidUnit: ins.liquid === '—' ? '' : 'm³' },
+      history: HISTORY.map(h => ({ name: h[0], oil: h[1], taifa: h[2], onClick: () => VESSELS.some(v => v.name === h[0]) ? this.go('cliente', { client: h[0] }) : this.toast(`${h[0]}: registro POS de jun–jul na planilha.`) })),
+      opFilters: [['todas', 'Todas'], ['ativas', 'Ativas'], ['fechadas', 'Fechadas']].map(([k, l]) => ({ label: l, onClick: () => this.setState({ opFilter: k }), ...seg(s.opFilter === k) })),
+      opList: s.ops.filter(x => s.opFilter === 'todas' || (s.opFilter === 'fechadas') === (x.done >= 17)).map(x => ({ name: x.name, date: x.date, line: `${x.ag} · ${x.term}`, st: x.done >= 17 ? 'Fechada' : 'Em andamento', pct: Math.round(x.done / 17 * 100) + '%', doneLabel: `${x.done} de 17 etapas`, onClick: () => this.go('op', { opId: x.id }) })),
+      opListEmpty: !s.ops.some(x => s.opFilter === 'todas' || (s.opFilter === 'fechadas') === (x.done >= 17)),
+      flow: PH.map((p, i) => { const n = i + 1, steps = STEPS.map((x, j) => ({ x, j })).filter(y => y.x[2] === n); return { name: `${n} · ${p[0]}`, ...phMark(n), open: s.openPhase === n, onToggle: () => this.setState({ openPhase: s.openPhase === n ? 0 : n }), count: `${steps.filter(y => y.j < o.done).length}/${steps.length}`, hasGate: n === 2,
+        steps: steps.map(({ x, j }) => ({ code: x[0], name: x[1], owner: x[3], tbd: !!x[5], weight: j === o.done ? 600 : 400, ...(j < o.done ? chip('ok', 'concluída') : j === o.done ? chip('info', 'em curso') : chip('mute', 'pendente')) })) }; }),
+      mf: { can: !!mKey && !closed, cannot: !mKey || closed, title: mKey ? `Registrar ${mLab} · ${me}` : 'Registrar medição', v: s.mv, onChange: e => this.setState({ mv: e.target.value, merr: '' }), err: s.merr, hasErr: !!s.merr, border: s.merr ? 'var(--color-danger)' : 'var(--color-divider)', btn: `Salvar ${mLab || ''}`, onSave: () => this.saveMeasure(o, mKey, mLab) },
+      nv: { refreshLabel: s.refreshing ? 'Atualizando…' : 'Atualizar', posWhen: o.eta.when, canEta: this.can('eta'), etaIn: s.etaIn, onEtaIn: e => this.setState({ etaIn: e.target.value }),
+        refresh: () => { if (s.offline) return this.toast(`Sem sinal. Última atualização às ${o.eta.when}.`); this.setState({ refreshing: true }); setTimeout(() => { this.setState({ refreshing: false }); this.setOp(o.id, x => ({ ...x, eta: { ...x.eta, when: now() } })); this.toast('Posição, ETA e clima atualizados (simulado).'); }, 900); },
+        saveEta: () => { const v = s.etaIn.trim(); if (!/^\d{1,2}\/\d{1,2} \d{1,2}:\d{2}$/.test(v)) return this.toast('Use o formato dd/mm hh:mm.'); this.setState({ etaIn: '' }); this.act(`ETA manual ${v} · ${o.name}`, () => { this.setOp(o.id, x => ({ ...x, eta: { v, src: `lançamento manual · ${me}`, when: now() } })); this.toast('ETA manual registrado com autor e horário.'); }); },
+        resched: () => this.setState({ confirm: { title: 'Reprogramar operação?', lines: ['Nova janela proposta: 15/11 manhã (simulado).', 'Marcos e Felipe aprovam. Convocações viram "a reconfirmar".'], ok: 'Reprogramar', cancel: 'Cancelar', onOk: () => { this.closeAll(); this.setOp(o.id, x => ({ ...x, resched: true, disp: { ...x.disp, paulo: x.disp.sent ? 'a reconfirmar' : '—', helio: x.disp.sent ? 'a reconfirmar' : '—' } })); this.note(`${o.name} reprogramada por ${me}. Todos notificados.`); this.toast('Operação reprogramada. Volta ao monitoramento (S07).'); }, onCancel: this.closeAll } }),
+        links: ['Praticagem SP', 'Semafórico', 'APS', 'Ventusky'].map(l => ({ label: l, onClick: () => this.toast(`Você está saindo do app: ${l} abre no navegador.`) })) },
+      docs: Object.keys(DOCDEF).map(id => { const d = o.docs[id], has = d !== 'faltando' && d !== 'reprovado'; return { id, name: DOCDEF[id][0], method: DOCDEF[id][1], who: DOCDEF[id][2], ...chip(docTone[d], d), thumbBg: has ? 'var(--color-accent-100)' : 'transparent', thumbBorder: has ? 'solid' : 'dashed', canAttach: !has && this.can('attach') && !closed, canValidate: d === 'anexado' && this.can('validate'),
+        onAttach: () => this.act(`Foto do ${id} · ${o.name}`, () => { this.setDoc(o, id, 'anexado', `${id} anexado. Aguardando validação de Marcos ou Felipe.`); this.note(`${o.name}: ${me} anexou ${id}.`); }),
+        onOk: () => this.setDoc(o, id, 'validado', `${id} validado por ${me}.`), onNo: () => { this.setDoc(o, id, 'reprovado', `${id} reprovado: foto ilegível. Autor notificado para reenviar.`); this.note(`${o.name}: ${id} reprovado por ${me}. Motivo: foto ilegível.`); } }; }),
+      mb: { isDriver: role === 'paulo', notDriver: role !== 'paulo', sent: o.disp.sent, notSent: !o.disp.sent, pauloSt: o.disp.paulo, canSend: this.can('dispatch') && !closed, readOnly: !this.can('dispatch'), marcosSt: o.disp.marcos ? 'a caminho' : 'pendente', canMarcos: role === 'marcos' && !o.disp.marcos,
+        marcosGo: () => { this.setOp(o.id, x => ({ ...x, disp: { ...x.disp, marcos: true } })); this.toast('Deslocamento informado.'); },
+        yes: () => this.act('Resposta à convocação · ' + o.name, () => { this.setOp(o.id, x => ({ ...x, disp: { ...x.disp, paulo: 'confirmou ' + now() } })); this.toast('Confirmado. Felipe foi avisado.'); this.note(`Paulo confirmou a convocação de ${o.name}.`); }),
+        no: () => { this.setOp(o.id, x => ({ ...x, disp: { ...x.disp, paulo: 'recusou ' + now() } })); this.toast('Recusa registrada. Felipe escolherá outro motorista.'); this.note(`Paulo recusou a convocação de ${o.name}. Escolha outro motorista.`); },
+        drivers: [['Paulo', 'selP', 'paulo'], ['Hélio', 'selH', 'helio']].map(([n, k, r]) => ({ name: n, on: o.disp[k], mark: o.disp[k] ? '✓' : '', boxBg: o.disp[k] ? 'var(--color-accent-600)' : 'transparent', ...dSt(o.disp[r]), onToggle: () => this.can('dispatch') && this.setOp(o.id, x => ({ ...x, disp: { ...x.disp, [k]: !x.disp[k] } })) })),
+        send: () => { if (!o.disp.selP && !o.disp.selH) return this.toast('Escolha ao menos um motorista.'); if (s.conflict) this.toast('Aviso: janela em conflito com outra operação. Convocação enviada mesmo assim.'); else this.toast('Convocação enviada por push e chat.');
+          this.setOp(o.id, x => ({ ...x, disp: { ...x.disp, sent: true, paulo: x.disp.selP ? 'aguardando' : '—', helio: x.disp.selH ? 'aguardando' : '—' } })); this.note(`Felipe convocou motoristas para ${o.name}.`);
+          if (o.disp.selH) setTimeout(() => this.setOp(o.id, x => ({ ...x, disp: { ...x.disp, helio: 'confirmou ' + now() } })), 1600); } },
+      f: { q: f.vessel ? f.vessel.name : f.q, onQ: e => fset({ q: e.target.value, vessel: null }), matches: matches.map(v => ({ name: v.name, imo: v.imo, tag: vTag(v), onClick: () => fset({ vessel: v, q: v.name, ag: v.ag, term: v.term }) })), noMatch: !f.vessel && q.length >= 3 && !matches.length,
+        picked: !!f.vessel, imo: f.vessel ? f.vessel.imo : '', tag: f.vessel ? vTag(f.vessel) : '', goHist: () => this.go('cliente', { client: f.vessel.name }), hasWarn: !!(f.vessel && f.vessel.note), warn: f.vessel ? f.vessel.note : '',
+        fields: [['Agência', 'ag', '1 / -1'], ['Terminal / berço', 'term', '1 / -1'], ['ETB (dd/mm)', 'etb', 'auto'], ['ETC (dd/mm)', 'etc', 'auto'], ['Sludge (m³)', 'sludge', 'auto'], ['Garbage', 'garbage', 'auto'], ['Vazão da bomba (m³/h)', 'vaz', '1 / -1']].map(([label, k, col]) => ({ label, col, v: f[k], onChange: e => fset({ [k]: e.target.value }), border: f.err && ((/ETC|Datas/.test(f.err) && (k === 'etb' || k === 'etc')) || (/Sludge/.test(f.err) && k === 'sludge')) ? 'var(--color-danger)' : 'var(--color-divider)' })),
+        toggles: [['Produto aquecido', 'aq'], ['Haverá cobrança?', 'cob']].map(([label, k]) => ({ label, on: f[k], val: f[k] ? 'Sim' : 'Não', bg: f[k] ? 'var(--color-accent-600)' : 'var(--color-surface)', fg: f[k] ? '#fff' : 'var(--color-text)', onClick: () => fset({ [k]: !f[k] }) })),
+        err: f.err, hasErr: !!f.err, submit: () => this.submitNova() },
+      cl: { name: cl.name, imo: cl.imo, tag: `${vTag(cl)} · ${cl.ag}`, hasNote: !!cl.note, note: cl.note || '', hist: cl.hist.map(h => ({ when: h[0], text: h[1] })) },
+      vessels: VESSELS.map(v => ({ name: v.name, imo: v.imo, ag: v.ag, tag: vTag(v), onClick: () => this.go('cliente', { client: v.name }) })),
+      chat: { v: s.chatV, onChange: e => this.setState({ chatV: e.target.value }), onKey: e => e.key === 'Enter' && this.sendChat(o), send: () => this.sendChat(o), msgs: o.msgs.map(m => ({ who: m[0], role: m[1], text: m[2], meta: m[4] ? m[3] + ' · pendente de envio' : m[3], align: m[0] === me ? 'flex-end' : 'flex-start', bg: m[0] === me ? 'var(--color-accent-100)' : 'var(--color-bg)' })) },
+      ai: { v: s.aiV, busy: s.aiBusy, onChange: e => this.setState({ aiV: e.target.value }), onKey: e => e.key === 'Enter' && this.ask(), send: () => this.ask(), sugs: AIQ.map(a => ({ label: a[0], onClick: () => this.ask(a[0]) })),
+        msgs: s.aiMsgs.map(m => ({ text: m.text, align: m.me ? 'flex-end' : 'flex-start', bg: m.me ? 'var(--color-accent-100)' : 'var(--color-bg)', hasSrc: !!m.src, src: (m.src || []).map(c => ({ label: c[0], onClick: () => c[1] ? this.go('cliente', { client: c[1] }) : this.jump('painel') })) })) },
+      fc: { count: `${nOk} de ${checks.length} ok`, checks: checks.map(c => ({ ...c, mark: c.ok ? '✓' : '', bg: c.ok ? 'var(--color-accent-600)' : 'transparent', border: c.ok ? 'var(--color-accent-600)' : 'var(--color-text-muted)', hasGo: !c.ok })),
+        msg: closed ? `Operação fechada. Protocolo ${o.proto} (simulado). Registro de auditoria gravado.` : o.done === 16 ? `Certificados submetidos. Protocolo ${o.proto} (simulado). Confirme o encerramento.` : !isF ? 'Só Felipe (Gestor) submete certificados e encerra a operação.' : allOk ? 'Checklist completo. Revise e submeta os certificados.' : `Não é possível fechar: ${checks.length - nOk} pendência(s).`,
+        msgBg: closed || allOk ? T.ok[0] : T.warn[0], submitOff: !canSubmit, submitBg: btn(canSubmit)[0], submitFg: btn(canSubmit)[1], closeOff: !canClose, closeBg: canClose ? 'var(--color-bg)' : 'var(--color-surface)', closeFg: canClose ? 'var(--color-text)' : 'var(--color-text-muted)',
+        submit: () => canSubmit && this.setState({ confirm: { title: 'Submeter aos sistemas oficiais?', lines: [`D1 · MTR via SIGOR-MTR (CETESB) · sludge ${o.m.pos.v} m³ (POS)`, 'D2 · Terrestre Ambiental · D3 e D4 · Premium Ambiental', 'Envio SIMULADO: nenhuma integração está ativa.'], ok: 'Confirmar e submeter', cancel: 'Revisar', onOk: () => { this.closeAll(); this.setOp(o.id, x => ({ ...x, done: 16, proto: 'SIM-' + String(Date.now()).slice(-6) })); this.toast('Certificados submetidos (simulado). S16 concluída.'); this.note(`${o.name}: certificados submetidos por Felipe (simulado).`); }, onCancel: this.closeAll } }),
+        close: () => canClose && this.setState({ confirm: { title: `Encerrar ${o.name}?`, lines: ['A operação passa a "Fechada" e não pode ser editada.', 'As outras operações não mudam.'], ok: 'Encerrar operação', cancel: 'Cancelar', onOk: () => { this.closeAll(); this.setOp(o.id, x => ({ ...x, done: 17 })); this.toast('Operação fechada. S17 concluída.'); this.note(`${o.name}: operação fechada por Felipe.`); }, onCancel: this.closeAll } }) },
+      fila: { head: s.offline ? 'Sem sinal. Você pode continuar; enviaremos quando a conexão voltar.' : 'Conectado. Itens são enviados na hora.', items: s.queue.map(q2 => ({ label: q2.label })), empty: !s.queue.length, retry: () => s.offline ? this.toast('Ainda sem sinal. Os itens continuam na fila.') : this.toast('Nada a enviar. Fila sincronizada.') },
+      notifs: s.notifs.map(n => ({ when: n[0], text: n[1] })),
+      switches: [sw('Simular sem sinal', s.offline, () => this.setOffline(!s.offline)), sw('Simular atraso climático', s.delay, () => this.setState({ delay: !s.delay })), sw('Simular operação simultânea', s.conflict, () => this.setState({ conflict: !s.conflict }))],
+      roles: RK.map(k => ({ name: P[k][0], role: P[k][1], sel: k === role, bg: k === role ? 'var(--color-text)' : 'var(--color-bg)', color: k === role ? 'var(--color-bg)' : 'var(--color-text)', onClick: () => this.setRole(k) })),
+      roteiro: [R('Painel', 'felipe', ['painel'], {}, 'Felipe · insights NOV ↔ Histórico'), R('Operação 14 NOV', 'felipe', ['painel', 'op'], {}, 'ANADOLU S · progresso e próxima etapa'), R('Medições', 'felipe', ['painel', 'op', 'med'], {}, 'divergência PRE × DURANTE'), R('Navio', 'felipe', ['painel', 'op', 'navio'], {}, 'ETA, clima, fontes sem API'), R('Fluxo', 'felipe', ['painel', 'op', 'fluxo'], { openPhase: 2 }, '17 etapas e decisão G-01'), R('Documentos', 'felipe', ['painel', 'op', 'docs'], {}, 'anexar e validar D1–D4'), R('Mobilização', 'felipe', ['painel', 'op', 'mob'], {}, 'convocar Paulo e Hélio'), R('Nova operação', 'cecilia', ['painel', 'nova'], {}, 'Cecília · busque "STAR"'), R('Sem sinal', 'joao', ['painel', 'op', 'med'], { offline: true }, 'João · DURANTE entra na fila'), R('Chat', 'cecilia', ['painel', 'chat'], {}, 'conversa da operação'), R('Ask AI', 'felipe', ['painel', 'ai'], {}, 'três perguntas prontas'), R('Fechamento', 'felipe', ['painel', 'op', 'fechar'], {}, 'checklist, submissão, encerrar')].map((r, i) => ({ ...r, n: i + 1 })),
+      drawerItems: drawer.map(([label, k, icon]) => { const a = k === scr; return { label, icon, bg: a ? 'var(--color-accent-100)' : 'transparent', color: a ? 'var(--color-accent-700)' : 'var(--color-text)', weight: a ? 600 : 400, onClick: () => k === 'hist' ? this.root(this.home(), { hist: true }) : this.root(k) }; }),
+      logout: () => this.jump('login'),
+      plusItems: [['Nova operação', 'nova'], ['Registrar medição', 'med'], ['Anexar documento', 'docs'], ['Nova mensagem', 'chat']].map(([label, k]) => ({ label, onClick: () => this.go(k) })),
+      openPlus: () => this.setState({ plus: true }), closeAll: this.closeAll,
+      scrimOp: s.drawer || s.plus || s.confirm ? 1 : 0, scrimPE: s.drawer || s.plus || s.confirm ? 'auto' : 'none',
+      drawerTf: s.drawer ? 'translateX(0)' : 'translateX(-100%)', drawerVis: s.drawer ? 'visible' : 'hidden', drawerShadow: s.drawer ? '0 0 40px rgba(0,0,0,.25)' : 'none',
+      plusTf: s.plus ? 'translateY(0)' : 'translateY(100%)', plusVis: s.plus ? 'visible' : 'hidden',
+      cfTf: s.confirm ? 'translateY(0)' : 'translateY(100%)', cfVis: s.confirm ? 'visible' : 'hidden', cf: s.confirm || { title: '', lines: [], ok: '', cancel: '' },
+      toast: s.toast, hasToast: !!s.toast,
+      wf: WF.map(([id, k, name, outs]) => ({ id, name, outs, border: k === scr ? 'var(--color-accent-600)' : 'var(--color-divider)', onClick: () => this.jump(k) })),
+      machine: MACHINE.map(m => { const a = m === st; return { label: m, bg: a ? 'var(--color-accent-600)' : 'var(--color-bg)', color: a ? '#fff' : 'var(--color-text)' }; }),
+      permHead: RK.map(k => ({ label: P[k][0], color: k === role ? 'var(--color-accent-700)' : 'var(--color-text)' })),
+      perms: PERMS.map(([label, row]) => ({ label, cells: [...row].map((v, i) => ({ v, bg: RK[i] === role ? 'var(--color-accent-100)' : 'transparent' })) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

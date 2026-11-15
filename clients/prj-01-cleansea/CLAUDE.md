@@ -29,6 +29,36 @@ If a fact is not in (1) or (2), it is an **assumption**: write `[ASSUMPTION]` ne
 - Visual style: the ABAP design system only. Never copy styles or colours from client files in `reference/`.
 - Never invent interviews, approvals, numbers, people or test results.
 
+## Architecture decisions and stack (ACT-05)
+Entry point: `docs/architecture/README.md` (stack board). Rules and ADR register: `docs/architecture/CLAUDE.md`. Read both before any ADR or stack work.
+
+```mermaid
+flowchart LR
+  accTitle: Order of work for an ADR
+  accDescr: Update the README stack board first, then write the ADR, then run the linter, then report to the owner.
+  A["1 Update the stack board<br/>docs/architecture/README.md"] --> B["2 Write the ADR<br/>docs/architecture/CLAUDE.md"] --> C["3 npm run adr:lint<br/>ERRORS: 0"] --> D["4 Report<br/>owner decides the status"]
+```
+
+- **README first.** WHEN you record, change or supersede an ADR THEN update the stack board at the top of `docs/architecture/README.md` **before** you write the ADR description. The status in the README MUST equal the status in the ADR.
+- New ADRs start as `Proposed`. Only the owner sets `Accepted`. An Accepted ADR is append-only: supersede it, do not edit it.
+- Each stack choice needs an ADR. A choice without an ADR shows `[OPEN]`.
+- Run `npm run adr:lint -w @clients/prj-01-cleansea` after each change. Report only with `ERRORS: 0`. Do not edit the linter to make it pass.
+- `as_built: VERIFIED` needs `CODE` or `TEST` evidence. A design prototype is not code.
+
+## Document style: visual-first
+Full specification: `docs/architecture/CLAUDE.md`, section 2.13. It applies to every deliverable in `docs/`.
+
+| Content | Form |
+|---|---|
+| Flow, states, structure, dependencies | Mermaid diagram (with `accTitle` and `accDescr`, 12 nodes or fewer) |
+| Comparison, options, status of many items | Table |
+| Reason (why), normative rule (MUST, SHALL) | Short sentences |
+| Long evidence, raw output | `<details>` below the summary |
+
+- Order: one-line summary → diagram or board → tables → details on demand.
+- **Reformat only.** A visual form MUST keep each fact, ID, number, status tag and requirement. Never trade accuracy for a visual.
+- Write each status as a word. Color and glyphs are additions only.
+
 ## Code rules (only after ACT-03, ACT-05 and ACT-06 are APPROVED)
 - Code lives in `src/` (or a new `apps/<client-app>/` workspace when it needs its own deploy). Follow the stack decided in this client's ADR, not the ABAP stack by default.
 - Reuse shared code only from `packages/*`. Never import from another client's folder.
@@ -50,6 +80,7 @@ Before the Drive sync, the only CleanSea material in the repo came from earlier 
 - `apps/abap/data/reference/cleansea.v1.json` — operational model extracted from a prototype: 17 steps in 6 phases (A–F), people, 4 documents (D1–D4), 7 open gaps. Status: **não validado**.
 - `apps/abap/reference/loop-design/` — ADR-002/003 (cite 23 activities in 7 phases; the source file `Clean Sea Pipeline Completo.md` was never provided) and the HTML prototypes `cleansea-*.html`.
 - In ABAP, the Canvas dataset "CleanSea — Studio LOOP" shows this model.
+- `reference/design-handoff-cleansea-app/` — design handoff of the mobile app received on 2026-11-15: a navigable HTML prototype (screens M00–M15, 5 roles, permission matrix, 17 steps, offline queue) and its README. It is a **design reference, not production code**: seeded data, no API, simulated integrations. The `_ds/` design-system bundle of the handoff is not in Git. Its permission matrix, states and open items are proposals until the client confirms them (ADR-013).
 
 When `docs/drive/` contains the real pipeline, it replaces this material: list the differences in `docs/governance/13_decisions-risks_v0.1.md`.
 
