@@ -2,7 +2,9 @@
  * 1) push de proximidade como banner no topo do celular do protótipo;
  * 2) card "Rastreamento ao vivo" na tela M06 Navio;
  * 3) painel completo na página do protótipo, antes do Wireflow;
- * 4) card "Acompanhamento ao vivo" com o mapa, na coluna ao lado do celular.
+ * 4) card "Acompanhamento ao vivo" com o mapa dentro do app, na tela M01 Painel, no lugar do
+ *    "Histórico de coletas · POS"; a tabela fica recolhida abaixo e abre com um toque.
+ * No máximo 3 pop-ups de mensagem chegam ao celular; os demais vão só para a lista de alertas.
  * As mensagens de rastreamento têm botão de pausa: pausadas, ficam só na lista de alertas.
  * Posição AIS, rotas, ETAs e mensagens: SIMULADO. Clima: Open-Meteo quando a rede permitir, senão SIMULADO.
  * Sem dependência do runtime do protótipo: só lê o atributo data-screen-label do celular.
@@ -108,6 +110,8 @@
   // Pausa das mensagens de rastreamento: os banners param de entrar e os visíveis ficam parados.
   // O alerta continua registrado na lista "Alertas e push".
   let msgPaused = false, msgHeld = 0;
+  const MAX_POPUPS = 3;
+  let popupsShown = 0;
   function setMsgPaused(on) {
     msgPaused = on;
     if (pushHost) {
@@ -141,7 +145,8 @@
     if (alerts.length > 60) alerts.pop();
     renderAlerts();
     if (msgPaused) { msgHeld++; renderPauseUi(); }
-    else if (pushHost) {
+    else if (pushHost && popupsShown < MAX_POPUPS) {
+      popupsShown++;
       const b = document.createElement("div");
       b.className = "cst-banner";
       b.setAttribute("role", "status");
@@ -424,6 +429,7 @@
     const f = phoneFrame();
     if (!f) return;
     if (!pushHost || !f.contains(pushHost)) { pushHost = document.createElement("div"); pushHost.className = "cst-push"; pushHost.setAttribute("aria-live", "assertive"); f.append(pushHost); }
+    syncHome(f);
     const onNavio = /M06/.test(f.getAttribute("data-screen-label") || "");
     if (!onNavio) return;
     const scroll = [...f.querySelectorAll("div")].find((d) => d.style.overflowY === "auto" && d.offsetParent !== null);
@@ -437,47 +443,61 @@
     renderPhoneInfo();
   }
   function renderPhoneInfo() {
-    if (!phoneCard || !document.body.contains(phoneCard)) return;
     const v = selected, e = etaObservations(v).chosen, d = nm([v.obs.lat, v.obs.lon], PORT);
-    phoneCard.querySelector(".cst-phone-info").innerHTML = `<b>${esc(v.name)}</b> · IMO ${v.imo}<br>${d.toFixed(1)} mn de Santos · ${v.obs.sog.toFixed(1)} kn<br>ETA ${e ? fmt(e.etaMs) : "—"} · <span style="color:var(--color-text-muted)">${e ? esc(e.src) : "sem fonte válida"}</span>`;
+    for (const card of [phoneCard, homeCard]) {
+      if (!card || !document.body.contains(card)) continue;
+      card.querySelector(".cst-phone-info").innerHTML = `<b>${esc(v.name)}</b> · IMO ${v.imo}<br>${d.toFixed(1)} mn de Santos · ${v.obs.sog.toFixed(1)} kn<br>ETA ${e ? fmt(e.etaMs) : "—"} · <span style="color:var(--color-text-muted)">${e ? esc(e.src) : "sem fonte válida"}</span>`;
+    }
   }
 
-  // ---------- Acompanhamento ao vivo: mapa na coluna ao lado do celular ----------
-  let side = null, sideMap = null;
-  function mountSide() {
-    if (side && document.body.contains(side)) return;
-    const f = phoneFrame();
-    const row = f?.parentElement?.parentElement;
-    const col = row && [...row.children].find((c) => !c.contains(f));
-    if (!col) return;
-    if (sideMap) { sideMap.map.remove(); maps.splice(maps.indexOf(sideMap), 1); sideMap = null; }
-    side = document.createElement("div");
-    side.className = "cst-card cst-side";
-    side.id = "cst-side";
-    side.innerHTML = `<div class="cst-head"><span class="cst-label">Acompanhamento ao vivo</span><span class="cst-tag">AIS SIMULADO</span></div>
-      <div class="cst-map side" role="img" aria-label="Mapa de acompanhamento com navios, terminais e anéis de proximidade de Santos"></div>
-      <div class="cst-side-info" aria-live="off"></div>
-      <div class="cst-controls" role="group" aria-label="Navios e mensagens"><span class="cst-side-ships"></span></div>
-      <div class="cst-controls"><button type="button" class="cst-btn" data-cst-msgpause aria-pressed="false">Pausar mensagens</button><a class="cst-btn" href="#cleansea-tracking">Painel completo</a></div>`;
-    side.querySelector("[data-cst-msgpause]").onclick = () => setMsgPaused(!msgPaused);
-    col.insertBefore(side, col.children[1] || null);
-    sideMap = makeMap(side.querySelector(".cst-map"), { mini: false });
-    setTimeout(() => sideMap?.map.invalidateSize(), 50);
-    renderPauseUi();
-    renderSide();
+  // ---------- Acompanhamento ao vivo: mapa dentro do app, tela M01 Painel ----------
+  // Fica no lugar do "Histórico de coletas · POS"; a tabela passa para baixo, recolhida.
+  let homeCard = null, homeMap = null, histOpen = false;
+  function applyHist(card, head) {
+    card.classList.toggle("cst-collapsed", !histOpen);
+    head.setAttribute("aria-expanded", String(histOpen));
   }
-  function renderSide() {
-    if (!side || !document.body.contains(side)) return;
-    const v = selected, e = etaObservations(v).chosen, d = nm([v.obs.lat, v.obs.lon], PORT);
-    side.querySelector(".cst-side-info").innerHTML = `<b>${esc(v.name)}</b> · IMO ${v.imo} · ${esc(termById[v.terminal].name)}<br>${d.toFixed(1)} mn de Santos · ${v.obs.sog.toFixed(1)} kn · ETA ${e ? fmt(e.etaMs) : "—"} <span class="cst-muted">(${e ? esc(e.src) : "sem fonte válida"})</span>`;
-    const ships = side.querySelector(".cst-side-ships");
+  function syncHome(f) {
+    if (!/M01/.test(f.getAttribute("data-screen-label") || "")) return;
+    const head = [...f.querySelectorAll("div")].find((d) => d.childElementCount === 0 && d.textContent.trim() === "Histórico de coletas · POS");
+    const card = head?.parentElement;
+    if (!card) return;
+    if (!card.classList.contains("cst-hist")) {
+      card.classList.add("cst-hist");
+      head.classList.add("cst-hist-head");
+      head.setAttribute("role", "button");
+      head.tabIndex = 0;
+      const toggle = () => { histOpen = !histOpen; applyHist(card, head); };
+      head.addEventListener("click", toggle);
+      head.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+    }
+    applyHist(card, head);
+    if (homeCard && homeCard.nextElementSibling === card) return;
+    if (homeMap) { homeMap.map.remove(); maps.splice(maps.indexOf(homeMap), 1); homeMap = null; }
+    homeCard?.remove();
+    homeCard = document.createElement("div");
+    homeCard.className = "cst-phone-card cst-home";
+    homeCard.innerHTML = `<div class="cst-head"><span class="cst-label">Acompanhamento ao vivo</span><span class="cst-tag">AIS SIMULADO</span></div>
+      <div class="cst-map home" role="img" aria-label="Mapa de acompanhamento do navio selecionado, terminais e anéis de proximidade de Santos"></div>
+      <div class="cst-phone-info" style="font-size:13px;line-height:1.4"></div>
+      <div class="cst-home-ships" role="group" aria-label="Escolher navio"></div>
+      <div class="cst-controls"><button type="button" class="cst-btn" data-cst-msgpause aria-pressed="false">Pausar mensagens</button><a class="cst-btn" href="#cleansea-tracking">Painel completo</a></div>`;
+    homeCard.querySelector("[data-cst-msgpause]").onclick = () => setMsgPaused(!msgPaused);
+    card.parentElement.insertBefore(homeCard, card);
+    homeMap = makeMap(homeCard.querySelector(".cst-map"), { mini: true });
+    setTimeout(() => homeMap?.map.invalidateSize(), 50);
+    renderPauseUi();
+    renderHome();
+  }
+  function renderHome() {
+    if (!homeCard || !document.body.contains(homeCard)) return;
+    const ships = homeCard.querySelector(".cst-home-ships");
     if (ships.childElementCount !== vessels.length) {
       ships.innerHTML = "";
       for (const x of vessels) {
         const b = document.createElement("button");
-        b.type = "button"; b.className = "cst-btn"; b.textContent = x.name;
+        b.type = "button"; b.className = "cst-btn"; b.textContent = x.name; b._v = x;
         b.onclick = () => select(x);
-        b._v = x;
         ships.append(b);
       }
     }
@@ -498,7 +518,7 @@
   function renderAll() {
     const c = document.getElementById("cst-clock");
     if (c) c.textContent = `Relógio simulado · ${fmt(simMs)}`;
-    renderVessels(); renderDetail(); renderAlerts(); renderWa(); renderPhoneInfo(); renderSide(); drawMaps();
+    renderVessels(); renderDetail(); renderAlerts(); renderWa(); renderPhoneInfo(); renderHome(); drawMaps();
   }
 
   let last = performance.now(), acc = 0;
@@ -507,10 +527,10 @@
     last = now;
     step(dt);
     acc += dt;
-    if (acc > 500) { acc = 0; mountPanel(); mountSide(); syncPhone(); renderAll(); }
+    if (acc > 500) { acc = 0; mountPanel(); syncPhone(); renderAll(); }
     requestAnimationFrame(loop);
   }
-  const start = () => { mountPanel(); mountSide(); syncPhone(); loadWeather(); requestAnimationFrame(loop); };
+  const start = () => { mountPanel(); syncPhone(); loadWeather(); requestAnimationFrame(loop); };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
   window.addEventListener("hashchange", () => { if (location.hash === "#cleansea-tracking") panel?.scrollIntoView({ behavior: "smooth" }); });
 })();

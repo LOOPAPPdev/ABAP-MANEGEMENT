@@ -11,10 +11,15 @@
 .cst-tag.live{background:color-mix(in srgb,var(--color-success) 16%,var(--color-bg));color:var(--color-success)}
 .cst-map{height:380px;border-radius:10px;border:1px solid var(--color-divider);z-index:0}
 .cst-map.mini{height:150px}
-.cst-map.side{height:300px}
-.cst-side .cst-btn[aria-pressed="true"]{border-color:var(--color-accent-600);background:var(--color-accent-100);color:var(--color-accent-700)}
-.cst-side-info{font-size:13px;line-height:1.45}
-.cst-side-ships{display:flex;flex-wrap:wrap;gap:6px}
+.cst-map.home{height:220px}
+.cst-home .cst-btn[aria-pressed="true"]{border-color:var(--color-accent-600);background:var(--color-accent-100);color:var(--color-accent-700)}
+.cst-home-ships{display:flex;flex-wrap:wrap;gap:6px}
+.cst-home .cst-btn{min-height:40px}
+.cst-hist-head{cursor:pointer;display:flex;justify-content:space-between;align-items:center;min-height:24px}
+.cst-hist-head::after{content:"›";font-size:20px;line-height:1;color:var(--color-text-muted);transform:rotate(90deg);transition:transform 160ms}
+.cst-hist.cst-collapsed .cst-hist-head::after{transform:none}
+.cst-hist-head:focus-visible{outline:2px solid var(--color-accent-600);outline-offset:-2px}
+.cst-hist.cst-collapsed > :not(.cst-hist-head){display:none !important}
 a.cst-btn{display:inline-flex;align-items:center;text-decoration:none}
 .cst-controls{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .cst-btn{min-height:36px;border:1px solid var(--color-divider);background:var(--color-bg);color:var(--color-text);border-radius:10px;padding:6px 12px;font-size:13px;font-weight:500;cursor:pointer}
