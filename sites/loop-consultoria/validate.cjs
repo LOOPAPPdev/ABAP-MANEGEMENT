@@ -19,7 +19,7 @@ const LIMITS = { "hero.title": 48, "hero.subtitle": 110, "section.title": 32, "c
       return {
         scrollX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
         h1: h1.length, h1Bottom: h1[0] ? r(h1[0]).bottom : 9999, ctaBottom: cta ? r(cta).bottom : 9999,
-        smallTargets: [...document.querySelectorAll(".ui-button,summary")].filter((e) => r(e).height && r(e).height < 36).length,
+        smallTargets: [...document.querySelectorAll(".sv-btn,.sv-tab,.sv-pause,[role=tab],summary")].filter((e) => r(e).height && r(e).height < 36).length,
         imgsNoAlt: [...document.querySelectorAll("img:not([alt])")].length,
       };
     });

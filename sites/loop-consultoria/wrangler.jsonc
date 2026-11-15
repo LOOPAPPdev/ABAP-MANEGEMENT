@@ -4,6 +4,6 @@
   "main": "worker.js",
   "compatibility_date": "2026-11-01",
   "workers_dev": true,
-  "rules": [{ "type": "Text", "globs": ["**/*.html", "**/*.css"], "fallthrough": true }],
+  "rules": [{ "type": "Text", "globs": ["**/*.html", "**/*.css", "**/*.client.js"], "fallthrough": true }],
   "d1_databases": [{ "binding": "DB", "database_name": "loop-site-leads", "database_id": "d86a8249-dd5d-4f3b-8bf7-f26e423afdd6" }]
 }

@@ -75,17 +75,10 @@ test("shared components exist in both workspaces (only what both use)", () => {
   }
 });
 
-test("the landing imports the package and uses only defined ui-* classes", () => {
-  const site = join(root, "sites", "loop-consultoria");
-  const worker = read(site, "worker.js");
-  for (const f of ["theme/loop.css", ...readdirSync(join(pkg, "components")).map((c) => `components/${c}`)])
-    assert.ok(worker.includes(`../../packages/ui/${f}`), `worker.js does not import ${f}`);
-  const html = read(site, "index.html");
-  assert.match(html, /<link rel="stylesheet" href="\/ui\.css">/);
-  const defined = new Set(readdirSync(join(pkg, "components")).flatMap((c) => [...read(pkg, "components", c).matchAll(/\.(ui-[a-z0-9_-]+)/g)].map((m) => m[1])));
-  const used = new Set([...html.matchAll(/class="([^"]+)"/g)].flatMap((m) => m[1].split(/\s+/)).filter((c) => c.startsWith("ui-")));
-  for (const c of used) assert.ok(defined.has(c), `landing uses undefined class ${c}`);
-  assert.ok(used.size >= 10, "landing should use the shared primitives");
+test("the Loop landing does not use @abap/ui (it uses the exclusive @loop/ui, decision 2026-11-15)", () => {
+  const worker = read(root, "sites", "loop-consultoria", "worker.js");
+  assert.doesNotMatch(worker, /packages\/ui\//);
+  assert.match(worker, /packages\/loop-ui\//);
 });
 
 test("LOOP theme carries the Screens v2 rc scale and palette (values from the design bundle)", () => {

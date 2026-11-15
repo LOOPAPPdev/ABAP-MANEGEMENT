@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,476 +14,375 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<!-- @abap/ui: LOOP theme + shared primitives (button, card, badge, field, separator). Served by worker.js from packages/ui. -->
-<link rel="stylesheet" href="/ui.css">
+<!-- @loop/ui (exclusive LOOP package): Screens v2 tokens + page patterns. Served by worker.js from packages/loop-ui. -->
+<link rel="stylesheet" href="/loop-ui.css">
+<script>document.documentElement.setAttribute("data-theme",matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")</script>
 <style>
-/* Screens v2 design system (rc bundle + loop-theme), via @abap/ui tokens. Landing layout and landing-only primitives
-   (accordion, checkbox, slider). Every colour, size and radius comes from /ui.css tokens. */
-*{box-sizing:border-box}
-.ui-card{background:var(--loop-slate-100)} /* Screens v2: cards sit on the surface ground; raised sheets override below */
-html{scroll-behavior:smooth;scroll-padding-top:80px;-webkit-text-size-adjust:100%}
-body{margin:0;background:hsl(var(--background));color:hsl(var(--foreground));font:400 var(--text-body)/var(--leading-body) var(--font-sans);letter-spacing:var(--tracking-body);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip}
-a{color:hsl(var(--foreground));text-underline-offset:3px}
-h1,h2,h3,p{margin:0}
-h1{font-weight:700;font-size:clamp(36px,5.4vw,72px);line-height:1;letter-spacing:-.04em;text-wrap:balance}
-h2{font-weight:500;font-size:clamp(30px,4vw,50px);line-height:1.1;letter-spacing:-.03em;text-wrap:balance}
-h3{font-weight:500;font-size:20px;line-height:1.3;letter-spacing:-.015em}
-:focus-visible{outline:2px solid hsl(var(--ring));outline-offset:2px}
-.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(16px,3vw,32px)}
-.section{padding-top:clamp(88px,10vw,120px)}
-.eyebrow{font:500 15px/1.35 var(--font-sans);letter-spacing:-.01em;color:hsl(var(--muted-foreground))}
-.lede{color:hsl(var(--muted-foreground));font-size:clamp(var(--text-body),1.6vw,var(--text-lead));line-height:var(--leading-lead);letter-spacing:-.015em;max-width:56ch;text-wrap:pretty}
-.intro{display:flex;flex-direction:column;gap:var(--space-4);margin-bottom:var(--space-7)}
-.intro.center{align-items:center;text-align:center}
-.muted{color:hsl(var(--muted-foreground))}
-.micro{font-size:var(--text-caption);line-height:var(--leading-caption);letter-spacing:var(--tracking-caption);color:hsl(var(--muted-foreground))}
-.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:0}
-.skip{position:absolute;left:-999px}.skip:focus{left:16px;top:12px;z-index:99}
-/* Stage: Screens v2 surface ground (slate-100), hairline divider, card radius */
-.stage{position:relative;border:1px solid var(--loop-divider);border-radius:var(--radius-card);background:var(--loop-slate-100);overflow:hidden}
-.stage.t-blue{background:var(--loop-blue-tint)}.stage.t-purple{background:var(--loop-purple-tint)}.stage.t-green{background:var(--loop-green-tint)}
-/* Nav: 72px, 85% ground + blur 18 (Screens v2 header) */
-header.nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,hsl(var(--background)) 85%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-.nav-in{display:flex;align-items:center;justify-content:space-between;gap:var(--space-5);height:72px}
-.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:20px;letter-spacing:-.02em;text-decoration:none}
-.logo i{width:22px;height:22px;border-radius:7px;background:hsl(var(--foreground));display:grid;place-items:center}
-.logo i::after{content:"";width:9px;height:9px;border-radius:50%;border:2.2px solid hsl(var(--background))}
-.nav-links{display:flex;gap:6px;list-style:none;margin:0;padding:4px;border-radius:999px;background:var(--loop-slate-100)}
-.nav-links .ui-button{color:hsl(var(--muted-foreground));padding:0 16px}.nav-links .ui-button:hover{color:hsl(var(--foreground));background:hsl(var(--background))}
-@media (max-width:860px){.nav-links{display:none}}
-/* Hero */
-.hero{padding-top:var(--space-7)}
-.hero-panel{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(20px,3vw,48px);padding:clamp(14px,2.4vw,32px);align-items:center}
-.hero-copy{display:flex;flex-direction:column;gap:var(--space-5);padding:clamp(4px,1.4vw,16px)}
-.hero-copy .lede{max-width:40ch}
-.cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-@media (max-width:980px){.hero-panel{grid-template-columns:1fr}.hero-copy{order:-1}}
-/* Simulator: raised white card on the surface ground */
-.sim{display:flex;flex-direction:column;gap:14px;min-width:0;padding:var(--space-4);background:hsl(var(--background));box-shadow:0 1px 0 var(--loop-divider)}
-.sim-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.sim svg{width:100%;height:auto;display:block}
-.sim-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.kpi{border-radius:var(--radius-md);background:var(--loop-slate-100);padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
-.kpi span{font-size:var(--text-micro);color:hsl(var(--muted-foreground))}
-.kpi b{font-size:clamp(18px,1.8vw,22px);font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.ctrl{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;font-size:var(--text-caption)}
-.ctrl output{font-weight:600;font-variant-numeric:tabular-nums;font-size:13px;color:hsl(var(--muted-foreground))}
-.sim-note{font-size:var(--text-caption);line-height:var(--leading-caption);padding:10px 12px;border-radius:var(--radius-md);background:var(--loop-slate-100);min-height:62px;display:grid;grid-template-columns:8px 1fr;gap:10px;align-items:start}
-.sim-note::before{content:"";width:8px;height:8px;border-radius:50%;margin-top:6px;background:var(--loop-blue)}
+/* Landing-only: the operation simulator inside a Screens v2 panel. Tokens from /loop-ui.css. */
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+.sim svg{width:100%;height:auto;display:block;margin-top:20px}
+.sim-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
+.sim-kpis div{border-radius:12px;background:var(--color-surface);padding:12px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.sim-kpis span{font-size:13px;color:var(--color-text-muted)}
+.sim-kpis b{font-size:clamp(18px,2vw,24px);font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ctrl{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;margin-top:18px;font-size:15px}
+.ctrl output{font-weight:600;font-variant-numeric:tabular-nums;font-size:14px;color:var(--color-text-muted)}
+.ctrl input{grid-column:1/-1;width:100%;margin:0;accent-color:var(--color-text)}
+.sim-note{margin:20px 0 0;font-size:15px;line-height:1.5;padding:14px 16px;border-radius:12px;background:var(--color-surface);display:grid;grid-template-columns:8px 1fr;gap:12px;align-items:start}
+.sim-note::before{content:"";width:8px;height:8px;border-radius:50%;margin-top:7px;background:var(--color-accent)}
 .sim-note.bad{background:var(--loop-warn-tint)}.sim-note.bad::before{background:var(--loop-warn)}
 .sim-note.ok{background:var(--loop-green-tint)}.sim-note.ok::before{background:var(--loop-green)}
-/* Slider (Screens v2 progress bar look: text-colour fill on a 14% track) */
-.slider{-webkit-appearance:none;appearance:none;grid-column:1/-1;width:100%;height:20px;margin:0;background:transparent;cursor:pointer;--p:50%}
-.slider::-webkit-slider-runnable-track{height:4px;border-radius:4px;background:linear-gradient(hsl(var(--foreground)),hsl(var(--foreground))) 0/var(--p) 100% no-repeat,color-mix(in srgb,hsl(var(--foreground)) 14%,transparent)}
-.slider::-moz-range-track{height:4px;border-radius:4px;background:color-mix(in srgb,hsl(var(--foreground)) 14%,transparent)}
-.slider::-moz-range-progress{height:4px;border-radius:4px;background:hsl(var(--foreground))}
-.slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border-radius:50%;background:hsl(var(--background));border:1px solid var(--loop-divider);box-shadow:0 1px 3px rgb(0 0 0/.16);transition:box-shadow var(--duration-fast)}
-.slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:hsl(var(--background));border:1px solid var(--loop-divider);box-shadow:0 1px 3px rgb(0 0 0/.16)}
-.slider:focus-visible{outline:none}.slider:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px hsl(var(--ring)/.3)}.slider:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px hsl(var(--ring)/.3)}
-/* Grids */
-.grid{display:grid;gap:var(--space-5)}
-.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
-.g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
-/* Cards: flat surface tiles (no border, no shadow) */
-.card{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5) var(--space-5) 28px;min-width:0;transition:background-color var(--duration-base) var(--ease-standard)}
-.card:hover{background:var(--loop-slate-200)}
-.card p{color:hsl(var(--muted-foreground));font-size:15px;line-height:1.5;letter-spacing:-.01em}
-.card .note{font-size:15px;color:hsl(var(--foreground));margin-top:auto;padding-top:var(--space-4)}
-.card .note b{font-weight:600}
-.idx{font:500 var(--text-micro)/1 var(--font-mono);color:hsl(var(--muted-foreground));letter-spacing:0}
-.card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:var(--space-6)}
-.pain{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:var(--space-5);list-style:none;padding:0;margin:0}
-.pain li{display:flex;flex-direction:column;gap:6px;padding:var(--space-5)}
-.pain b{font-weight:500;font-size:var(--text-body);letter-spacing:-.015em}
-.pain span{color:hsl(var(--muted-foreground));font-size:15px;line-height:1.5;letter-spacing:-.01em}
-/* Badges: Screens v2 chips */
-.ui-badge{font-weight:500;letter-spacing:-.01em}
-.ui-badge--secondary{background:color-mix(in srgb,hsl(var(--foreground)) 9%,var(--loop-slate-100))}
-.ui-badge--outline{border-color:var(--loop-divider)}
-/* Feature rows */
-.feature{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(24px,5vw,72px);align-items:center}
-.feature.rev>.stage{order:2}
-@media (max-width:900px){.feature{grid-template-columns:1fr}.feature.rev>.stage{order:0}}
-.feature>.stage{padding:clamp(20px,5vw,64px)}
-.fc{display:flex;flex-direction:column;gap:var(--space-4)}
-.fc>p:not(.eyebrow){color:hsl(var(--muted-foreground));font-size:var(--text-body)}
-.ticks{list-style:none;padding:0;margin:var(--space-2) 0 0;display:flex;flex-direction:column;gap:10px}
-.ticks li{display:grid;grid-template-columns:20px 1fr;gap:10px;font-size:15px;line-height:1.5;letter-spacing:-.01em}
-.ticks li::before{content:"";width:16px;height:16px;margin-top:3px;background:hsl(var(--foreground));-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/contain no-repeat}
-/* Mock UI: white sheet on a tinted ground (Screens v2 "card on tint") */
-.mock{display:flex;flex-direction:column;gap:0;padding:6px 18px;font-size:var(--text-caption);background:hsl(var(--background));border-radius:var(--radius-md);box-shadow:0 20px 40px -18px rgb(0 0 0/.25)}
-.mock-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--loop-divider)}
-.mock-row:last-of-type{border-bottom:0}
-.mock-row b{font-weight:600}
-.mock-row span:first-child{color:hsl(var(--muted-foreground))}
-.mock .micro{padding:10px 0 8px}
-.bar{height:4px;border-radius:4px;background:color-mix(in srgb,hsl(var(--foreground)) 14%,transparent);overflow:hidden;margin:6px 0 4px}.bar i{display:block;height:100%;border-radius:4px;background:hsl(var(--foreground))}
-.bar.brand i{background:var(--loop-blue)}
-.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
-.st-ok{color:var(--loop-green)}.st-warn{color:var(--loop-warn)}.st-info{color:var(--loop-blue)}
-/* Steps */
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:var(--space-5);counter-reset:s;list-style:none;padding:0;margin:0}
-.steps li{counter-increment:s;display:flex;flex-direction:column;gap:10px;padding:var(--space-5) var(--space-5) 28px}
-.steps li::before{content:counter(s,upper-alpha);width:32px;height:32px;border-radius:999px;display:grid;place-items:center;background:hsl(var(--foreground));color:hsl(var(--background));font:500 13px/1 var(--font-mono);margin-bottom:var(--space-4)}
-.steps p{font-size:15px;line-height:1.5;letter-spacing:-.01em;color:hsl(var(--muted-foreground))}
-.steps small{font-size:var(--text-caption);color:hsl(var(--foreground));margin-top:auto;padding-top:var(--space-4);border-top:1px solid var(--loop-divider)}
-/* Connectors: chips */
-.conn{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;list-style:none;padding:0;margin:0 auto;max-width:860px}
-.conn .ui-badge{font-size:16px;padding:12px 20px;border:0;background:color-mix(in srgb,hsl(var(--foreground)) 9%,var(--loop-slate-100))}
-/* Path: segmented rail */
-.path{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));list-style:none;padding:5px;margin:0;gap:5px;border-radius:14px;background:var(--loop-slate-100)}
-.path li{padding:var(--space-5);display:flex;flex-direction:column;gap:8px;border-radius:10px;background:hsl(var(--background));box-shadow:0 1px 3px rgb(0 0 0/.06)}
-.path p{font-size:15px;line-height:1.5;letter-spacing:-.01em;color:hsl(var(--muted-foreground))}
-/* Accordion (landing-only, on <details>) */
-.faq{max-width:760px;margin:0 auto;border-top:1px solid var(--loop-divider)}
-.faq details{border-bottom:1px solid var(--loop-divider)}
-.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:22px 0;font-weight:500;font-size:20px;letter-spacing:-.015em;line-height:1.3;min-height:44px}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"";width:28px;height:28px;flex:none;border-radius:999px;background:var(--loop-slate-100) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f6670' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center/14px no-repeat;transition:transform var(--duration-base) var(--ease-standard)}
-.faq details[open] summary::after{transform:rotate(45deg)}
-.faq details p{color:hsl(var(--muted-foreground));padding:0 0 22px;max-width:62ch;font-size:var(--text-body)}
-/* CTA band + form */
-.band{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,72px);align-items:start;padding:clamp(24px,5vw,64px)}
-@media (max-width:900px){.band{grid-template-columns:1fr}}
-form.ui-card{display:flex;flex-direction:column;gap:var(--space-4);padding:clamp(18px,2.4vw,28px);background:hsl(var(--background));box-shadow:0 20px 40px -18px rgb(0 0 0/.2)}
-.field{display:flex;flex-direction:column;gap:8px}
-.ui-input,.ui-textarea{background:var(--loop-slate-100);border-color:transparent;letter-spacing:-.01em}
-.ui-input:focus-visible,.ui-textarea:focus-visible{background:hsl(var(--background))}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media (max-width:520px){.two{grid-template-columns:1fr}}
-/* Checkbox (landing-only) */
-.consent{display:grid;grid-template-columns:16px 1fr;gap:10px;align-items:start;font-size:13px;line-height:1.5;color:hsl(var(--muted-foreground));cursor:pointer}
-.checkbox{-webkit-appearance:none;appearance:none;width:16px;height:16px;margin:2px 0 0;border:1px solid hsl(var(--foreground));border-radius:4px;background:hsl(var(--background));display:grid;place-items:center;cursor:pointer}
-.checkbox:checked{background:hsl(var(--foreground))}
-.checkbox:checked::after{content:"";width:10px;height:10px;background:hsl(var(--background));-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/contain no-repeat}
-.checkbox:focus-visible{outline:none;box-shadow:0 0 0 3px hsl(var(--ring)/.3)}
-.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-.form-msg{font-size:var(--text-caption);padding:10px 12px;border-radius:var(--radius-md);display:none}
-.form-msg.ok{display:block;background:var(--loop-green-tint);color:var(--loop-green)}
-.form-msg.err{display:block;background:var(--loop-warn-tint);color:var(--loop-warn)}
-.ui-button--default:hover{background:var(--loop-action-hover)}
-.ui-button--outline:hover{background:var(--loop-slate-100)}
-.w-full{width:100%}
-footer{margin-top:120px;padding:24px 0 40px;font-size:var(--text-caption);color:hsl(var(--muted-foreground))}
-.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;padding-top:24px}
-.foot nav{display:flex;gap:20px;flex-wrap:wrap}
-.foot a{color:hsl(var(--muted-foreground));text-decoration:none}.foot a:hover{color:hsl(var(--foreground))}
-[data-reveal]{opacity:0;transform:translateY(12px);transition:opacity .6s var(--ease-standard),transform .6s var(--ease-standard)}
-[data-reveal].in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}[data-reveal]{opacity:1;transform:none}}
+.sim-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid var(--color-divider);font-size:13px;color:var(--color-text-muted)}
+.sim-foot p{margin:0}
+.svc-media{display:grid;grid-template-columns:3fr 2fr;grid-template-rows:1fr 1fr;gap:3px;margin-top:16px;border-radius:14px;overflow:hidden;aspect-ratio:2/1}
+.svc-media>:first-child{grid-row:span 2}
+.part-entrega{display:block;margin-top:14px;padding-top:14px;border-top:1px solid var(--color-divider);font-size:15px}
+.rail-idx{font:500 12px var(--font-mono);color:var(--color-text-muted)}
+.rail-title{margin:8px 0 0;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.rail-text{margin:6px 0 0;font-size:15px;line-height:1.5;color:var(--color-text-muted)}
+.col-title{margin:0;font-size:20px;font-weight:400;letter-spacing:-.015em}
+.col-text{margin:10px 0 0;font-size:15px;line-height:1.5;color:var(--color-text-muted)}
 </style>
 </head>
 <body>
-<a class="skip ui-button ui-button--outline" href="#conteudo">Ir para o conteúdo</a>
+<a class="sv-skip skip sv-btn sv-btn--secondary" href="#conteudo">Ir para o conteúdo</a>
 
-<header class="nav">
-  <div class="wrap nav-in">
-    <a class="logo" href="#topo" aria-label="Loop Consultoria — início"><i aria-hidden="true"></i>Loop</a>
-    <nav aria-label="Principal">
-      <ul class="nav-links">
-        <li><a class="ui-button ui-button--ghost" href="#metodo" data-slot="nav.item">Método</a></li>
-        <li><a class="ui-button ui-button--ghost" href="#servicos" data-slot="nav.item">Serviços</a></li>
-        <li><a class="ui-button ui-button--ghost" href="#plataforma" data-slot="nav.item">Plataforma</a></li>
-        <li><a class="ui-button ui-button--ghost" href="#faq" data-slot="nav.item">Perguntas</a></li>
-      </ul>
-    </nav>
-    <a class="ui-button ui-button--default" href="#diagnostico" data-slot="cta.label" data-cta="nav">Agendar diagnóstico</a>
-  </div>
+<header class="sv-header">
+  <nav class="sv-wrap sv-nav" aria-label="Principal" data-sv-spy>
+    <a class="sv-logo" href="#topo" aria-label="Loop Consultoria — início"><i aria-hidden="true"></i>Loop</a>
+    <ul class="sv-tabs" role="list">
+      <li><a class="sv-tab sv-tap" href="#metodo" data-slot="nav.item">Método</a></li>
+      <li><a class="sv-tab sv-tap" href="#servicos" data-slot="nav.item">Serviços</a></li>
+      <li><a class="sv-tab sv-tap" href="#plataforma" data-slot="nav.item">Plataforma</a></li>
+      <li><a class="sv-tab sv-tap" href="#faq" data-slot="nav.item">Perguntas</a></li>
+    </ul>
+    <div class="sv-actions">
+      <a class="sv-btn sv-btn--tonal sv-btn--sm" href="#metodo" data-slot="cta.label">Ver o método</a>
+      <a class="sv-btn sv-btn--primary sv-btn--sm" href="#diagnostico" data-slot="cta.label" data-cta="nav">Agendar diagnóstico <span aria-hidden="true">↗</span></a>
+    </div>
+  </nav>
 </header>
 
-<main id="conteudo">
+<main id="conteudo" class="sv-wrap">
 <span id="topo"></span>
 
-<!-- 1 · HERO -->
-<section class="hero wrap" aria-labelledby="h-hero">
-  <div class="stage hero-panel">
-    <div class="ui-card sim" aria-labelledby="sim-title">
-      <div class="sim-head">
-        <span class="ui-badge ui-badge--outline" id="sim-title">Modelo de uma operação</span>
-        <span class="ui-badge ui-badge--secondary">Exemplo ilustrativo</span>
+<!-- Hero panel: feed (left) + display title (right) -->
+<section style="padding-top:48px" aria-labelledby="h-hero">
+  <div class="sv-hero">
+    <div class="sv-feed-mask" aria-hidden="true">
+      <div class="sv-feed" id="feed" data-sv-feed="0.5">
+        <div class="sv-feed-item"><div class="sv-feed-card" style="--tint:14%"><div class="sv-ph"></div><div class="sv-progress"><div class="sv-bar" style="--w:70%"><i></i></div><div class="sv-mini-pill">● →</div></div></div></div>
+        <div class="sv-feed-item sv-feed-item--end"><div class="sv-chip">Pedidos copiados à mão</div></div>
+        <div class="sv-feed-item"><div class="sv-feed-card" style="--tint:22%"><div class="sv-ph"></div><div class="sv-progress"><div class="sv-bar" style="--w:40%"><i></i></div><div class="sv-mini-pill">● →</div></div></div></div>
+        <div class="sv-feed-item sv-feed-item--end"><div class="sv-chip">Informação espalhada</div></div>
+        <div class="sv-feed-item"><div class="sv-feed-card" style="--tint:10%"><div class="sv-ph"></div><div class="sv-progress"><div class="sv-bar" style="--w:55%"><i></i></div><div class="sv-mini-pill">● →</div></div></div></div>
+        <div class="sv-feed-item sv-feed-item--end"><div class="sv-chip">Tornar visível</div></div>
+        <div class="sv-feed-item"><div class="sv-feed-card" style="--tint:18%"><div class="sv-ph"></div><div class="sv-progress"><div class="sv-bar" style="--w:30%"><i></i></div><div class="sv-mini-pill">● →</div></div></div></div>
+        <div class="sv-feed-item sv-feed-item--end"><div class="sv-chip">Simular antes</div></div>
+        <div class="sv-feed-item"><div class="sv-feed-card" style="--tint:26%"><div class="sv-ph"></div><div class="sv-progress"><div class="sv-bar" style="--w:85%"><i></i></div><div class="sv-mini-pill">● →</div></div></div></div>
+        <div class="sv-feed-item sv-feed-item--end"><div class="sv-chip">Automatizar com controle</div></div>
       </div>
+    </div>
+    <div class="sv-hero-copy">
+      <h1 class="sv-display" id="h-hero" data-slot="hero.title">Veja sua operação antes de mudá-la</h1>
+      <div class="sv-cta-row">
+        <a class="sv-btn sv-btn--primary" href="#diagnostico" data-slot="cta.label" data-cta="hero">Agendar diagnóstico</a>
+        <a class="sv-btn sv-btn--secondary" href="#metodo" data-slot="cta.label">Ver o método</a>
+      </div>
+    </div>
+    <button class="sv-pause sv-tap" type="button" data-sv-pause="feed" data-pause="Pausar animação" data-play="Retomar animação" aria-pressed="false">Pausar animação</button>
+  </div>
+  <div style="padding:28px 0 0" data-reveal>
+    <p class="sv-headline" data-slot="hero.subtitle">Mapeamos sua empresa como um sistema, simulamos cenários e automatizamos só o que traz retorno.</p>
+    <div class="sv-meta"><p>Consultoria de eficiência operacional para PMEs</p><p>Primeira conversa de 30 minutos, sem custo. Você sai com um mapa inicial dos gargalos.</p></div>
+  </div>
+</section>
+
+<!-- Problem: featured tiles -->
+<section aria-labelledby="h-prob">
+  <div class="sv-sec-head"><h2 class="sv-sec-title" id="h-prob" data-slot="section.title">O custo que ninguém vê</h2><p class="sv-sec-kicker">O problema</p></div>
+  <p class="sv-sec-lede">O trabalho manual não aparece em nenhum relatório. Ele aparece em atraso, erro e gente sobrecarregada.</p>
+  <ul class="sv-tiles">
+    <li class="sv-tile" data-reveal><div class="sv-tile-media"><div class="sv-ph" role="img" aria-label="Ilustração: pedidos digitados de novo"></div></div><h3 class="sv-tile-title">Pedidos copiados à mão</h3><p class="sv-tile-text">Chegam pelo WhatsApp e alguém digita tudo de novo no sistema.</p></li>
+    <li class="sv-tile" data-reveal><div class="sv-tile-media"><div class="sv-ph" role="img" aria-label="Ilustração: documentos em conferência"></div></div><h3 class="sv-tile-title">Documentos conferidos um a um</h3><p class="sv-tile-text">Notas, manifestos e certificados dependem de uma pessoa disponível.</p></li>
+    <li class="sv-tile" data-reveal><div class="sv-tile-media"><div class="sv-ph" role="img" aria-label="Ilustração: planilhas separadas"></div></div><h3 class="sv-tile-title">Informação espalhada</h3><p class="sv-tile-text">Cada área tem a sua planilha. Ninguém vê a operação inteira.</p></li>
+    <li class="sv-tile" data-reveal><div class="sv-tile-media"><div class="sv-ph" role="img" aria-label="Ilustração: decisão sem indicador"></div></div><h3 class="sv-tile-title">Decisão sem número</h3><p class="sv-tile-text">O gestor descobre o gargalo quando o cliente reclama.</p></li>
+  </ul>
+</section>
+
+<!-- Capabilities: news rows -->
+<section aria-labelledby="h-cap">
+  <div class="sv-sec-head"><h2 class="sv-sec-title" id="h-cap" data-slot="section.title">Três movimentos, nessa ordem</h2><p class="sv-sec-kicker">O que fazemos</p></div>
+  <p class="sv-sec-lede">O cliente não compra um agente de IA. Compra menos custo, menos erro e mais controle da operação.</p>
+  <ol class="sv-rows">
+    <li class="sv-row" data-reveal><div class="sv-row-media" style="--tint:14%"><div class="sv-ph" role="img" aria-label="Ilustração: mapa da operação"></div></div><div><h3 class="sv-row-title" data-slot="card.title">Tornar visível</h3><div class="sv-meta"><span data-slot="card.label">Tornar visível</span><span data-slot="card.desc">Sua operação em um mapa único, do pedido à entrega.</span></div><p class="sv-tile-note">Fluxo, pessoas e informação em <b>um mapa</b> que a equipe valida.</p></div></li>
+    <li class="sv-row" data-reveal><div class="sv-row-media" style="--tint:30%"><div class="sv-ph" role="img" aria-label="Ilustração: cenários comparados"></div></div><div><h3 class="sv-row-title" data-slot="card.title">Simular antes</h3><div class="sv-meta"><span data-slot="card.label">Simular antes</span><span data-slot="card.desc">Cenários comparados antes de gastar com tecnologia.</span></div><p class="sv-tile-note">“Se automatizarmos a triagem, a fila cai?” <b>Teste antes de investir.</b></p></div></li>
+    <li class="sv-row" data-reveal><div class="sv-row-media" style="--tint:8%"><div class="sv-ph" role="img" aria-label="Ilustração: piloto medido"></div></div><div><h3 class="sv-row-title" data-slot="card.title">Automatizar com controle</h3><div class="sv-meta"><span data-slot="card.label">Automatizar</span><span data-slot="card.desc">Piloto pequeno e medido, com pessoas no comando.</span></div><p class="sv-tile-note">Um piloto pequeno, com indicador e meta. <b>Aprovação humana</b> no que é sensível.</p></div></li>
+  </ol>
+</section>
+
+<!-- Features: stories (tilt squares holding the product sheets) -->
+<section aria-label="Como trabalhamos" style="margin-top:120px">
+  <div class="sv-stories">
+    <article data-reveal aria-labelledby="h-f1">
+      <div class="sv-tilt-wrap"><div class="sv-tilt" data-sv-tilt style="--tint:14%" aria-hidden="true">
+        <div class="sv-sheet">
+          <div class="sv-sheet-row"><b>S07 · Monitorar chegada</b><span class="sv-tag sv-tag--accent"><i></i>em curso</span></div>
+          <div class="sv-sheet-row"><span>Responsável</span><b>Operações</b></div>
+          <div class="sv-sheet-row"><span>Informação que falta</span><span class="sv-tag sv-tag--warn"><i></i>horário confirmado</span></div>
+          <div class="sv-sheet-row"><span>Dependência</span><b>S06 → S07 → S09</b></div>
+          <div class="sv-bar sv-bar--accent" style="--w:41%"><i></i></div>
+          <small>7 de 17 etapas mapeadas e validadas pela equipe</small>
+        </div>
+      </div></div>
+      <p class="sv-story-kicker">Torne o invisível visível</p>
+      <h2 class="sv-story-title" id="h-f1" data-slot="feature.title">Sua empresa como um sistema</h2>
+      <p class="sv-story-text">Entrevistamos quem faz o trabalho e desenhamos como ele acontece de fato, não como está no manual.</p>
+      <ul class="sv-ticks"><li>Cada etapa tem dono, entrada, saída e dependência.</li><li>O que não foi confirmado fica marcado como não validado.</li><li>Diretoria e operação olham para o mesmo mapa.</li></ul>
+    </article>
+    <article data-reveal aria-labelledby="h-f2">
+      <div class="sv-tilt-wrap"><div class="sv-tilt" data-sv-tilt style="--tint:24%" aria-hidden="true">
+        <div class="sv-sheet">
+          <div class="sv-sheet-row"><b>Cenário A · Como está</b><span class="sv-tag sv-tag--warn"><i></i>fila cresce</span></div>
+          <div class="sv-bar" style="--w:92%"><i></i></div>
+          <div class="sv-sheet-row"><b>Cenário B · Triagem automática</b><span class="sv-tag sv-tag--ok"><i></i>fila estável</span></div>
+          <div class="sv-bar sv-bar--accent" style="--w:58%"><i></i></div>
+          <div class="sv-sheet-row"><span>Hipótese</span><b>Se X, esperamos Y em T</b></div>
+          <small>Cada cenário registra a evidência e o grau de incerteza</small>
+        </div>
+      </div></div>
+      <p class="sv-story-kicker">Explore o que pode acontecer</p>
+      <h2 class="sv-story-title" id="h-f2" data-slot="feature.title">Teste a mudança antes de pagar por ela</h2>
+      <p class="sv-story-text">Cada proposta vira uma hipótese: se mudarmos isto, esperamos aquele resultado, neste prazo, medido por este indicador.</p>
+      <ul class="sv-ticks"><li>Compare manter como está com duas ou três alternativas.</li><li>Veja o efeito colateral antes que ele aconteça.</li><li>Priorize por impacto, esforço e risco.</li></ul>
+      <p style="margin:20px 0 0"><a class="sv-btn sv-btn--secondary" href="#simulador" data-slot="cta.label">Testar o simulador</a></p>
+    </article>
+    <article data-reveal aria-labelledby="h-plat" id="plataforma">
+      <div class="sv-tilt-wrap"><div class="sv-tilt" data-sv-tilt style="--tint:8%" aria-hidden="true">
+        <div class="sv-sheet">
+          <div class="sv-sheet-row"><b>Studio do projeto</b><span class="sv-tag sv-tag--ok"><i></i>compartilhado</span></div>
+          <div class="sv-sheet-row"><span>Protótipo navegável</span><b>revisão 2</b></div>
+          <div class="sv-sheet-row"><span>Decisões registradas</span><b>17</b></div>
+          <div class="sv-sheet-row"><span>Atividades com evidência</span><b>14 etapas</b></div>
+          <div class="sv-sheet-row"><span>Acesso do cliente</span><span class="sv-tag">por convite</span></div>
+        </div>
+      </div></div>
+      <p class="sv-story-kicker">Plataforma</p>
+      <h2 class="sv-story-title" id="h-plat" data-slot="feature.title">Você acompanha tudo, sem reunião de status</h2>
+      <p class="sv-story-text">Cada projeto tem uma área compartilhada entre a consultoria e a sua equipe. Você vê o que foi decidido, por quê, e o que está pronto.</p>
+      <ul class="sv-ticks"><li>Protótipos para testar antes de qualquer código de produção.</li><li>Cada decisão fica registrada com sua evidência.</li><li>Nada é marcado como concluído sem comprovação.</li></ul>
+    </article>
+  </div>
+</section>
+
+<!-- Connectors: chips -->
+<section aria-labelledby="h-con">
+  <div class="sv-sec-head"><h2 class="sv-sec-title" id="h-con" data-slot="section.title">Traga seus sistemas</h2></div>
+  <p class="sv-sec-lede">Trabalhamos com o que sua empresa já usa. A escolha da ferramenta depende do processo, não do contrário.</p>
+  <ul class="sv-chips" data-reveal aria-label="Sistemas e ferramentas com que trabalhamos">
+    <li>WhatsApp Business</li><li>E-mail</li><li>Planilhas</li><li>Formulários</li><li>ERP</li><li>CRM</li><li>Sistemas financeiros</li><li>n8n</li><li>Make</li><li>Power BI</li><li>Bancos de dados</li><li>APIs próprias</li><li>Modelos de linguagem</li>
+  </ul>
+</section>
+
+<!-- Trust: columns -->
+<section aria-labelledby="h-conf">
+  <div class="sv-sec-head"><h2 class="sv-sec-title" id="h-conf" data-slot="section.title">Automação com limite claro</h2><p class="sv-sec-kicker">Pessoas primeiro</p></div>
+  <p class="sv-sec-lede">Regras de segurança valem desde o primeiro projeto, não depois do primeiro incidente.</p>
+  <ul class="sv-cols">
+    <li data-reveal><h3 class="col-title" data-slot="card.title">Aprovação humana</h3><p class="col-text" data-slot="card.desc">Operação financeira ou sensível passa por uma pessoa.</p></li>
+    <li data-reveal><h3 class="col-title" data-slot="card.title">Ações registradas</h3><p class="col-text" data-slot="card.desc">O que cada automação fez fica em histórico auditável.</p></li>
+    <li data-reveal><h3 class="col-title" data-slot="card.title">LGPD desde o início</h3><p class="col-text" data-slot="card.desc">Acesso controlado e dado pessoal só quando necessário.</p></li>
+    <li data-reveal><h3 class="col-title" data-slot="card.title">Sem dependência única</h3><p class="col-text" data-slot="card.desc">A solução não fica presa a um só fornecedor.</p></li>
+  </ul>
+</section>
+
+<!-- Article layout: TOC + method, simulator, services, path, FAQ, form -->
+<div class="sv-article-layout">
+  <nav class="sv-toc" aria-label="Nesta página" data-sv-spy>
+    <a class="sv-tap" href="#metodo">Método LOOP</a>
+    <a class="sv-tap sv-sub" href="#simulador">Modelo de uma operação</a>
+    <a class="sv-tap" href="#servicos">Serviços</a>
+    <a class="sv-tap" href="#comecar">Como começamos</a>
+    <a class="sv-tap" href="#faq">Perguntas</a>
+    <a class="sv-tap" href="#diagnostico">Diagnóstico</a>
+  </nav>
+  <article class="sv-article">
+
+    <section class="sv-sec" id="metodo" aria-labelledby="h-met">
+      <div class="sv-measure">
+        <p class="sv-sec-kicker" data-reveal>Método LOOP</p>
+        <h2 class="sv-h-article" id="h-met" data-slot="section.title" data-reveal>Do problema ao resultado medido</h2>
+        <p class="sv-prose" data-reveal>Seis etapas. Cada uma termina com um entregável que você pode conferir.</p>
+      </div>
+      <div class="sv-measure--wide" style="margin-top:64px">
+        <div class="sv-stage3d"><div data-sv-tilt data-sv-stage="steps" aria-hidden="true">Delimitar</div></div>
+        <div class="sv-parts" role="tablist" aria-label="Etapas do método" id="steps" data-sv-tabs>
+          <button role="tab" type="button" id="t-s1" aria-controls="p-s1" aria-selected="true">Delimitar</button>
+          <button role="tab" type="button" id="t-s2" aria-controls="p-s2" aria-selected="false" tabindex="-1">Mapear</button>
+          <button role="tab" type="button" id="t-s3" aria-controls="p-s3" aria-selected="false" tabindex="-1">Investigar</button>
+          <button role="tab" type="button" id="t-s4" aria-controls="p-s4" aria-selected="false" tabindex="-1">Modelar</button>
+          <button role="tab" type="button" id="t-s5" aria-controls="p-s5" aria-selected="false" tabindex="-1">Intervir</button>
+          <button role="tab" type="button" id="t-s6" aria-controls="p-s6" aria-selected="false" tabindex="-1">Acompanhar</button>
+        </div>
+        <div>
+          <div role="tabpanel" id="p-s1" aria-labelledby="t-s1"><h3 class="sv-part-head">Delimitar</h3><p class="sv-body">Definimos o problema, quem é afetado e o resultado que precisa melhorar.</p><small class="part-entrega">Entrega: desafio e linha de base dos indicadores</small></div>
+          <div role="tabpanel" id="p-s2" aria-labelledby="t-s2" hidden><h3 class="sv-part-head">Mapear</h3><p class="sv-body">Confrontamos o fluxograma com a operação real e com quem decide o quê.</p><small class="part-entrega">Entrega: mapa da operação e da informação</small></div>
+          <div role="tabpanel" id="p-s3" aria-labelledby="t-s3" hidden><h3 class="sv-part-head">Investigar</h3><p class="sv-body">Do evento ao padrão, da estrutura à crença que sustenta o problema.</p><small class="part-entrega">Entrega: diagnóstico em camadas</small></div>
+          <div role="tabpanel" id="p-s4" aria-labelledby="t-s4" hidden><h3 class="sv-part-head">Modelar</h3><p class="sv-body">Desenhamos as relações de causa e efeito e os ciclos que se reforçam.</p><small class="part-entrega">Entrega: modelo causal com hipóteses</small></div>
+          <div role="tabpanel" id="p-s5" aria-labelledby="t-s5" hidden><h3 class="sv-part-head">Intervir</h3><p class="sv-body">Escolhemos onde agir: regra, informação, capacidade ou tecnologia.</p><small class="part-entrega">Entrega: cenários e prioridades justificadas</small></div>
+          <div role="tabpanel" id="p-s6" aria-labelledby="t-s6" hidden><h3 class="sv-part-head">Acompanhar</h3><p class="sv-body">Cada ação tem dono, prazo, indicador e critério para continuar ou parar.</p><small class="part-entrega">Entrega: roadmap e rotina de revisão</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sv-sec" id="simulador" aria-labelledby="sim-title">
+      <div class="sv-measure">
+        <h2 class="sv-h-sec" id="sim-title" data-reveal>Modelo de uma operação</h2>
+      </div>
+      <div class="sv-panel sim" style="margin-top:40px">
+        <div class="sv-bubble-row"><p class="sv-bubble">Exemplo ilustrativo</p></div>
       <svg viewBox="0 14 560 206" role="img" aria-labelledby="sim-desc">
         <desc id="sim-desc">Diagrama de uma operação: os pedidos entram, esperam em uma fila, são executados e entregues. Parte do trabalho volta para a fila como retrabalho.</desc>
-        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="hsl(var(--muted-foreground))"/></marker></defs>
-        <path id="p-main" d="M96 92 H464" fill="none" stroke="hsl(var(--border))" stroke-width="3" marker-end="url(#ar)"/>
-        <path id="p-loop" d="M372 122 C372 214 190 214 190 124" fill="none" stroke="hsl(var(--loop-caution))" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#ar)"/>
-        <g font-family="Inter,Arial,sans-serif" font-size="13" font-weight="600" text-anchor="middle" fill="hsl(var(--foreground))">
-          <g><rect x="16" y="62" width="100" height="60" rx="10" fill="hsl(var(--muted))" stroke="hsl(var(--border))"/><text x="66" y="88">Pedidos</text><text id="t-in" x="66" y="107" font-weight="500" fill="hsl(var(--muted-foreground))">80/dia</text></g>
-          <g><rect id="r-queue" x="140" y="62" width="100" height="60" rx="10" fill="hsl(var(--muted))" stroke="hsl(var(--border))"/><text x="190" y="88">Fila</text><text id="t-queue" x="190" y="107" font-weight="500" fill="hsl(var(--muted-foreground))">estável</text></g>
-          <g><rect x="322" y="62" width="100" height="60" rx="10" fill="hsl(var(--muted))" stroke="hsl(var(--border))"/><text x="372" y="88">Execução</text><text id="t-cap" x="372" y="107" font-weight="500" fill="hsl(var(--muted-foreground))">96/dia</text></g>
-          <g><rect x="446" y="62" width="100" height="60" rx="10" fill="hsl(var(--muted))" stroke="hsl(var(--border))"/><text x="496" y="88">Entrega</text><text id="t-out" x="496" y="107" font-weight="500" fill="hsl(var(--muted-foreground))">no prazo</text></g>
-          <text x="281" y="206" fill="hsl(var(--loop-caution))">Retrabalho <tspan id="t-rw">4%</tspan></text>
-          <text x="281" y="34" font-weight="500" font-size="12" fill="hsl(var(--muted-foreground))">pressão → erros → retrabalho → mais pressão</text>
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="var(--color-text-muted)"/></marker></defs>
+        <path id="p-main" d="M96 92 H464" fill="none" stroke="var(--border-strong)" stroke-width="3" marker-end="url(#ar)"/>
+        <path id="p-loop" d="M372 122 C372 214 190 214 190 124" fill="none" stroke="var(--loop-warn)" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#ar)"/>
+        <g font-family="Inter,Arial,sans-serif" font-size="13" font-weight="600" text-anchor="middle" fill="var(--color-text)">
+          <g><rect x="16" y="62" width="100" height="60" rx="10" fill="var(--color-bg)" stroke="var(--color-divider)"/><text x="66" y="88">Pedidos</text><text id="t-in" x="66" y="107" font-weight="500" fill="var(--color-text-muted)">80/dia</text></g>
+          <g><rect id="r-queue" x="140" y="62" width="100" height="60" rx="10" fill="var(--color-bg)" stroke="var(--color-divider)"/><text x="190" y="88">Fila</text><text id="t-queue" x="190" y="107" font-weight="500" fill="var(--color-text-muted)">estável</text></g>
+          <g><rect x="322" y="62" width="100" height="60" rx="10" fill="var(--color-bg)" stroke="var(--color-divider)"/><text x="372" y="88">Execução</text><text id="t-cap" x="372" y="107" font-weight="500" fill="var(--color-text-muted)">96/dia</text></g>
+          <g><rect x="446" y="62" width="100" height="60" rx="10" fill="var(--color-bg)" stroke="var(--color-divider)"/><text x="496" y="88">Entrega</text><text id="t-out" x="496" y="107" font-weight="500" fill="var(--color-text-muted)">no prazo</text></g>
+          <text x="281" y="206" fill="var(--loop-warn)">Retrabalho <tspan id="t-rw">4%</tspan></text>
+          <text x="281" y="34" font-weight="500" font-size="12" fill="var(--color-text-muted)">pressão → erros → retrabalho → mais pressão</text>
         </g>
         <g id="dots" aria-hidden="true"></g>
       </svg>
-      <div class="sim-grid" aria-live="polite">
-        <div class="kpi"><span>Ocupação</span><b id="k-util">—</b></div>
-        <div class="kpi"><span>Espera média</span><b id="k-wait">—</b></div>
-        <div class="kpi"><span>Retrabalho</span><b id="k-rw">—</b></div>
+        <div class="sim-kpis" aria-live="polite">
+          <div><span>Ocupação</span><b id="k-util">—</b></div>
+          <div><span>Espera média</span><b id="k-wait">—</b></div>
+          <div><span>Retrabalho</span><b id="k-rw">—</b></div>
+        </div>
+        <div class="ctrl"><label for="s-d">Pedidos por dia</label><output id="o-d" for="s-d">80</output><input id="s-d" type="range" min="20" max="200" step="5" value="80"></div>
+        <div class="ctrl"><label for="s-c">Pessoas na execução</label><output id="o-c" for="s-c">6</output><input id="s-c" type="range" min="2" max="12" step="1" value="6"></div>
+        <div class="ctrl"><label for="s-a">Tarefas repetitivas automatizadas</label><output id="o-a" for="s-a">0%</output><input id="s-a" type="range" min="0" max="80" step="5" value="0"></div>
+        <p class="sim-note" id="sim-note" role="status"></p>
+        <div class="sim-foot"><p>Modelo simplificado para demonstração. Não usa dados de clientes.</p><button class="sv-btn sv-btn--secondary sv-btn--sm" id="sim-pause" type="button" aria-pressed="false">Pausar animação</button></div>
       </div>
-      <div class="ctrl"><label class="ui-label" for="s-d">Pedidos por dia</label><output id="o-d" for="s-d">80</output><input class="slider" id="s-d" type="range" min="20" max="200" step="5" value="80"></div>
-      <div class="ctrl"><label class="ui-label" for="s-c">Pessoas na execução</label><output id="o-c" for="s-c">6</output><input class="slider" id="s-c" type="range" min="2" max="12" step="1" value="6"></div>
-      <div class="ctrl"><label class="ui-label" for="s-a">Tarefas repetitivas automatizadas</label><output id="o-a" for="s-a">0%</output><input class="slider" id="s-a" type="range" min="0" max="80" step="5" value="0"></div>
-      <p class="sim-note" id="sim-note" role="status"></p>
-      <hr class="ui-separator">
-      <div class="sim-head"><span class="micro">Modelo simplificado para demonstração. Não usa dados de clientes.</span><button class="ui-button ui-button--ghost" id="sim-pause" type="button" aria-pressed="false">Pausar animação</button></div>
-    </div>
-    <div class="hero-copy">
-      <p class="eyebrow">Consultoria de eficiência operacional para PMEs</p>
-      <h1 id="h-hero" data-slot="hero.title">Veja sua operação antes de mudá-la</h1>
-      <p class="lede" data-slot="hero.subtitle">Mapeamos sua empresa como um sistema, simulamos cenários e automatizamos só o que traz retorno.</p>
-      <div class="cta-row">
-        <a class="ui-button ui-button--default ui-button--lg" href="#diagnostico" data-slot="cta.label" data-cta="hero">Agendar diagnóstico</a>
-        <a class="ui-button ui-button--outline ui-button--lg" href="#metodo" data-slot="cta.label">Ver o método</a>
+    </section>
+
+    <section class="sv-sec" id="servicos" aria-labelledby="h-srv">
+      <div class="sv-measure">
+        <p class="sv-sec-kicker" data-reveal>Serviços</p>
+        <h2 class="sv-h-sec" id="h-srv" data-slot="section.title" data-reveal>Seis linhas, juntas ou separadas</h2>
+        <p class="sv-prose" data-reveal>Nem tudo precisa de IA. Usamos regra simples quando ela resolve e modelo de linguagem quando há texto para interpretar.</p>
       </div>
-      <p class="micro">Primeira conversa de 30 minutos, sem custo. Você sai com um mapa inicial dos gargalos.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 2 · PROBLEMA -->
-<section class="section wrap" aria-labelledby="h-prob">
-  <div class="intro" data-reveal>
-    <p class="eyebrow">O problema</p>
-    <h2 id="h-prob" data-slot="section.title">O custo que ninguém vê</h2>
-    <p class="lede">O trabalho manual não aparece em nenhum relatório. Ele aparece em atraso, erro e gente sobrecarregada.</p>
-  </div>
-  <ul class="pain" data-reveal>
-    <li class="ui-card"><b>Pedidos copiados à mão</b><span>Chegam pelo WhatsApp e alguém digita tudo de novo no sistema.</span></li>
-    <li class="ui-card"><b>Documentos conferidos um a um</b><span>Notas, manifestos e certificados dependem de uma pessoa disponível.</span></li>
-    <li class="ui-card"><b>Informação espalhada</b><span>Cada área tem a sua planilha. Ninguém vê a operação inteira.</span></li>
-    <li class="ui-card"><b>Decisão sem número</b><span>O gestor descobre o gargalo quando o cliente reclama.</span></li>
-  </ul>
-</section>
-
-<!-- 3 · CAPACIDADES (3) -->
-<section class="section wrap" aria-labelledby="h-cap">
-  <div class="intro" data-reveal>
-    <p class="eyebrow">O que fazemos</p>
-    <h2 id="h-cap" data-slot="section.title">Três movimentos, nessa ordem</h2>
-    <p class="lede">O cliente não compra um agente de IA. Compra menos custo, menos erro e mais controle da operação.</p>
-  </div>
-  <div class="grid g3">
-    <article class="ui-card card" data-reveal>
-      <div class="card-top"><span class="idx" aria-hidden="true">01</span><span class="ui-badge ui-badge--outline" data-slot="card.label">Tornar visível</span></div>
-      <h3 data-slot="card.title">Tornar visível</h3>
-      <p data-slot="card.desc">Sua operação em um mapa único, do pedido à entrega.</p>
-      <p class="note">Fluxo, pessoas e informação em <b>um mapa</b> que a equipe valida.</p>
-    </article>
-    <article class="ui-card card" data-reveal>
-      <div class="card-top"><span class="idx" aria-hidden="true">02</span><span class="ui-badge ui-badge--outline" data-slot="card.label">Simular antes</span></div>
-      <h3 data-slot="card.title">Simular antes</h3>
-      <p data-slot="card.desc">Cenários comparados antes de gastar com tecnologia.</p>
-      <p class="note">“Se automatizarmos a triagem, a fila cai?” <b>Teste antes de investir.</b></p>
-    </article>
-    <article class="ui-card card" data-reveal>
-      <div class="card-top"><span class="idx" aria-hidden="true">03</span><span class="ui-badge ui-badge--outline" data-slot="card.label">Automatizar</span></div>
-      <h3 data-slot="card.title">Automatizar com controle</h3>
-      <p data-slot="card.desc">Piloto pequeno e medido, com pessoas no comando.</p>
-      <p class="note">Um piloto pequeno, com indicador e meta. <b>Aprovação humana</b> no que é sensível.</p>
-    </article>
-  </div>
-</section>
-
-<!-- 4 · FEATURE: visível -->
-<section class="section wrap feature" aria-labelledby="h-f1">
-  <div class="stage t-blue" data-reveal>
-    <div class="ui-card mock" aria-hidden="true">
-      <div class="mock-row"><b>S07 · Monitorar chegada</b><span class="ui-badge ui-badge--outline st-info"><i class="dot"></i>em curso</span></div>
-      <div class="mock-row"><span>Responsável</span><b>Operações</b></div>
-      <div class="mock-row"><span>Informação que falta</span><span class="ui-badge ui-badge--outline st-warn"><i class="dot"></i>horário confirmado</span></div>
-      <div class="mock-row"><span>Dependência</span><b class="mono">S06 → S07 → S09</b></div>
-      <div class="bar brand"><i style="width:41%"></i></div>
-      <span class="micro">7 de 17 etapas mapeadas e validadas pela equipe</span>
-    </div>
-  </div>
-  <div class="fc" data-reveal>
-    <p class="eyebrow">Torne o invisível visível</p>
-    <h2 id="h-f1" data-slot="feature.title">Sua empresa como um sistema</h2>
-    <p>Entrevistamos quem faz o trabalho e desenhamos como ele acontece de fato, não como está no manual.</p>
-    <ul class="ticks">
-      <li>Cada etapa tem dono, entrada, saída e dependência.</li>
-      <li>O que não foi confirmado fica marcado como não validado.</li>
-      <li>Diretoria e operação olham para o mesmo mapa.</li>
-    </ul>
-  </div>
-</section>
-
-<!-- 5 · FEATURE: simular -->
-<section class="section wrap feature rev" aria-labelledby="h-f2">
-  <div class="stage t-purple" data-reveal>
-    <div class="ui-card mock" aria-hidden="true">
-      <div class="mock-row"><b>Cenário A · Como está</b><span class="ui-badge ui-badge--outline st-warn"><i class="dot"></i>fila cresce</span></div>
-      <div class="bar"><i style="width:92%"></i></div>
-      <div class="mock-row"><b>Cenário B · Triagem automática</b><span class="ui-badge ui-badge--outline st-ok"><i class="dot"></i>fila estável</span></div>
-      <div class="bar brand"><i style="width:58%"></i></div>
-      <div class="mock-row"><span>Hipótese</span><b>Se X, esperamos Y em T</b></div>
-      <span class="micro">Cada cenário registra a evidência e o grau de incerteza</span>
-    </div>
-  </div>
-  <div class="fc" data-reveal>
-    <p class="eyebrow">Explore o que pode acontecer</p>
-    <h2 id="h-f2" data-slot="feature.title">Teste a mudança antes de pagar por ela</h2>
-    <p>Cada proposta vira uma hipótese: se mudarmos isto, esperamos aquele resultado, neste prazo, medido por este indicador.</p>
-    <ul class="ticks">
-      <li>Compare manter como está com duas ou três alternativas.</li>
-      <li>Veja o efeito colateral antes que ele aconteça.</li>
-      <li>Priorize por impacto, esforço e risco.</li>
-    </ul>
-    <div><a class="ui-button ui-button--outline" href="#topo" data-slot="cta.label">Testar o simulador</a></div>
-  </div>
-</section>
-
-<!-- 6 · MÉTODO -->
-<section class="section wrap" id="metodo" aria-labelledby="h-met">
-  <div class="intro" data-reveal>
-    <p class="eyebrow">Método LOOP</p>
-    <h2 id="h-met" data-slot="section.title">Do problema ao resultado medido</h2>
-    <p class="lede">Seis etapas. Cada uma termina com um entregável que você pode conferir.</p>
-  </div>
-  <ol class="steps" data-reveal>
-    <li class="ui-card"><h3>Delimitar</h3><p>Definimos o problema, quem é afetado e o resultado que precisa melhorar.</p><small>Entrega: desafio e linha de base dos indicadores</small></li>
-    <li class="ui-card"><h3>Mapear</h3><p>Confrontamos o fluxograma com a operação real e com quem decide o quê.</p><small>Entrega: mapa da operação e da informação</small></li>
-    <li class="ui-card"><h3>Investigar</h3><p>Do evento ao padrão, da estrutura à crença que sustenta o problema.</p><small>Entrega: diagnóstico em camadas</small></li>
-    <li class="ui-card"><h3>Modelar</h3><p>Desenhamos as relações de causa e efeito e os ciclos que se reforçam.</p><small>Entrega: modelo causal com hipóteses</small></li>
-    <li class="ui-card"><h3>Intervir</h3><p>Escolhemos onde agir: regra, informação, capacidade ou tecnologia.</p><small>Entrega: cenários e prioridades justificadas</small></li>
-    <li class="ui-card"><h3>Acompanhar</h3><p>Cada ação tem dono, prazo, indicador e critério para continuar ou parar.</p><small>Entrega: roadmap e rotina de revisão</small></li>
-  </ol>
-</section>
-
-<!-- 7 · SERVIÇOS -->
-<section class="section wrap" id="servicos" aria-labelledby="h-srv">
-  <div class="intro" data-reveal>
-    <p class="eyebrow">Serviços</p>
-    <h2 id="h-srv" data-slot="section.title">Seis linhas, juntas ou separadas</h2>
-    <p class="lede">Nem tudo precisa de IA. Usamos regra simples quando ela resolve e modelo de linguagem quando há texto para interpretar.</p>
-  </div>
-  <div class="grid g3">
-    <article class="ui-card card" data-reveal><div class="card-top"><span class="idx" aria-hidden="true">01</span><span class="ui-badge ui-badge--outline" data-slot="card.label">Diagnóstico</span></div><h3 data-slot="card.title">Diagnóstico de processos</h3><p data-slot="card.desc">Gargalos, tarefas repetitivas e onde vale automatizar.</p><p class="note">Mapa atual · tempo e custo · plano priorizado</p></article>
-    <article class="ui-card card" data-reveal><div class="card-top"><span class="idx" aria-hidden="true">02</span><span class="ui-badge ui-badge--outline" data-slot="card.label">Atendimento</span></div><h3 data-slot="card.title">Atendimento e vendas</h3><p data-slot="card.desc">Primeira resposta, triagem e follow-up sem fila.</p><p class="note">WhatsApp · qualificação · agenda · proposta</p></article>
-    <article class="ui-card card" data-reveal><div class="card-top"><span class="idx" aria-hidden="true">03</span><span class="ui-badge ui-badge--outline" data-slot="card.label">Administrativo</span></div><h3 data-slot="card.title">Administrativo e financeiro</h3><p data-slot="card.desc">Documentos lidos, conferidos e organizados.</p><p class="note">Notas fiscais · conferência · contas com aprovação</p></article>
-    <article class="ui-card card" data-reveal><div class="card-top"><span class="idx" aria-hidden="true">04</span><span class="ui-badge ui-badge--outline" data-slot="card.label">Integração</span></div><h3 data-slot="card.title">Integração de sistemas</h3><p data-slot="card.desc">Ferramentas que hoje não conversam passam a conversar.</p><p class="note">WhatsApp + CRM · e-mail + ERP · formulário + planilha</p></article>
-    <article class="ui-card card" data-reveal><div class="card-top"><span class="idx" aria-hidden="true">05</span><span class="ui-badge ui-badge--outline" data-slot="card.label">Indicadores</span></div><h3 data-slot="card.title">Inteligência operacional</h3><p data-slot="card.desc">Dados da operação viram instrumento de gestão.</p><p class="note">Painel · relatório periódico · alerta de desvio</p></article>
-    <article class="ui-card card" data-reveal><div class="card-top"><span class="idx" aria-hidden="true">06</span><span class="ui-badge ui-badge--outline" data-slot="card.label">Sustentação</span></div><h3 data-slot="card.title">Sustentação contínua</h3><p data-slot="card.desc">O que foi implantado segue funcionando e medido.</p><p class="note">Monitoramento · correção · custo de API · relatório mensal</p></article>
-  </div>
-</section>
-
-<!-- 8 · PLATAFORMA -->
-<section class="section wrap feature" id="plataforma" aria-labelledby="h-plat">
-  <div class="stage t-green" data-reveal>
-    <div class="ui-card mock" aria-hidden="true">
-      <div class="mock-row"><b>Studio do projeto</b><span class="ui-badge ui-badge--outline st-ok"><i class="dot"></i>compartilhado</span></div>
-      <div class="mock-row"><span>Protótipo navegável</span><b>revisão 2</b></div>
-      <div class="mock-row"><span>Decisões registradas</span><b class="mono">17</b></div>
-      <div class="mock-row"><span>Atividades com evidência</span><b>14 etapas</b></div>
-      <div class="mock-row"><span>Acesso do cliente</span><span class="ui-badge ui-badge--secondary">por convite</span></div>
-    </div>
-  </div>
-  <div class="fc" data-reveal>
-    <p class="eyebrow">Plataforma</p>
-    <h2 id="h-plat" data-slot="feature.title">Você acompanha tudo, sem reunião de status</h2>
-    <p>Cada projeto tem uma área compartilhada entre a consultoria e a sua equipe. Você vê o que foi decidido, por quê, e o que está pronto.</p>
-    <ul class="ticks">
-      <li>Protótipos para testar antes de qualquer código de produção.</li>
-      <li>Cada decisão fica registrada com sua evidência.</li>
-      <li>Nada é marcado como concluído sem comprovação.</li>
-    </ul>
-  </div>
-</section>
-
-<!-- 9 · CONECTORES -->
-<section class="section wrap" aria-labelledby="h-con">
-  <div class="intro center" data-reveal>
-    <h2 id="h-con" data-slot="section.title">Traga seus sistemas</h2>
-    <p class="lede">Trabalhamos com o que sua empresa já usa. A escolha da ferramenta depende do processo, não do contrário.</p>
-  </div>
-  <ul class="conn" data-reveal aria-label="Sistemas e ferramentas com que trabalhamos">
-    <li class="ui-badge ui-badge--outline">WhatsApp Business</li><li class="ui-badge ui-badge--outline">E-mail</li><li class="ui-badge ui-badge--outline">Planilhas</li><li class="ui-badge ui-badge--outline">Formulários</li><li class="ui-badge ui-badge--outline">ERP</li><li class="ui-badge ui-badge--outline">CRM</li><li class="ui-badge ui-badge--outline">Sistemas financeiros</li><li class="ui-badge ui-badge--outline">n8n</li><li class="ui-badge ui-badge--outline">Make</li><li class="ui-badge ui-badge--outline">Power BI</li><li class="ui-badge ui-badge--outline">Bancos de dados</li><li class="ui-badge ui-badge--outline">APIs próprias</li><li class="ui-badge ui-badge--outline">Modelos de linguagem</li>
-  </ul>
-</section>
-
-<!-- 10 · CONFIANÇA -->
-<section class="section wrap" aria-labelledby="h-conf">
-  <div class="intro" data-reveal>
-    <p class="eyebrow">Pessoas primeiro</p>
-    <h2 id="h-conf" data-slot="section.title">Automação com limite claro</h2>
-    <p class="lede">Regras de segurança valem desde o primeiro projeto, não depois do primeiro incidente.</p>
-  </div>
-  <div class="grid g4">
-    <article class="ui-card card" data-reveal><h3 data-slot="card.title">Aprovação humana</h3><p data-slot="card.desc">Operação financeira ou sensível passa por uma pessoa.</p></article>
-    <article class="ui-card card" data-reveal><h3 data-slot="card.title">Ações registradas</h3><p data-slot="card.desc">O que cada automação fez fica em histórico auditável.</p></article>
-    <article class="ui-card card" data-reveal><h3 data-slot="card.title">LGPD desde o início</h3><p data-slot="card.desc">Acesso controlado e dado pessoal só quando necessário.</p></article>
-    <article class="ui-card card" data-reveal><h3 data-slot="card.title">Sem dependência única</h3><p data-slot="card.desc">A solução não fica presa a um só fornecedor.</p></article>
-  </div>
-</section>
-
-<!-- 11 · COMO COMEÇAMOS -->
-<section class="section wrap" aria-labelledby="h-path">
-  <div class="intro" data-reveal>
-    <p class="eyebrow">Como começamos</p>
-    <h2 id="h-path" data-slot="section.title">Pequeno, medido, depois maior</h2>
-  </div>
-  <ol class="path" data-reveal>
-    <li><span class="idx" aria-hidden="true">01</span><h3>Diagnóstico</h3><p>Entramos pelo processo. Mapeamos e medimos a situação atual.</p></li>
-    <li><span class="idx" aria-hidden="true">02</span><h3>Oportunidade</h3><p>Escolhemos uma melhoria que se justifica financeiramente.</p></li>
-    <li><span class="idx" aria-hidden="true">03</span><h3>Piloto</h3><p>Implantamos uma solução pequena, com indicador e meta.</p></li>
-    <li><span class="idx" aria-hidden="true">04</span><h3>Expansão</h3><p>Com resultado comprovado, levamos a outros processos.</p></li>
-    <li><span class="idx" aria-hidden="true">05</span><h3>Sustentação</h3><p>Monitoramos, corrigimos e reportamos todo mês.</p></li>
-  </ol>
-</section>
-
-<!-- 12 · FAQ -->
-<section class="section wrap" id="faq" aria-labelledby="h-faq">
-  <div class="intro center" data-reveal><h2 id="h-faq" data-slot="section.title">Perguntas frequentes</h2></div>
-  <div class="faq" data-reveal>
-    <details><summary>Preciso já ter processos documentados?</summary><p>Não. O diagnóstico começa com entrevistas e com o que existe hoje: planilhas, mensagens, formulários. Documentar é parte da entrega.</p></details>
-    <details><summary>Vocês vão substituir minha equipe por IA?</summary><p>Não é o objetivo. Tiramos da equipe a tarefa repetitiva e deixamos com ela a decisão. Operações sensíveis sempre têm aprovação humana.</p></details>
-    <details><summary>Quanto tempo leva para ver resultado?</summary><p>Depende do processo. Por isso o primeiro passo é um piloto pequeno com indicador e meta definidos antes de começar. Se o piloto não atingir a meta, você sabe cedo e decide se continua.</p></details>
-    <details><summary>Toda solução usa inteligência artificial?</summary><p>Não. Passar um pedido de um formulário para o sistema se resolve com integração simples. Interpretar um e-mail livre pode justificar um modelo de linguagem. Usamos a tecnologia mais simples que resolve.</p></details>
-    <details><summary>Para que tipo de empresa isso serve?</summary><p>Pequenas e médias empresas com operação repetitiva e muitos sistemas: logística, distribuição, serviços empresariais e operações portuárias são nosso ponto de partida.</p></details>
-    <details><summary>O que acontece com os dados da minha empresa?</summary><p>Ficam em ambiente com acesso controlado, por projeto. Só as pessoas convidadas veem a área do seu projeto, e cada acesso e alteração fica registrado.</p></details>
-    <details><summary>Quanto custa?</summary><p>A primeira conversa não tem custo. O diagnóstico e o piloto têm escopo e preço fechados antes de começar, definidos pelo tamanho do processo analisado.</p></details>
-  </div>
-</section>
-
-<!-- 13 · CTA + FORM -->
-<section class="section wrap" id="diagnostico" aria-labelledby="h-cta">
-  <div class="stage band">
-    <div class="fc">
-      <h2 id="h-cta" data-slot="feature.title">Modele o sistema. Depois mude o resultado.</h2>
-      <p>Conte qual processo mais pesa hoje. Em 30 minutos mostramos por onde começaríamos e o que seria medido.</p>
-      <ul class="ticks">
-        <li>Sem custo e sem compromisso.</li>
-        <li>Você recebe um mapa inicial dos gargalos.</li>
-        <li>Resposta em até 2 dias úteis.</li>
-      </ul>
-    </div>
-    <form class="ui-card" id="lead" novalidate>
-      <div class="two">
-        <div class="field"><label class="ui-label" for="f-name">Nome</label><input class="ui-input" id="f-name" type="text" name="name" autocomplete="name" required maxlength="80"></div>
-        <div class="field"><label class="ui-label" for="f-company">Empresa</label><input class="ui-input" id="f-company" type="text" name="company" autocomplete="organization" required maxlength="80"></div>
+      <div class="sv-segment" role="tablist" aria-label="Serviços" id="svc" data-sv-tabs="fade">
+        <button role="tab" type="button" id="t-v1" aria-controls="p-v1" aria-selected="true" data-slot="card.label">Diagnóstico</button>
+        <button role="tab" type="button" id="t-v2" aria-controls="p-v2" aria-selected="false" tabindex="-1" data-slot="card.label">Atendimento</button>
+        <button role="tab" type="button" id="t-v3" aria-controls="p-v3" aria-selected="false" tabindex="-1" data-slot="card.label">Administrativo</button>
+        <button role="tab" type="button" id="t-v4" aria-controls="p-v4" aria-selected="false" tabindex="-1" data-slot="card.label">Integração</button>
+        <button role="tab" type="button" id="t-v5" aria-controls="p-v5" aria-selected="false" tabindex="-1" data-slot="card.label">Indicadores</button>
+        <button role="tab" type="button" id="t-v6" aria-controls="p-v6" aria-selected="false" tabindex="-1" data-slot="card.label">Sustentação</button>
       </div>
-      <div class="field"><label class="ui-label" for="f-email">E-mail de trabalho</label><input class="ui-input" id="f-email" type="email" name="email" autocomplete="email" required maxlength="120"></div>
-      <div class="field"><label class="ui-label" for="f-message">Qual processo mais pesa hoje?</label><textarea class="ui-textarea" id="f-message" name="message" maxlength="600" placeholder="Ex.: pedidos chegam pelo WhatsApp e são digitados no ERP"></textarea></div>
-      <label class="hp" aria-hidden="true">Site<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
-      <label class="consent"><input class="checkbox" type="checkbox" name="consent" required><span>Autorizo a Loop Consultoria a usar estes dados para entrar em contato sobre este pedido. Você pode pedir a exclusão a qualquer momento.</span></label>
-      <button class="ui-button ui-button--default ui-button--lg w-full" type="submit" data-slot="cta.label" data-cta="form">Agendar diagnóstico</button>
-      <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
-    </form>
-  </div>
-</section>
+      <div class="sv-panel" style="margin-top:24px">
+        <div role="tabpanel" id="p-v1" aria-labelledby="t-v1">
+          <div class="sv-bubble-row"><p class="sv-bubble" data-slot="card.desc">Gargalos, tarefas repetitivas e onde vale automatizar.</p></div>
+          <h3 class="sv-panel-title" data-slot="card.title">Diagnóstico de processos</h3>
+          <div class="svc-media" aria-hidden="true"><div class="sv-ph"></div><div class="sv-ph"></div><div class="sv-ph"></div></div>
+          <p class="sv-body" style="margin-top:24px">Mapa atual · tempo e custo · plano priorizado</p>
+        </div>
+        <div role="tabpanel" id="p-v2" aria-labelledby="t-v2" hidden>
+          <div class="sv-bubble-row"><p class="sv-bubble" data-slot="card.desc">Primeira resposta, triagem e follow-up sem fila.</p></div>
+          <h3 class="sv-panel-title" data-slot="card.title">Atendimento e vendas</h3>
+          <div class="svc-media" aria-hidden="true"><div class="sv-ph"></div><div class="sv-ph"></div><div class="sv-ph"></div></div>
+          <p class="sv-body" style="margin-top:24px">WhatsApp · qualificação · agenda · proposta</p>
+        </div>
+        <div role="tabpanel" id="p-v3" aria-labelledby="t-v3" hidden>
+          <div class="sv-bubble-row"><p class="sv-bubble" data-slot="card.desc">Documentos lidos, conferidos e organizados.</p></div>
+          <h3 class="sv-panel-title" data-slot="card.title">Administrativo e financeiro</h3>
+          <div class="svc-media" aria-hidden="true"><div class="sv-ph"></div><div class="sv-ph"></div><div class="sv-ph"></div></div>
+          <p class="sv-body" style="margin-top:24px">Notas fiscais · conferência · contas com aprovação</p>
+        </div>
+        <div role="tabpanel" id="p-v4" aria-labelledby="t-v4" hidden>
+          <div class="sv-bubble-row"><p class="sv-bubble" data-slot="card.desc">Ferramentas que hoje não conversam passam a conversar.</p></div>
+          <h3 class="sv-panel-title" data-slot="card.title">Integração de sistemas</h3>
+          <div class="svc-media" aria-hidden="true"><div class="sv-ph"></div><div class="sv-ph"></div><div class="sv-ph"></div></div>
+          <p class="sv-body" style="margin-top:24px">WhatsApp + CRM · e-mail + ERP · formulário + planilha</p>
+        </div>
+        <div role="tabpanel" id="p-v5" aria-labelledby="t-v5" hidden>
+          <div class="sv-bubble-row"><p class="sv-bubble" data-slot="card.desc">Dados da operação viram instrumento de gestão.</p></div>
+          <h3 class="sv-panel-title" data-slot="card.title">Inteligência operacional</h3>
+          <div class="svc-media" aria-hidden="true"><div class="sv-ph"></div><div class="sv-ph"></div><div class="sv-ph"></div></div>
+          <p class="sv-body" style="margin-top:24px">Painel · relatório periódico · alerta de desvio</p>
+        </div>
+        <div role="tabpanel" id="p-v6" aria-labelledby="t-v6" hidden>
+          <div class="sv-bubble-row"><p class="sv-bubble" data-slot="card.desc">O que foi implantado segue funcionando e medido.</p></div>
+          <h3 class="sv-panel-title" data-slot="card.title">Sustentação contínua</h3>
+          <div class="svc-media" aria-hidden="true"><div class="sv-ph"></div><div class="sv-ph"></div><div class="sv-ph"></div></div>
+          <p class="sv-body" style="margin-top:24px">Monitoramento · correção · custo de API · relatório mensal</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sv-sec" id="comecar" aria-labelledby="h-path">
+      <div class="sv-measure">
+        <p class="sv-sec-kicker" data-reveal>Como começamos</p>
+        <h2 class="sv-h-sec" id="h-path" data-slot="section.title" data-reveal>Pequeno, medido, depois maior</h2>
+      </div>
+      <ol class="sv-rail" data-reveal>
+        <li><span class="rail-idx" aria-hidden="true">01</span><h3 class="rail-title">Diagnóstico</h3><p class="rail-text">Entramos pelo processo. Mapeamos e medimos a situação atual.</p></li>
+        <li><span class="rail-idx" aria-hidden="true">02</span><h3 class="rail-title">Oportunidade</h3><p class="rail-text">Escolhemos uma melhoria que se justifica financeiramente.</p></li>
+        <li><span class="rail-idx" aria-hidden="true">03</span><h3 class="rail-title">Piloto</h3><p class="rail-text">Implantamos uma solução pequena, com indicador e meta.</p></li>
+        <li><span class="rail-idx" aria-hidden="true">04</span><h3 class="rail-title">Expansão</h3><p class="rail-text">Com resultado comprovado, levamos a outros processos.</p></li>
+        <li><span class="rail-idx" aria-hidden="true">05</span><h3 class="rail-title">Sustentação</h3><p class="rail-text">Monitoramos, corrigimos e reportamos todo mês.</p></li>
+      </ol>
+    </section>
+
+    <section class="sv-sec" id="faq" aria-labelledby="h-faq">
+      <div class="sv-measure">
+        <h2 class="sv-h-sec" id="h-faq" data-slot="section.title" data-reveal>Perguntas frequentes</h2>
+        <div class="sv-faq">
+          <details><summary>Preciso já ter processos documentados?</summary><p>Não. O diagnóstico começa com entrevistas e com o que existe hoje: planilhas, mensagens, formulários. Documentar é parte da entrega.</p></details>
+          <details><summary>Vocês vão substituir minha equipe por IA?</summary><p>Não é o objetivo. Tiramos da equipe a tarefa repetitiva e deixamos com ela a decisão. Operações sensíveis sempre têm aprovação humana.</p></details>
+          <details><summary>Quanto tempo leva para ver resultado?</summary><p>Depende do processo. Por isso o primeiro passo é um piloto pequeno com indicador e meta definidos antes de começar. Se o piloto não atingir a meta, você sabe cedo e decide se continua.</p></details>
+          <details><summary>Toda solução usa inteligência artificial?</summary><p>Não. Passar um pedido de um formulário para o sistema se resolve com integração simples. Interpretar um e-mail livre pode justificar um modelo de linguagem. Usamos a tecnologia mais simples que resolve.</p></details>
+          <details><summary>Para que tipo de empresa isso serve?</summary><p>Pequenas e médias empresas com operação repetitiva e muitos sistemas: logística, distribuição, serviços empresariais e operações portuárias são nosso ponto de partida.</p></details>
+          <details><summary>O que acontece com os dados da minha empresa?</summary><p>Ficam em ambiente com acesso controlado, por projeto. Só as pessoas convidadas veem a área do seu projeto, e cada acesso e alteração fica registrado.</p></details>
+          <details><summary>Quanto custa?</summary><p>A primeira conversa não tem custo. O diagnóstico e o piloto têm escopo e preço fechados antes de começar, definidos pelo tamanho do processo analisado.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="sv-sec" id="diagnostico" aria-labelledby="h-cta">
+      <div class="sv-measure">
+        <h2 class="sv-h-sec" id="h-cta" data-slot="feature.title" data-reveal>Modele o sistema. Depois mude o resultado.</h2>
+        <p class="sv-prose" data-reveal>Conte qual processo mais pesa hoje. Em 30 minutos mostramos por onde começaríamos e o que seria medido.</p>
+        <ul class="sv-ticks"><li>Sem custo e sem compromisso.</li><li>Você recebe um mapa inicial dos gargalos.</li><li>Resposta em até 2 dias úteis.</li></ul>
+      </div>
+      <form class="sv-panel sv-form" id="lead" novalidate style="margin-top:40px">
+        <div class="sv-two">
+          <div class="sv-field"><label class="sv-label" for="f-name">Nome</label><input class="sv-input" id="f-name" type="text" name="name" autocomplete="name" required maxlength="80"></div>
+          <div class="sv-field"><label class="sv-label" for="f-company">Empresa</label><input class="sv-input" id="f-company" type="text" name="company" autocomplete="organization" required maxlength="80"></div>
+        </div>
+        <div class="sv-field"><label class="sv-label" for="f-email">E-mail de trabalho</label><input class="sv-input" id="f-email" type="email" name="email" autocomplete="email" required maxlength="120"></div>
+        <div class="sv-field"><label class="sv-label" for="f-message">Qual processo mais pesa hoje?</label><textarea class="sv-input" id="f-message" name="message" maxlength="600" placeholder="Ex.: pedidos chegam pelo WhatsApp e são digitados no ERP"></textarea></div>
+        <label class="sv-hp" aria-hidden="true">Site<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        <label class="sv-check"><input type="checkbox" name="consent" required><span>Autorizo a Loop Consultoria a usar estes dados para entrar em contato sobre este pedido. Você pode pedir a exclusão a qualquer momento.</span></label>
+        <button class="sv-btn sv-btn--primary sv-btn--block" type="submit" data-slot="cta.label" data-cta="form">Agendar diagnóstico</button>
+        <p class="sv-msg" id="form-msg" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+  </article>
+</div>
 </main>
 
-<footer>
-  <div class="wrap">
-    <hr class="ui-separator">
-    <div class="foot">
-      <span>© 2026 Loop Consultoria · Eficiência operacional e automação inteligente</span>
-      <nav aria-label="Rodapé"><a href="#metodo" data-slot="footer.link">Método</a><a href="#servicos" data-slot="footer.link">Serviços</a><a href="#faq" data-slot="footer.link">Perguntas</a><a href="#diagnostico" data-slot="footer.link">Contato</a></nav>
-    </div>
+<footer class="sv-footer">
+  <div class="sv-wrap sv-footer-in">
+    <span>© 2026 Loop Consultoria · Eficiência operacional e automação inteligente</span>
+    <nav aria-label="Rodapé"><a href="#metodo" data-slot="footer.link">Método</a><a href="#servicos" data-slot="footer.link">Serviços</a><a href="#faq" data-slot="footer.link">Perguntas</a><a href="#diagnostico" data-slot="footer.link">Contato</a></nav>
   </div>
 </footer>
-
+<script src="/loop-ui.js" defer></script>
 <script>
 (() => {
   // ---- Simulador ilustrativo (modelo simplificado de fila com retrabalho) ----
@@ -510,7 +409,7 @@ footer{margin-top:120px;padding:24px 0 40px;font-size:var(--text-caption);color:
     $("k-wait").textContent = over ? "cresce" : wait < 1 ? Math.round(wait * 60) + " min" : wait.toFixed(1).replace(".", ",") + " h";
     $("t-queue").textContent = over ? "+" + grow + "/dia" : util > 0.85 ? "no limite" : "estável";
     $("t-out").textContent = over ? "atrasa" : util > 0.85 ? "em risco" : "no prazo";
-    $("r-queue").setAttribute("fill", over ? "hsl(var(--loop-caution-soft))" : "hsl(var(--muted))");
+    $("r-queue").setAttribute("fill", over ? "var(--loop-warn-tint)" : "var(--color-bg)");
     $("p-loop").setAttribute("stroke-width", (1.5 + rw * 9).toFixed(1));
     const n = $("sim-note");
     n.className = "sim-note" + (over ? " bad" : util <= 0.85 ? " ok" : "");
@@ -520,8 +419,7 @@ footer{margin-top:120px;padding:24px 0 40px;font-size:var(--text-caption);color:
         ? "A operação está no limite. Qualquer pico vira fila e o retrabalho começa a subir. É aqui que um diagnóstico evita a contratação apressada."
         : "A operação absorve a demanda com folga. O ganho agora está em qualidade e em liberar pessoas para o que exige decisão.";
   }
-  const fill = (el) => el.style.setProperty("--p", ((el.value - el.min) / (el.max - el.min)) * 100 + "%");
-  [d, c, a].forEach((el) => { fill(el); el.addEventListener("input", () => { fill(el); calc(); }); });
+    [d, c, a].forEach((el) => el.addEventListener("input", calc));
   calc();
 
   // ---- Animação dos pedidos no diagrama ----
@@ -538,7 +436,7 @@ footer{margin-top:120px;padding:24px 0 40px;font-size:var(--text-caption);color:
     if (!paused && document.visibilityState === "visible") {
       acc += dt;
       const every = 900 / Math.max(0.4, +d.value / 80);
-      if (acc > every) { acc = 0; spawn(main, "hsl(var(--loop-data-1))"); if (Math.random() < state.rework * 2.2) spawn(loop, "hsl(var(--loop-caution))"); }
+      if (acc > every) { acc = 0; spawn(main, "var(--color-accent)"); if (Math.random() < state.rework * 2.2) spawn(loop, "var(--loop-warn)"); }
       const speed = state.util >= 1 ? 0.00022 : 0.0004;
       items = items.filter((it) => { it.t += dt * speed * (it.path === loop ? 1.6 : 1); if (it.t >= 1) { it.el.remove(); return false; } const p = it.path.getPointAtLength(it.t * it.len); it.el.setAttribute("cx", p.x); it.el.setAttribute("cy", p.y); return true; });
     }
@@ -546,29 +444,25 @@ footer{margin-top:120px;padding:24px 0 40px;font-size:var(--text-caption);color:
   }
   if (!reduce) requestAnimationFrame((t) => { last = t; frame(t); });
 
-  // ---- Revelação ao rolar ----
-  const io = "IntersectionObserver" in window ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" }) : null;
-  document.querySelectorAll("[data-reveal]").forEach((el) => (io ? io.observe(el) : el.classList.add("in")));
-
   // ---- Formulário ----
   const form = $("lead"), msg = $("form-msg");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    msg.className = "form-msg";
+    msg.className = "sv-msg";
     const data = Object.fromEntries(new FormData(form));
     data.consent = form.consent.checked;
     const bad = !data.name?.trim() ? "Informe seu nome." : !data.company?.trim() ? "Informe a empresa." : !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email || "") ? "Informe um e-mail válido." : !data.consent ? "Marque a autorização para entrarmos em contato." : "";
-    if (bad) { msg.textContent = bad; msg.className = "form-msg err"; return; }
+    if (bad) { msg.textContent = bad; msg.className = "sv-msg err"; return; }
     const btn = form.querySelector("button"); btn.disabled = true; btn.textContent = "Enviando…";
     try {
       const r = await fetch("/api/lead", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
       if (!r.ok) throw new Error(String(r.status));
       form.reset();
       msg.textContent = "Recebemos seu pedido. Respondemos em até 2 dias úteis.";
-      msg.className = "form-msg ok";
+      msg.className = "sv-msg ok";
     } catch (err) {
       msg.textContent = "Não foi possível enviar agora. Tente de novo em alguns minutos.";
-      msg.className = "form-msg err";
+      msg.className = "sv-msg err";
     } finally { btn.disabled = false; btn.textContent = "Agendar diagnóstico"; }
   });
 })();

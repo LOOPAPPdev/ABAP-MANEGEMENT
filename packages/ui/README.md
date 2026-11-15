@@ -1,5 +1,7 @@
 # @abap/ui
 
+> 2026-11-15 (D-040): the Loop landing no longer imports this package. It uses the exclusive [`@loop/ui`](../loop-ui/README.md), which follows the Screens v2 design one to one. The sections below describe the integration as it was (traceability A–D); the LOOP theme stays here for reference.
+
 One UI contract for the ABAP platform and the Loop Consultoria landing.
 
 ```mermaid
