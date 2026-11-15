@@ -26,15 +26,16 @@ flowchart LR
 
 ## Design system
 
-The page uses `@abap/ui` (theme `loop` + shared primitives): see [`packages/ui/README.md`](../../packages/ui/README.md). Rules applied in the 2026-11-15 polish, content unchanged:
+The page uses `@abap/ui` (theme `loop` + shared primitives): see [`packages/ui/README.md`](../../packages/ui/README.md). Since 2026-11-15 (second pass) the LOOP theme is the **Screens v2 design system**: the rc bundle scale (`_ds_bundle.css`) and the `loop-theme.css` palette, copied from the design artifact `a74ae02c` (`ds/rc/`). Content unchanged.
 
-| Before | After |
+| Element | Screens v2 rule applied |
 |---|---|
-| Pastel tinted blocks per card, rotating blue/purple/green | Neutral cards (border + soft shadow), one brand colour for focus, links and eyebrows |
-| Pill shapes everywhere | Radius from the contract (`--radius`), pills removed |
-| Coloured check circles, tinted step letters | Neutral check icon, mono step index in a bordered square |
-| Per-section colour tokens and hard-coded shadows | Contract tokens + `--loop-shadow-*`; status shown by a dot and a word |
-| Hand-made buttons, inputs, FAQ | `ui-button`, `ui-input`, `ui-textarea`, `ui-label`, `ui-badge`, `ui-card`, `ui-separator`; shadcn-style accordion, checkbox and slider |
+| Type | Inter; body 17px / 1.47 / -0.022em; lead 21px / 1.38; h1 700, clamp 36–72px, -0.04em; h2 500, clamp 30–50px, -0.03em; card titles 20px |
+| Grounds | White page; cards are flat slate-100 tiles (no border, no shadow); feature stages use the blue, purple and green tints; white sheets sit on tints |
+| Controls | Pill buttons (primary filled slate-900, outline 1px text colour); pill nav menu on slate-100; chips at 9% text mix |
+| Header | 72px, 85% ground + blur 18px, no border |
+| Radius, space, motion | Card 16px, controls pill, fields 12px; 4/8/12/16/24/32/48/64 spacing; `cubic-bezier(.25,.1,.25,1)` |
+| Shared recipes | Unchanged classes (`ui-button`, `ui-card`, `ui-badge`, `ui-input`…); the theme sets `--ui-*` hooks, ABAP keeps its defaults |
 
 Content check: `node content-baseline.mjs` extracts the visible copy; the redesign removed no sentence (only decorative card numbers were added, `aria-hidden`).
 

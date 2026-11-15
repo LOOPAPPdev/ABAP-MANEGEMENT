@@ -20,7 +20,8 @@ flowchart LR
 |---|---|---|
 | `theme/contract.json` | Names only: 19 colours + `radius` (shadcn/ui HSL channels, used as `hsl(var(--name))`) | Every theme MUST define every name |
 | `theme/abap.css` | ABAP neutral bundle (ADR-007) | MUST equal `apps/abap/app/app.css` (test) |
-| `theme/loop.css` | LOOP-CONSULTORIA palette (Screens v2), light and dark | Extensions use the `--loop-*` prefix. Text pairs ≥ 4.5:1 (test) |
+| `theme/loop.css` | Screens v2 design system: `loop-theme.css` palette + rc bundle scale (type, space, radius, motion), light and dark | Extensions use `--loop-*`; scale values equal the design bundle (test). Text pairs ≥ 4.5:1 (test) |
+| `--ui-*` hooks | Optional theme knobs read by the recipes: `--ui-button-radius`, `--ui-button-shadow`, `--ui-outline-border`, `--ui-badge-radius`, `--ui-field-radius`, `--ui-card-shadow`, `--ui-card-border` | Each hook has the ABAP value as fallback; ABAP sets none (test) |
 
 ## C · Components: only what both use
 

@@ -87,3 +87,26 @@ test("the landing imports the package and uses only defined ui-* classes", () =>
   for (const c of used) assert.ok(defined.has(c), `landing uses undefined class ${c}`);
   assert.ok(used.size >= 10, "landing should use the shared primitives");
 });
+
+test("LOOP theme carries the Screens v2 rc scale and palette (values from the design bundle)", () => {
+  // Source: claude.ai/code/artifact/a74ae02c, ds/rc/_ds_bundle.css and ds/rc/loop-theme.css.
+  const v = rootVars(read(pkg, "theme", "loop.css"));
+  const expected = {
+    "text-display": "80px", "text-hero": "56px", "text-title": "40px", "text-subtitle": "28px", "text-lead": "21px",
+    "text-card": "21px", "text-body": "17px", "text-caption": "14px", "text-micro": "12px", "leading-body": "1.47",
+    "tracking-body": "-0.022em", "space-1": "4px", "space-5": "24px", "space-8": "64px", "radius-card": "16px",
+    "radius-pill": "980px", "loop-slate-100": "#f3f4f6", "loop-slate-900": "#111418", "loop-blue": "#2a62d4",
+    "loop-blue-tint": "#edf3ff", "loop-green": "#0f6b5f", "loop-purple": "#5146b8", "loop-warn": "#a2451b",
+  };
+  for (const [k, val] of Object.entries(expected)) assert.equal(v[k], val, `--${k}`);
+  const dark = darkVars(read(pkg, "theme", "loop.css"));
+  for (const k of ["loop-slate-100", "loop-slate-900", "loop-blue", "loop-blue-tint"]) assert.ok(k in dark, `dark misses --${k}`);
+});
+
+test("component hooks keep ABAP defaults (ABAP theme sets no --ui-* hook)", () => {
+  const abap = rootVars(read(pkg, "theme", "abap.css"));
+  assert.deepEqual(Object.keys(abap).filter((k) => k.startsWith("ui-")), []);
+  for (const f of ["button.css", "badge.css", "card.css", "field.css"]) {
+    for (const m of read(pkg, "components", f).matchAll(/var\(--ui-[a-z-]+(,?)/g)) assert.equal(m[1], ",", `${f}: hook without ABAP fallback`);
+  }
+});
