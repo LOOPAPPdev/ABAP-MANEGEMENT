@@ -17,7 +17,7 @@ flowchart LR
 ```
 1. **Same Worker, stateless MCP.** `POST /mcp` uses `@modelcontextprotocol/sdk` (Streamable HTTP, JSON responses, one server per request). No Durable Objects: every tool is request/response. One deploy, one D1, domain rules not duplicated.
 2. **Personal API tokens** (`api_tokens`, migration 0004): `abap_` + 256 random bits, shown once, only the SHA-256 hash stored, role `read | write`, revocable with immediate effect (looked up on every request). Created and revoked in **Settings → Tokens de API** by signed-in users only. The legacy `ABAP_API_TOKEN` keeps working as **read**.
-3. **25 tools `abap_*`** call the same services as the app. Guardrails enforced on the server, not in the prompt:
+3. **25 tools `abap_*`** (27 since ADR-011: `abap_studio_list`, `abap_studio_publish`) call the same services as the app. Guardrails enforced on the server, not in the prompt:
    - a `read` token cannot call write tools;
    - `DONE` and `VERIFIED` are refused (the owner sets them, with evidence);
    - `abap_drive_create_document` requires `confirm: true` and only creates new documents;

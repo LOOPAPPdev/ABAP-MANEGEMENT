@@ -25,7 +25,7 @@ flowchart LR
 | Field | Value |
 |---|---|
 | Document ID | DOC-ADR-CTRL |
-| Version | 0.2 (draft for owner review) |
+| Version | 0.3 (draft for owner review) |
 | Date | 2026-11-15 |
 | Project | CleanSea (Studio LOOP) |
 | Software category | Enterprise Application Software (EAS) |
@@ -515,7 +515,7 @@ GIVEN a diagram WHEN a reader cannot see color THEN the reader can read each sta
 
 # ACT 3 — ADR REGISTER (CleanSea)
 
-Status on 2026-11-15. The repository has no production app code. The front end that exists is an HTML design prototype (ADR-013). All `as_built` fields are `UNVERIFIED` or `N/A`.
+Status on 2026-11-15. The repository has no production app code. The front end that exists is an HTML design prototype (ADR-013). All `as_built` fields are `UNVERIFIED` or `N/A`, except ADR-014 (the ABAP Studio code and its tests).
 
 Read the stack board and the decision cards in [`README.md`](./README.md) first. The blocks below are the full records.
 
@@ -536,6 +536,7 @@ Read the stack board and the decision cards in [`README.md`](./README.md) first.
 | ADR-011 | Update the README stack board before each ADR record | Accepted | N/A | AR | PO.1, PO.3 |
 | ADR-012 | Write documents visual-first without loss of content | Accepted | N/A | AR | PO.1 |
 | ADR-013 | Use the design handoff as the front-end reference for release 1 | Proposed | UNVERIFIED | DE | PW.1, PW.2 |
+| ADR-014 | Review the prototype with the client in the ABAP project Studio | Accepted | VERIFIED | AR, DE | PW.1, PW.8 |
 
 ## 3.2 ADRs
 
@@ -1182,6 +1183,58 @@ GIVEN each screen M00 to M15 of the handoff WHEN the SPEC is reviewed THEN each 
 ### Revisit when
 The client confirms or changes the open items of the handoff, or the owner sets the token source.
 
+## ADR-014 — Review the prototype with the client in the ABAP project Studio
+
+- id: ADR-014
+- status: Accepted
+- date: 2026-11-15
+- deciders: Project owner
+- supersedes: none
+- superseded_by: none
+- as_built: VERIFIED
+- nist_process: AR, DE
+- arc42: 7, 8, 9
+- ssdf: PW.1, PW.8
+- trace: BRD-001, PRD-013
+- evidence: OWNER:chat 2026-11-15 ; CODE:apps/abap/src/server/studio.ts ; CODE:apps/abap/docs/architecture/adr-011_project-studio-shared-access.md ; TEST:npx vitest run tests/unit/studio.test.ts tests/integration/studio.test.ts 2026-11-15
+
+### Context
+`[FACT]` The owner asks to publish the prototype in the ABAP app: create the CleanSea client project and put the prototype in the studio area of that client. The studio is shared between the owner and the client, with access, logins and invitations. The owner asks to record this as a decision and as workflows.
+`[FACT]` The prototype is a design reference with simulated data (ADR-013). It is not production code.
+`[VERIFIED 2026-11-15]` ABAP has a project Studio (ABAP ADR-011): staff invite guests in the app, guests sign in with Google and see only the studio of their project, artifacts run in a sandboxed frame with a mandatory notice. Tests: 13 studio tests pass; full suite 205 tests pass.
+`[VERIFIED 2026-11-15]` In a local ABAP, `npm run studio:publish -w @clients/prj-01-cleansea` published the prototype (6 files, about 1955 KB) and the browser showed it in the studio frame.
+`[OPEN]` ABAP production runs in a Cloudflare account that this session cannot reach. The publication in production waits for migration 0007, the deploy and the project creation.
+
+### Decision
+- The prototype SHALL be published in the Studio of the ABAP project `prj-01-cleansea` as the artifact `prototipo-app-mobile` (manifest `studio/prototipo-app-mobile.json`).
+- The notice MUST say that the data is simulated and that it is not the production app.
+- Client people MUST see the studio only by invitation. Only staff invite and revoke, in the app.
+- The prototype MUST run sandboxed. It MUST NOT get the ABAP session or call the ABAP API with credentials.
+- This ADR does not approve the production stack. ADR-004 and ADR-013 stay Proposed.
+
+### Options
+| Option | Evidence | Fit | Risk |
+|---|---|---|---|
+| A ABAP project Studio with invitations (chosen) | OWNER:chat 2026-11-15 | High | Guests need a Google account |
+| B Public static Worker for the prototype | NONE: | Medium | No login. The link can leak |
+| C Send the HTML file by e-mail | NONE: | Low | No access control, no versions, needs the 2 MB bundle |
+
+### Consequences
+- Easier: the client sees each new revision in one place. Each access change and publication is audited.
+- Harder: someone must invite and revoke people.
+- Revisit: when the client needs to comment or upload files in the studio.
+
+### Security impact
+Threat: a client person sees governance data of other projects. Control: guest allow-list on every request, read-only (SSDF PW.1). Threat: prototype script reads the session. Control: CSP sandbox, opaque origin, signed 12-hour link (PW.1). Tests cover denial paths and forged or expired links (PW.8). The invited e-mail addresses are personal data (LGPD): they stay in the ABAP database, not in Git.
+
+### Verification
+GIVEN an invited client person WHEN the person signs in THEN the person sees the studio of PRJ-01 and the prototype with its notice.
+GIVEN the same person WHEN the person opens the dashboard or the API of the activities THEN ABAP denies it.
+GIVEN staff revoke the person WHEN the person calls again THEN ABAP denies the access.
+
+### Revisit when
+The client needs comments or uploads, or the production app replaces the prototype.
+
 ---
 
 # ACT 4 — TRACEABILITY MATRIX
@@ -1203,6 +1256,7 @@ The client confirms or changes the open items of the handoff, or the owner sets 
 | ADR-011 | BRD-001 | — | — | — | — | AR | 4, 9 | PO.1, PO.3 |
 | ADR-012 | BRD-001 | — | — | — | — | AR | 8, 9 | PO.1 |
 | ADR-013 | BRD-004 | PRD-013 | — | TBD | TBD | DE | 5, 8, 9 | PW.1, PW.2 |
+| ADR-014 | BRD-001 | PRD-013 | — | — | — | AR, DE | 7, 8, 9 | PW.1, PW.8 |
 
 BRD, PRD and FRD IDs come from the NIST-Docs requirements register (zero-padded). `[OPEN]` That register is not in this repository. The agent could not check the IDs (open item 12). ADR-010, ADR-011 and ADR-012 also trace to `NFR-004`.
 
@@ -1230,6 +1284,7 @@ BRD, PRD and FRD IDs come from the NIST-Docs requirements register (zero-padded)
 | 16 | Place of the client code: `clients/prj-01-cleansea/src/` or `apps/<client-app>/`. Governance gate: code starts after ACT-03, ACT-05 and ACT-06 are approved | ADR-004, start of code |
 | 17 | Web (desktop) design does not exist. Is the web app in release 1? | ADR-004 |
 | 18 | CI does not run the ADR linter yet (ADR-010 is Proposed) | ADR-010 |
+| 19 | ABAP production runs in a Cloudflare account that this session cannot reach. Migration 0007, the deploy and the creation of the project `prj-01-cleansea` need the owner or access to that account | ADR-014 publication |
 
 ---
 
@@ -1278,3 +1333,4 @@ The linter checks form. It does not check that a statement is true.
 |---|---|---|---|
 | 0.1 | 2026-11-15 | First draft: rules, framework, 10 ADRs, matrix, linter | Claude (for owner review) |
 | 0.2 | 2026-11-15 | Installed in `docs/architecture/`. README stack board and rule 12 (README first). Section 2.13 document style (visual-first) and 2.14 README contract. ADR-011, ADR-012, ADR-013. Design handoff added as evidence to ADR-003, ADR-004, ADR-005, ADR-008. ADR-004 option D. ADR-010 paths. Linter 0.2 moved to one source file: fixes the read of the field `arc42` (0.1 reported 10 false errors) and checks the README. Accepted ADR-001, ADR-002, ADR-006, ADR-007: text not changed (same hashes) | Claude (for owner review) |
+| 0.3 | 2026-11-15 | ADR-014 (prototype review in the ABAP Studio). Open item 19 (production account). README updated first | Claude (for owner review) |

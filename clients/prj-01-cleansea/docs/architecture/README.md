@@ -1,6 +1,6 @@
 # CleanSea — Architecture and stack
 
-Stack board of the CleanSea app (PRJ-01, ACT-05). **Draft for owner review.** Status on 2026-11-15: 6 decisions 🟢 Accepted, 7 🟡 Proposed, no production code yet.
+Stack board of the CleanSea app (PRJ-01, ACT-05). **Draft for owner review.** Status on 2026-11-15: 7 decisions 🟢 Accepted, 7 🟡 Proposed, no production code yet.
 
 ## Stack
 
@@ -17,6 +17,7 @@ Stack board of the CleanSea app (PRJ-01, ACT-05). **Draft for owner review.** St
 | Web app | Next.js (React, shadcn/ui) | 🟡 Proposed | ADR-004 |
 | Mobile app | Expo (React Native) | 🟡 Proposed | ADR-004 |
 | Mobile UI reference | Design handoff: HTML prototype, screens M00 to M15, 5 roles. Rebuild it. Do not ship it | 🟡 Proposed | ADR-013 |
+| Prototype review with the client | ABAP Studio of the project: invited client logins, sandboxed prototype with a notice | 🟢 Accepted | ADR-014 |
 | Database, auth, storage, realtime | Supabase (Postgres) `[ASSUMPTION]`. Alternative: Cloudflare Workers and D1 | 🟡 Proposed | ADR-004 |
 | Web hosting | Vercel `[ASSUMPTION]` | 🟡 Proposed | ADR-004 |
 | Mobile build and updates | EAS Build, Submit and Update `[ASSUMPTION]` | 🟡 Proposed | ADR-004 |
@@ -93,6 +94,7 @@ flowchart LR
     A8["ADR-008 Proposed<br/>offline queue"]
     A9["ADR-009 Proposed<br/>AI read-only"]
     A13["ADR-013 Proposed<br/>design handoff"]
+    A14["ADR-014 Accepted<br/>Studio review"]
   end
   A1 --> A2 --> A4
   A10 --> A11 --> A12
@@ -104,6 +106,7 @@ flowchart LR
   A5 --> A7
   A5 --> A9
   A13 --> A8
+  A13 --> A14
 ```
 
 ## ADR index
@@ -125,6 +128,7 @@ Full records: [`CLAUDE.md`, Act 3](./CLAUDE.md#act-3--adr-register-cleansea).
 | ADR-011 | Update the README stack board before each ADR record | 🟢 Accepted | N/A |
 | ADR-012 | Write documents visual-first without loss of content | 🟢 Accepted | N/A |
 | ADR-013 | Use the design handoff as the front-end reference for release 1 | 🟡 Proposed | UNVERIFIED |
+| ADR-014 | Review the prototype with the client in the ABAP project Studio | 🟢 Accepted | VERIFIED |
 
 ## Decision cards
 
@@ -145,6 +149,7 @@ One line for each ADR. The ADR text is the source (VS-07).
 | ADR-011 | Update this README before each ADR record. The linter compares the two files | One more step for each ADR | The stack data moves to a structured file |
 | ADR-012 | Summary, then diagram, then tables, then details. No loss of content | Diagrams can drift from the text | A reader reports a hidden requirement |
 | ADR-013 | Rebuild the mobile screens from the handoff. No seed data or "SIMULADO" in production | The handoff has items the client did not confirm | The client answers the open items |
+| ADR-014 | Publish the prototype in the ABAP Studio of PRJ-01. Client people see it by invitation only | Guests need a Google account. Production needs migration 0007 + deploy | The client needs to comment or upload in the studio |
 
 ## What blocks the stack
 
@@ -161,7 +166,7 @@ flowchart LR
   S --> C
 ```
 
-Full list: [`CLAUDE.md`, Act 5](./CLAUDE.md#act-5--open-items) (18 items).
+Full list: [`CLAUDE.md`, Act 5](./CLAUDE.md#act-5--open-items) (19 items).
 
 ## Files in this directory
 

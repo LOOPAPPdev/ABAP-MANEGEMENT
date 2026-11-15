@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { getDb } from "../db/client";
+import { homeFor } from "~/domain/studio";
 import { storeSheetsCredential } from "../sheets/sources";
+import { acceptInvites, accessOf } from "../studio";
 import { randomToken, signJson, verifyJson } from "./crypto";
 import { buildAuthUrl, exchangeCode, GoogleError, readIdToken, SCOPE_DRIVE, SCOPE_LOGIN, SCOPE_SHEETS, type Fetch } from "./google";
 import type { AuthVariables } from "./middleware";
@@ -64,7 +66,12 @@ export function createAuthRoutes(deps: { fetch?: Fetch; now?: () => number } = {
       const tokens = await exchangeCode({ code, verifier: st.verifier, redirectUri: redirectUri(c.req.url), ...cfg.google }, f);
       if (!tokens.id_token) return fail("oauth");
       const id = readIdToken(tokens.id_token, cfg.google.clientId, now());
-      if (!id.emailVerified || !cfg.allowedEmails.includes(id.email)) return fail("not_allowed");
+      if (!id.emailVerified) return fail("not_allowed");
+      // Staff (allow-list) or a guest invited to a project studio (ADR-011).
+      const access = await accessOf(c.env.DB, id.email, cfg.allowedEmails);
+      if (access.kind === "none") return fail("not_allowed");
+      if (access.kind === "guest" && st.purpose !== "login") return fail("not_allowed");
+      if (access.kind === "guest") await acceptInvites(c.env.DB, id.email, new Date(now()).toISOString());
       if (st.purpose === "sheets") {
         if (!tokens.refresh_token || !tokens.scope.split(" ").includes(SCOPE_SHEETS)) return fail("sheets_scope");
         // Store the scopes Google actually granted (the user may untick Drive on the consent screen).
@@ -72,7 +79,12 @@ export function createAuthRoutes(deps: { fetch?: Fetch; now?: () => number } = {
       }
       c.header("Set-Cookie", clearCookie(OAUTH_COOKIE), { append: true });
       c.header("Set-Cookie", cookie(SESSION_COOKIE, await createSession({ email: id.email, name: id.name }, cfg.sessionSecret, now()), SESSION_TTL_S), { append: true });
-      const target = st.purpose === "sheets" ? `${st.returnTo}${st.returnTo.includes("?") ? "&" : "?"}connected=1` : st.returnTo;
+      const target =
+        st.purpose === "sheets"
+          ? `${st.returnTo}${st.returnTo.includes("?") ? "&" : "?"}connected=1`
+          : access.kind === "guest" && !st.returnTo.startsWith("/studio")
+            ? homeFor(access)
+            : st.returnTo;
       return c.redirect(target, 302);
     } catch (e) {
       console.error("oauth callback failed", e instanceof GoogleError ? e.message : e);

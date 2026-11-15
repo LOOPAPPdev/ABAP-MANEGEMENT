@@ -20,7 +20,7 @@ export class ProjectDeleteError extends Error {
 }
 
 /** Tables holding rows of a project, in the order they must be deleted (children first). */
-export const PROJECT_TABLES = ["evidence", "activity_events", "sheet_snapshots", "sync_runs", "client_plugins", "project_models", "project_events", "activities"] as const;
+export const PROJECT_TABLES = ["studio_files", "studio_artifacts", "studio_members", "evidence", "activity_events", "sheet_snapshots", "sync_runs", "client_plugins", "project_models", "project_events", "activities"] as const;
 export type ProjectImpact = Record<(typeof PROJECT_TABLES)[number], number>;
 
 const fixture = fixtureSchema.parse(fixtureJson);

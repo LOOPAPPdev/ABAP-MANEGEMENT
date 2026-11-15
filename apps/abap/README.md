@@ -179,6 +179,11 @@ Reset local data: `npm run db:reset:local`.
 | GET/POST | `/api/v1/projects` | List / create a project `{ code, name, id }` |
 | GET | `/api/v1/projects/:id` | Project (machine token allowed) |
 | PUT | `/api/v1/projects/:id/links` | `{ driveFolder?, spreadsheet? }` pasted URLs or IDs |
+| GET | `/api/v1/studio/:projectId` | Studio artifacts (+ members for staff). Guests: own projects only (ADR-011) |
+| POST | `/api/v1/studio/:projectId/members` | Invite `{ email, role: client\|consultant }` — staff session only |
+| DELETE | `/api/v1/studio/:projectId/members/:email` | Revoke — staff session only |
+| POST | `/api/v1/studio/:projectId/artifacts` | Publish `{ slug, title, notice, entry, files[] }` — staff session (tokens use MCP `abap_studio_publish`) |
+| GET | `/studio/raw/:token/*` | Artifact files, signed link (12 h), sandboxed CSP, no cookie |
 | GET | `/api/v1/projects/:id/drive/files` | Drive folder tree (machine token allowed) |
 | GET | `/api/v1/projects/:id/drive/files/:fileId` | One file + Markdown if Google Doc |
 | GET | `/api/v1/projects/:id/drive/export` | All Google Docs as Markdown (machine token allowed) |

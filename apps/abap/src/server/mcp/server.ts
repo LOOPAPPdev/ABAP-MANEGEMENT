@@ -31,6 +31,8 @@ import { GovernanceService, type Clock } from "../governance-service";
 import { ModelService } from "../models";
 import { ProjectService, type Project } from "../projects";
 import { syncServiceFor } from "../sheets/factory";
+import { publishSchema } from "~/domain/studio";
+import { StudioService } from "../studio";
 
 export interface McpContext {
   db: D1Database;
@@ -284,6 +286,44 @@ export function buildMcpServer(ctx: McpContext): McpServer {
     async ({ project: id, resolve }) => {
       const p = await getProject(id);
       return syncServiceFor(ctx.cfg, ctx.db, ctx.clock, p, ctx.fetch).sync({ mode: "manual", actor, resolve });
+    },
+  );
+
+  // ---------- Studio (ADR-011) ----------
+  tool("abap_studio_list", { title: "Ver studio do projeto", description: "Artefatos publicados no Studio do projeto (área compartilhada com o cliente) e os membros convidados." }, { project }, async ({ project: id }) => {
+    const s = new StudioService(ctx.db, ctx.clock, (await getProject(id)).id);
+    const artifacts = await s.artifacts(true);
+    return {
+      artifacts: await Promise.all(artifacts.map(async (a) => ({ slug: a.slug, title: a.title, notice: a.notice, status: a.status, revision: a.revision, bytes: a.bytes, publishedBy: a.publishedBy, publishedAt: a.publishedAt, files: (await s.files(a.slug)).length }))),
+      members: (await s.members()).map((m) => ({ email: m.email, role: m.role, status: m.status })),
+      note: "Convites e revogações são feitos só por uma pessoa da equipe, no app (Studio → Membros).",
+    };
+  });
+
+  tool(
+    "abap_studio_publish",
+    {
+      title: "Publicar artefato no studio",
+      description:
+        "Publica (ou atualiza) um artefato web estático no Studio do projeto, visível para a equipe e para os convidados do cliente. " +
+        "Arquivos de texto (html, js, css, json, svg). O aviso (notice) aparece acima do artefato. Conteúdo igual não cria revisão nova.",
+      write: true,
+    },
+    {
+      project,
+      slug: z.string().describe("ex.: prototipo-app-mobile"),
+      title: z.string(),
+      description: z.string().optional(),
+      notice: z.string().describe("Aviso obrigatório, ex.: 'Protótipo — dados simulados. Não é o app de produção.'"),
+      entry: z.string().describe("Arquivo .html de entrada"),
+      files: z.array(z.object({ path: z.string(), content: z.string() })),
+    },
+    async ({ project: id, ...input }) => {
+      const p = await getProject(id);
+      const parsed = publishSchema.safeParse(input);
+      if (!parsed.success) throw new ToolError(parsed.error.issues.slice(0, 10).map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
+      const { artifact, changed } = await new StudioService(ctx.db, ctx.clock, p.id).publish(parsed.data, actor);
+      return { changed, artifact: { slug: artifact.slug, title: artifact.title, revision: artifact.revision, bytes: artifact.bytes }, open: `/studio/${p.id}?artifact=${artifact.slug}` };
     },
   );
 

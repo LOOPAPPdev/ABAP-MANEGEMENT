@@ -1,5 +1,7 @@
 import type { MiddlewareHandler } from "hono";
 import { parseConfig, type AppConfig } from "../config";
+import { guestMayAccess, homeFor, type Access } from "~/domain/studio";
+import { accessOf } from "../studio";
 import { TokenService, type TokenRole } from "../tokens";
 import { readCookie, readSession, SESSION_COOKIE } from "./session";
 
@@ -13,22 +15,29 @@ export interface AppUser {
   mode: "google" | "dev" | "machine" | "token";
   /** Permission for token callers (MCP tools check it). Sessions and the dev bypass act as "write". */
   role?: TokenRole;
+  /** Studio access (ADR-011): staff (ALLOWED_EMAILS) or guest limited to the studio of invited projects. */
+  access?: Access;
 }
 
 export type AuthVariables = { user: AppUser | null; cfg: AppConfig };
 
 /** Paths reachable without a session. Everything else requires login. */
 export const MCP_PATH = "/mcp";
-const PUBLIC = [/^\/login\/?$/, /^\/auth\//, /^\/api\/v1\/health$/, /^\/assets\//, /^\/favicon\.ico$/, /^\/__manifest/];
+const PUBLIC = [/^\/studio\/raw\//, /^\/login\/?$/, /^\/auth\//, /^\/api\/v1\/health$/, /^\/assets\//, /^\/favicon\.ico$/, /^\/__manifest/];
 export const isPublicPath = (path: string) => PUBLIC.some((r) => r.test(path));
 
-export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefined | null): Promise<AppUser | null> {
-  if (cfg.auth === "dev-bypass") return { email: "local-dev", mode: "dev" };
+export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefined | null, db?: D1Database): Promise<AppUser | null> {
+  if (cfg.auth === "dev-bypass") return { email: "local-dev", mode: "dev", access: { kind: "staff" } };
   if (cfg.auth !== "google" || !cfg.sessionSecret) return null;
   const s = await readSession(readCookie(cookieHeader, SESSION_COOKIE), cfg.sessionSecret);
-  // The allow-list is checked on every request: removing an e-mail revokes access immediately.
-  return s && cfg.allowedEmails.includes(s.email.toLowerCase()) ? { ...s, mode: "google" } : null;
+  if (!s) return null;
+  // Checked on every request: removing an e-mail from the allow-list, or revoking a studio invite, ends access at once.
+  if (cfg.allowedEmails.includes(s.email.toLowerCase())) return { ...s, mode: "google", access: { kind: "staff" } };
+  const access = db ? await accessOf(db, s.email, cfg.allowedEmails) : ({ kind: "none" } as const);
+  return access.kind === "guest" ? { ...s, mode: "google", access } : null;
 }
+
+export const isGuest = (u: AppUser | null | undefined): u is AppUser & { access: { kind: "guest"; projects: readonly string[] } } => u?.access?.kind === "guest";
 
 /** Read-only endpoints the machine token may call (used by `npm run docs:pull`). */
 const MACHINE_ALLOWED = [/^\/api\/v1\/projects\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/drive\/(export|files)\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/models(\/[A-Z]+-\d{2})?\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/agent\/?$/];
@@ -69,10 +78,15 @@ export function authGate(): MiddlewareHandler<{ Bindings: object; Variables: Aut
     }
     if (isMcp && cfg.auth !== "dev-bypass")
       return c.json({ ok: false, error: "token_required", message: "Crie um token pessoal em Settings → Tokens de API" }, 401, { "WWW-Authenticate": 'Bearer realm="abap"' });
-    const user = await resolveUser(cfg, c.req.header("cookie"));
+    const user = await resolveUser(cfg, c.req.header("cookie"), (c.env as { DB?: D1Database }).DB);
     c.set("user", user);
     const path = new URL(c.req.url).pathname;
     if (isPublicPath(path)) return next();
+    // Guests (ADR-011) reach only the studio of their projects; everything else is denied.
+    if (isGuest(user) && !guestMayAccess(c.req.method, path, user.access.projects)) {
+      if (path.startsWith("/api/")) return c.json({ ok: false, error: "forbidden_for_guest" }, 403);
+      return c.redirect(homeFor(user.access), 302);
+    }
     const isApi = path.startsWith("/api/");
     if (cfg.auth === "misconfigured") {
       const body = { ok: false, error: "auth_not_configured", missing: cfg.missing };
