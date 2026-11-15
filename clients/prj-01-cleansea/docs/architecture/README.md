@@ -1,6 +1,6 @@
 # CleanSea — Architecture and stack
 
-Stack board of the CleanSea app (PRJ-01, ACT-05). **Draft for owner review.** Status on 2026-11-15: 8 decisions 🟢 Accepted, 9 🟡 Proposed, no production code yet.
+Stack board of the CleanSea app (PRJ-01, ACT-05). **Draft for owner review.** Status on 2026-11-15: 8 decisions 🟢 Accepted, 10 🟡 Proposed, no production code yet.
 
 ## Stack
 
@@ -18,6 +18,7 @@ Stack board of the CleanSea app (PRJ-01, ACT-05). **Draft for owner review.** St
 | Mobile app | Expo (React Native) | 🟡 Proposed | ADR-004 |
 | Mobile UI reference | Design handoff: HTML prototype, screens M00 to M15, 5 roles. Rebuild it. Do not ship it | 🟡 Proposed | ADR-013 |
 | Prototype review with the client | ABAP Studio of the project (`abap-manegement.adm-loop-app.workers.dev/studio/prj-01-cleansea`): invited client logins, sandboxed prototype with a notice | 🟢 Accepted | ADR-014 |
+| Public prototype link | Static Worker `clema` on workers.dev (`clema.adm-loop-app.workers.dev`), deployed by Workers Builds from `/clients/prj-01-cleansea`: no login, notice banner on every page, `noindex`. Simulated data only | 🟡 Proposed | ADR-018 |
 | Vessel tracking in the prototype | Widget inside the prototype: Leaflet + OpenStreetMap map, proximity push (50 mn, 12 mn, berth), data crossing, Open-Meteo weather. AIS simulated | 🟢 Accepted | ADR-017 |
 | Vessel identity, positions, ETA | Internal IDs + IMO (identity) + MMSI (complement) + provider ID map; positions with source and two timestamps; ETA observations kept, priority and validity rule | 🟡 Proposed | ADR-015 |
 | WhatsApp | WhatsApp Business Platform, webhook, association to the operation (code, vessel, human confirmation), original message ID against duplicates | 🟡 Proposed | ADR-016 |
@@ -99,6 +100,7 @@ flowchart LR
     A9["ADR-009 Proposed<br/>AI read-only"]
     A13["ADR-013 Proposed<br/>design handoff"]
     A14["ADR-014 Accepted<br/>Studio review"]
+    A18["ADR-018 Proposed<br/>public link"]
   end
   A1 --> A2 --> A4
   A10 --> A11 --> A12
@@ -111,6 +113,7 @@ flowchart LR
   A5 --> A9
   A13 --> A8
   A13 --> A14
+  A13 --> A18
 ```
 
 ## ADR index
@@ -136,6 +139,7 @@ Full records: [`CLAUDE.md`, Act 3](./CLAUDE.md#act-3--adr-register-cleansea).
 | ADR-015 | Identify vessels by IMO with provider ID maps, and keep every position and ETA observation | 🟡 Proposed | UNVERIFIED |
 | ADR-016 | Mirror WhatsApp through the WhatsApp Business Platform and associate each message to one operation | 🟡 Proposed | UNVERIFIED |
 | ADR-017 | Put the vessel tracking widget inside the prototype with proximity push and data crossing | 🟢 Accepted | VERIFIED |
+| ADR-018 | Publish the prototype on a public Worker without login | 🟡 Proposed | UNVERIFIED |
 
 ## Decision cards
 
@@ -160,6 +164,7 @@ One line for each ADR. The ADR text is the source (VS-07).
 | ADR-015 | Internal IDs + IMO + MMSI + provider map. Position = lat, lon, source, observed and collected time. ETA observations kept; manual > port > agency > AIS, each with a validity | Each provider needs an adapter and a contract | An AIS provider is contracted |
 | ADR-016 | WhatsApp Business webhook. Associate by `#OP-` code, then vessel name, then human confirmation. Keep the original message ID | Meta business verification and message costs | The client confirms the business number |
 | ADR-017 | Tracking widget inside the prototype (phone push banners, M06 card, full panel). AIS simulated, weather live when possible | Simulated positions may be read as real. Every simulated value carries SIMULADO | A real AIS contract exists, or the production app replaces the prototype |
+| ADR-018 | Public static Worker for the prototype, no login. The Studio (ADR-014) stays for invited review | Anyone with the link sees the prototype, including client agencies and operation volumes from the unvalidated spreadsheet | The link leaks to a third party, the client objects, or the production app replaces the prototype |
 
 ## What blocks the stack
 

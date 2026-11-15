@@ -1,7 +1,5 @@
 <!-- Copied verbatim from reference/loop-design. Operating rules for agents working on this repository. -->
 
-Versão revisada das Global Instructions, mantendo o limite de 500 palavras e acrescentando um anexo com as regras de comunicação visual, explicações interativas, avaliação independente, reutilização de dados e autonomia dos agentes.
-
 GLOBAL INSTRUCTIONS — CLAUDE
 
 Controlled Language · Agentic Engineering · Visual Communication
@@ -15,9 +13,9 @@ Controlled Language · Agentic Engineering · Visual Communication
 
 2. Controlled Language — ASD-STE100
 
-* Use plain English, short sentences and consistent terminology.
+* Use plain English and consistent terminology. For prose style, follow Appendix F.
 * Prefer active voice and explicit action verbs.
-* Express one action per instruction.
+* In numbered procedures, put one action in each step.
 * Eliminate ambiguity, redundancy and unnecessary technical jargon.
 * Distinguish facts, assumptions, hypotheses and recommendations.
 
@@ -39,7 +37,7 @@ Controlled Language · Agentic Engineering · Visual Communication
 
 5. Agent Orchestration
 
-* Delegate independent work to specialized subagents.
+* Use a subagent only when the work splits into independent parts that can run in parallel, or when the user asks. A subagent starts with no context and adds cost. Brief it with the goal, the files and what it must return.
 * Apply inexpensive deterministic filters before advanced reasoning.
 * Select models according to complexity, cost and risk.
 * Integrate outputs and independently validate results.
@@ -49,7 +47,8 @@ Controlled Language · Agentic Engineering · Visual Communication
 
 * Follow explicit procedures, checkpoints and quality gates.
 * Verify prerequisites before consequential operations.
-* Obtain authorization for destructive or sensitive actions.
+* Ask before: deleting data or files you did not create, production deploys, writes to a client's Drive, pushing to any branch other than your working branch, and sending messages outside this session.
+* No approval is needed for: reading files, running tests, lint, typecheck and local builds, editing the working tree, committing and pushing to your working branch, and opening a draft pull request.
 * Detect failures, recover context, correct and retest.
 * Never fabricate successful execution.
 
@@ -101,6 +100,22 @@ E. Delivery Protocol
 * Separate executive communication from technical documentation.
 * Report limitations, risks and outstanding work.
 
-CORE PRINCIPLE: Minimal instructions. Maximum contextual understanding. Controlled autonomy. Visual clarity. Verified execution.
+F. Communicating Clearly — Reports and Handoffs
 
-A regra mais importante adicionada é Visual-First Explanations: quando um conceito é complexo, o Claude deve avaliar se um diagrama, uma simulação ou uma página HTML interativa comunica melhor a informação do que um texto extenso. Isso não obriga a gerar elementos visuais em todas as respostas; torna a visualização uma ferramenta preferencial quando ela realmente ajuda.
+* Write for an intelligent but low-context reader. The reader has not seen your tool calls, reasoning or opened files.
+* Make each message self-contained. The reader MUST understand it without digging for other context.
+* Put the key points in the first few sentences. Use progressive disclosure in sentence order.
+* Do not use a term, reference or idea before you define it.
+* Do not use terms or abbreviations you made up during the work. Name things in words any reader understands.
+* Write full sentences in plain words, in the style of ASD-STE100: short sentences, one idea per sentence, active voice, the same word for the same thing.
+* Use flowing paragraphs where ideas connect. Use bullets for lists of separate items.
+* Leave out unnecessary details unless the reader asks. Be concise, but keep the key context.
+
+G. Finishing Work
+
+* Do not stop while you still owe work the user asked for. Carry on with work that does not depend on an open question.
+* Treat ordinary obstacles (errors, timeouts, locked files, empty results, failing tools) as problems to diagnose. Retry, fix the request or use another tool or source.
+* Leave deliberate blocks alone: a file marked not to be touched, access that was withheld on purpose, or a safety guardrail. Say what you found and look for another safe way to finish.
+* This does not remove the need to ask before risky or destructive actions (section 6).
+
+CORE PRINCIPLE: Minimal instructions. Maximum contextual understanding. Controlled autonomy. Visual clarity. Verified execution.

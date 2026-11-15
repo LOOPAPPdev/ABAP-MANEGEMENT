@@ -9,6 +9,8 @@
     "extract:legacy": "node tools/extract_cleansea.mjs reference/cleansea-operacao-integrada.html reference/cleansea.v1.json",
     "models:pull": "node ../../tools/pull-models.mjs prj-01-cleansea",
     "plugin:pull": "node ../../tools/pull-plugin.mjs prj-01-cleansea",
-    "studio:publish": "node ../../tools/studio-publish.mjs prj-01-cleansea"
+    "studio:publish": "node ../../tools/studio-publish.mjs prj-01-cleansea",
+    "prototipo:deploy": "npx --yes wrangler@4 deploy",
+    "build": "node -e \"console.log('static prototype: nothing to build')\""
   }
 }

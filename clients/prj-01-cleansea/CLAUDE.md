@@ -42,7 +42,7 @@ flowchart LR
 - **README first.** WHEN you record, change or supersede an ADR THEN update the stack board at the top of `docs/architecture/README.md` **before** you write the ADR description. The status in the README MUST equal the status in the ADR.
 - New ADRs start as `Proposed`. Only the owner sets `Accepted`. An Accepted ADR is append-only: supersede it, do not edit it.
 - Each stack choice needs an ADR. A choice without an ADR shows `[OPEN]`.
-- Run `npm run adr:lint -w @clients/prj-01-cleansea` after each change. Report only with `ERRORS: 0`. Do not edit the linter to make it pass.
+- Run `npm run adr:lint -w @clients/prj-01-cleansea` after each change. Do not call an ADR change done until the linter shows `ERRORS: 0`. If it cannot reach 0, report the remaining errors. Do not edit the linter to make it pass.
 - `as_built: VERIFIED` needs `CODE` or `TEST` evidence. A design prototype is not code.
 
 ## Document style: visual-first
@@ -50,7 +50,7 @@ Full specification: `docs/architecture/CLAUDE.md`, section 2.13. It applies to e
 
 | Content | Form |
 |---|---|
-| Flow, states, structure, dependencies | Mermaid diagram (with `accTitle` and `accDescr`, 12 nodes or fewer) |
+| Flow, states, structure, dependencies | Mermaid diagram (with `accTitle` and `accDescr`, aim for 12 nodes or fewer; split a bigger diagram into linked diagrams) |
 | Comparison, options, status of many items | Table |
 | Reason (why), normative rule (MUST, SHALL) | Short sentences |
 | Long evidence, raw output | `<details>` below the summary |
