@@ -10,6 +10,8 @@
   "compatibility_date": "2026-11-01",
   "workers_dev": true,
   "preview_urls": false,
+  // Required by `wrangler preview` (pull request builds). No bindings, so it stays empty.
+  "previews": {},
   "assets": {
     "directory": "reference/design-handoff-cleansea-app",
     "binding": "ASSETS",
