@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "abap": {
+      "type": "http",
+      "url": "https://governance-system.contato-adulto-tdah.workers.dev/mcp",
+      "headers": { "Authorization": "Bearer ${ABAP_TOKEN}" }
+    }
+  }
+}

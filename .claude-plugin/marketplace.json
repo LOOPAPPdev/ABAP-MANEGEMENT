@@ -1,0 +1,148 @@
+{
+  "name": "abap",
+  "owner": {
+    "name": "LOOP"
+  },
+  "metadata": {
+    "description": "Marketplace interno da consultoria: plugin ABAP (MCP na Cloudflare), agentes de clientes e o stack padrão de engenharia.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "abap",
+      "source": "./plugins/abap",
+      "description": "Conecta o Claude ao ABAP (plataforma de serviços da consultoria): projetos de clientes, 14 atividades de governança, modelos (diagnóstico, organograma, fluxo), Drive e planilha, pelo MCP hospedado na Cloudflare.",
+      "version": "1.0.0",
+      "author": {
+        "name": "LOOP"
+      },
+      "category": "abap"
+    },
+    {
+      "name": "agent-engineering",
+      "source": "./plugins/vendor/agent-engineering",
+      "description": "A playbook for coding agents: plan changes, implement with checks, review independently, and publish within your limits.",
+      "author": {
+        "name": "Otavio Barros"
+      },
+      "category": "vendor",
+      "version": "0.3.2",
+      "license": "MIT"
+    },
+    {
+      "name": "agent-handoff",
+      "source": "./plugins/vendor/agent-handoff",
+      "description": "Strict 3-stage handoff workflow (plan → execute → verify) for coding agents. Disk-backed state enables fresh-context code review and multi-stage verification across chat contexts. Supports multi-phase plans and parallel subagent execution.",
+      "author": {
+        "name": "WillowRyu"
+      },
+      "category": "vendor",
+      "version": "0.4.2",
+      "license": "MIT"
+    },
+    {
+      "name": "ai-firstify",
+      "source": "./plugins/vendor/ai-firstify",
+      "description": "AI-first project auditor and re-engineer based on the 9 design principles and 7 design patterns from the TechWolf AI-First Bootcamp",
+      "author": {
+        "name": "TechWolf"
+      },
+      "category": "vendor",
+      "version": "1.1.0"
+    },
+    {
+      "name": "backend-design",
+      "source": "./plugins/vendor/backend-design",
+      "description": "Teaches Claude the reflexes of a senior backend engineer. Workflows, disciplines, and opinionated defaults for data modeling, migrations, queries, idempotency, error handling, observability, performance, security, authentication and authorization, debugging, and testing. Covers APIs, workers, CLIs, ",
+      "author": {
+        "name": "sheitabrk"
+      },
+      "category": "vendor",
+      "version": "0.2.0",
+      "license": "MIT"
+    },
+    {
+      "name": "cowork-plugin-management",
+      "source": "./plugins/vendor/cowork-plugin-management",
+      "description": "Create, customize, and manage plugins tailored to your organization's tools and workflows. Configure MCP servers, adjust plugin behavior, and adapt templates to match how your team works.",
+      "author": {
+        "name": "Anthropic"
+      },
+      "category": "vendor",
+      "version": "0.2.2",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "customer-support",
+      "source": "./plugins/vendor/customer-support",
+      "description": "Triage tickets, draft responses, escalate issues, and build your knowledge base. Research customer context and turn resolved issues into self-service content.",
+      "author": {
+        "name": "Anthropic"
+      },
+      "category": "vendor",
+      "version": "1.3.0",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "engineering",
+      "source": "./plugins/vendor/engineering",
+      "description": "Streamline engineering workflows — standups, code review, architecture decisions, incident response, and technical documentation. Works with your existing tools or standalone.",
+      "author": {
+        "name": "Anthropic"
+      },
+      "category": "vendor",
+      "version": "1.2.0"
+    },
+    {
+      "name": "expo",
+      "source": "./plugins/vendor/expo",
+      "description": "Official Expo skills for building, deploying, upgrading, and debugging Expo apps",
+      "author": {
+        "name": "Expo Team"
+      },
+      "category": "vendor",
+      "version": "1.12.5",
+      "license": "MIT"
+    },
+    {
+      "name": "github",
+      "source": "./plugins/vendor/github",
+      "description": "Official GitHub MCP server for repository management. Create issues, manage pull requests, review code, search repositories, and interact with GitHub's full API directly from Claude Code.",
+      "author": {
+        "name": "GitHub"
+      },
+      "category": "vendor"
+    },
+    {
+      "name": "modern-web-guidance",
+      "source": "./plugins/vendor/modern-web-guidance",
+      "description": "Keep your coding agent up to date with the latest web best practices",
+      "author": {
+        "name": "Google Chrome"
+      },
+      "category": "vendor",
+      "version": "0.0.194",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "prisma",
+      "source": "./plugins/vendor/prisma",
+      "description": "Prisma MCP integration for Postgres database management, schema migrations, SQL queries, and connection string management. Provision Prisma Postgres databases, run migrations, and interact with your data directly.",
+      "author": {
+        "name": "Prisma"
+      },
+      "category": "vendor"
+    },
+    {
+      "name": "senior-engineering-partner",
+      "source": "./plugins/vendor/senior-engineering-partner",
+      "description": "A strict code reviewer, pair programmer, debugger, and mentor for Python, Bash, Google Apps Script, and JavaScript — a security-first, phase-aware engineering discipline with an enforced spec → plan → TDD → verify workflow.",
+      "author": {
+        "name": "Brian Greenberg"
+      },
+      "category": "vendor",
+      "version": "1.28.0",
+      "license": "Apache-2.0"
+    }
+  ]
+}

@@ -52,3 +52,15 @@ test.describe("Feature: progressive enhancement (no JavaScript)", () => {
     await expect(page.getByRole("heading", { level: 1 }).locator("..")).toContainText("PREPARED");
   });
 });
+
+test("Settings: a personal API token is shown once, listed, and can be revoked (ADR-009)", async ({ page }) => {
+  await page.goto("/settings");
+  await page.getByLabel("Nome do token").fill("e2e-laptop");
+  await page.getByRole("button", { name: "Criar token" }).click();
+  await expect(page.getByTestId("token-value")).toHaveText(/^abap_[A-Za-z0-9_-]{43}$/);
+  await expect(page.getByTestId("token-list")).toContainText("e2e-laptop");
+  await page.reload();
+  await expect(page.getByTestId("token-created")).toHaveCount(0); // never shown again
+  await page.getByRole("button", { name: "Revogar e2e-laptop" }).click();
+  await expect(page.getByTestId("token-list")).toContainText("Revogado em");
+});

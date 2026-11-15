@@ -1,0 +1,7 @@
+{
+  "name": "abap",
+  "version": "1.0.0",
+  "description": "Conecta o Claude ao ABAP (plataforma de serviços da consultoria): projetos de clientes, 14 atividades de governança, modelos (diagnóstico, organograma, fluxo), Drive e planilha, pelo MCP hospedado na Cloudflare.",
+  "author": { "name": "LOOP" },
+  "keywords": ["abap", "governance", "mcp", "cloudflare", "clients"]
+}

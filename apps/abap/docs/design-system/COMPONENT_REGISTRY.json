@@ -2018,6 +2018,42 @@
         "state": "atual, respondida, vazia.",
         "uxRule": "Progresso por contagem de campos, sempre com número além da barra."
       }
+    },
+    {
+      "id": "pattern-api-tokens",
+      "family": "Patterns",
+      "name": "API tokens",
+      "function": "Creates, lists and revokes personal API tokens for the MCP endpoint.",
+      "variants": [],
+      "props": [
+        "tokens",
+        "mcpUrl"
+      ],
+      "states": [
+        "empty",
+        "created-once",
+        "active",
+        "revoked"
+      ],
+      "dependencies": [
+        "ds:card",
+        "ds:input",
+        "ds:button"
+      ],
+      "usage": [
+        "/settings"
+      ],
+      "status": "adopted",
+      "source": "app/routes/settings.tsx",
+      "metanote": {
+        "name": "Tokens de API",
+        "function": "Dar a cada pessoa um token para conectar o Claude ao ABAP (MCP).",
+        "whenToUse": "Em Settings, por quem tem login.",
+        "data": "Nome, permissão, dono, início do token, último uso, situação. O token completo nunca é guardado.",
+        "interaction": "Criar (mostra o token uma única vez), revogar (efeito imediato).",
+        "state": "vazio, recém-criado, ativo, revogado.",
+        "uxRule": "O token aparece uma vez com aviso; orientar variável de ambiente; nunca mostrar de novo."
+      }
     }
   ]
 }

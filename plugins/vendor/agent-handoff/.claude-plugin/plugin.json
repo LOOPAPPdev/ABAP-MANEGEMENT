@@ -1,0 +1,30 @@
+{
+  "name": "agent-handoff",
+  "version": "0.4.2",
+  "description": "Strict 3-stage handoff workflow (plan → execute → verify) for coding agents. Disk-backed state enables fresh-context code review and multi-stage verification across chat contexts. Supports multi-phase plans and parallel subagent execution.",
+  "keywords": [
+    "handoff",
+    "workflow",
+    "plan",
+    "execute",
+    "verify",
+    "verification",
+    "multi-stage",
+    "context-handoff",
+    "code-review",
+    "coding-agent"
+  ],
+  "author": {
+    "name": "WillowRyu",
+    "url": "https://github.com/WillowRyu"
+  },
+  "homepage": "https://github.com/WillowRyu/agent-handoff",
+  "repository": "https://github.com/WillowRyu/agent-handoff",
+  "license": "MIT",
+  "skills": [
+    "./skills/setup-handoff",
+    "./skills/plan",
+    "./skills/execute",
+    "./skills/verify"
+  ]
+}

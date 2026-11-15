@@ -1,0 +1,8 @@
+Third-party plugin copied into the ABAP marketplace (internal use).
+
+Plugin:   agent-engineering 0.3.2
+Author:   Otavio Barros
+Source:   package "Agent Engineering-0.3.2-v1.zip" supplied by the repository owner on 2026-11-14 (STACK-PLUGINS EAGENTES)
+License:  MIT
+Changes:  none. Files are copied as received (macOS metadata files removed).
+Update:   replace this folder with the new package and update the version in .claude-plugin/marketplace.json.

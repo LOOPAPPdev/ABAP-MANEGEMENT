@@ -1,0 +1,22 @@
+{
+  "name": "agent-engineering",
+  "version": "0.3.2",
+  "description": "A playbook for coding agents: plan changes, implement with checks, review independently, and publish within your limits.",
+  "author": {
+    "name": "Otavio Barros"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/otaviobarros/agent-engineering",
+  "repository": "https://github.com/otaviobarros/agent-engineering",
+  "documentationUrl": "https://github.com/otaviobarros/agent-engineering#readme",
+  "supportUrl": "https://github.com/otaviobarros/agent-engineering/issues",
+  "icon": "./assets/icon.png",
+  "privacyPolicyUrl": "https://github.com/otaviobarros/agent-engineering/blob/main/PRIVACY.md",
+  "keywords": [
+    "coding-agents",
+    "workflow",
+    "code-review",
+    "codex",
+    "claude-code"
+  ]
+}

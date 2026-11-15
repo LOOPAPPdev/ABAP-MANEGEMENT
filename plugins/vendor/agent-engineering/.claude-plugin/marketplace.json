@@ -1,0 +1,15 @@
+{
+  "name": "agent-engineering",
+  "owner": {
+    "name": "Otavio Barros"
+  },
+  "plugins": [
+    {
+      "name": "agent-engineering",
+      "source": "./",
+      "description": "A playbook for coding agents: plan changes, implement with checks, review independently, and publish within your limits.",
+      "category": "Productivity"
+    }
+  ],
+  "description": "A playbook for coding agents: plan changes, implement with checks, review independently, and publish within your limits."
+}

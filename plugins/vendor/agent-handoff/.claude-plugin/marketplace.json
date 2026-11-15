@@ -1,0 +1,14 @@
+{
+  "name": "agent-handoff",
+  "description": "Strict 3-stage handoff workflow (plan → execute → verify) for coding agents.",
+  "owner": { "name": "WillowRyu" },
+  "plugins": [
+    {
+      "name": "agent-handoff",
+      "source": {
+        "source": "github",
+        "repo": "WillowRyu/agent-handoff"
+      }
+    }
+  ]
+}

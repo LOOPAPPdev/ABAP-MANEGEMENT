@@ -1,0 +1,8 @@
+Third-party plugin copied into the ABAP marketplace (internal use).
+
+Plugin:   cowork-plugin-management 0.2.2
+Author:   Anthropic
+Source:   package "Plugin Management-0.2.2-v40.zip" supplied by the repository owner on 2026-11-14 (STACK-PLUGINS EAGENTES)
+License:  Apache-2.0
+Changes:  none. Files are copied as received (macOS metadata files removed).
+Update:   replace this folder with the new package and update the version in .claude-plugin/marketplace.json.

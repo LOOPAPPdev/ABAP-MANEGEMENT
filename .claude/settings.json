@@ -1,0 +1,16 @@
+{
+  "extraKnownMarketplaces": {
+    "abap": {
+      "source": { "source": "github", "repo": "loopappdev/abap-manegement" }
+    }
+  },
+  "enabledPlugins": {
+    "abap@abap": true,
+    "agent-engineering@abap": true,
+    "backend-design@abap": true,
+    "senior-engineering-partner@abap": true,
+    "modern-web-guidance@abap": true,
+    "agent-handoff@abap": true,
+    "ai-firstify@abap": true
+  }
+}

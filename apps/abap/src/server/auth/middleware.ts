@@ -1,17 +1,24 @@
 import type { MiddlewareHandler } from "hono";
 import { parseConfig, type AppConfig } from "../config";
+import { TokenService, type TokenRole } from "../tokens";
 import { readCookie, readSession, SESSION_COOKIE } from "./session";
 
 export interface AppUser {
   email: string;
   name?: string;
-  /** "dev" = local bypass (development without Google configured); "machine" = ABAP_API_TOKEN (read-only automation). */
-  mode: "google" | "dev" | "machine";
+  /**
+   * "dev" = local bypass (development without Google configured); "machine" = ABAP_API_TOKEN (read-only automation);
+   * "token" = personal API token (ADR-009), used by the MCP endpoint.
+   */
+  mode: "google" | "dev" | "machine" | "token";
+  /** Permission for token callers (MCP tools check it). Sessions and the dev bypass act as "write". */
+  role?: TokenRole;
 }
 
 export type AuthVariables = { user: AppUser | null; cfg: AppConfig };
 
 /** Paths reachable without a session. Everything else requires login. */
+export const MCP_PATH = "/mcp";
 const PUBLIC = [/^\/login\/?$/, /^\/auth\//, /^\/api\/v1\/health$/, /^\/assets\//, /^\/favicon\.ico$/, /^\/__manifest/];
 export const isPublicPath = (path: string) => PUBLIC.some((r) => r.test(path));
 
@@ -43,13 +50,25 @@ export function authGate(): MiddlewareHandler<{ Bindings: object; Variables: Aut
   return async (c, next) => {
     const cfg = parseConfig(c.env);
     c.set("cfg", cfg);
+    const path0 = new URL(c.req.url).pathname;
     const bearer = c.req.header("authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
-    if (bearer && new URL(c.req.url).pathname.startsWith("/api/")) {
-      if (!cfg.apiToken || !(await tokenMatches(bearer, cfg.apiToken))) return c.json({ ok: false, error: "invalid_token" }, 401);
-      if (!machineMayCall(c.req.method, new URL(c.req.url).pathname)) return c.json({ ok: false, error: "forbidden_for_token" }, 403);
-      c.set("user", { email: "machine:api-token", mode: "machine" });
+    const isMcp = path0 === MCP_PATH;
+    if (bearer && (isMcp || path0.startsWith("/api/"))) {
+      let user: AppUser | null = null;
+      if (cfg.apiToken && (await tokenMatches(bearer, cfg.apiToken))) user = { email: "machine:api-token", mode: "machine", role: "read" };
+      else {
+        const db = (c.env as { DB?: D1Database }).DB;
+        const t = db ? await new TokenService(db, () => new Date()).verify(bearer) : null;
+        if (t) user = { email: `token:${t.name} (${t.owner})`, name: t.name, mode: "token", role: t.role as TokenRole };
+      }
+      if (!user) return c.json({ ok: false, error: "invalid_token" }, 401, { "WWW-Authenticate": 'Bearer realm="abap"' });
+      // REST with a token: read-only allow-list (docs:pull, models:pull). Writes by token go through /mcp only.
+      if (!isMcp && !machineMayCall(c.req.method, path0)) return c.json({ ok: false, error: "forbidden_for_token" }, 403);
+      c.set("user", user);
       return next();
     }
+    if (isMcp && cfg.auth !== "dev-bypass")
+      return c.json({ ok: false, error: "token_required", message: "Crie um token pessoal em Settings → Tokens de API" }, 401, { "WWW-Authenticate": 'Bearer realm="abap"' });
     const user = await resolveUser(cfg, c.req.header("cookie"));
     c.set("user", user);
     const path = new URL(c.req.url).pathname;

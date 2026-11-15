@@ -153,3 +153,20 @@ export const projectModels = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.projectId, t.id] })],
 );
+
+/**
+ * Personal API tokens (ADR-009) for the MCP endpoint and the read API.
+ * Only the SHA-256 hash is stored; the plaintext is shown once at creation. Revocation is immediate.
+ */
+export const apiTokens = sqliteTable("api_tokens", {
+  id: text("id").primaryKey(), // random, public (shown in lists)
+  name: text("name").notNull(), // e.g. "joao-laptop"
+  owner: text("owner").notNull(), // e-mail of the person who created it
+  role: text("role").notNull(), // read | write
+  hash: text("hash").notNull().unique(),
+  prefix: text("prefix").notNull(), // first characters, to recognise the token
+  createdAt: text("created_at").notNull(),
+  lastUsedAt: text("last_used_at"),
+  revokedAt: text("revoked_at"),
+  revokedBy: text("revoked_by"),
+});

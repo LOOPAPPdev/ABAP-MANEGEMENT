@@ -26,5 +26,6 @@ export const FORBIDDEN = [
   { name: "Google API key", re: /AIza[0-9A-Za-z_-]{30,}/ },
   { name: "OAuth access token", re: /ya29\.[0-9A-Za-z_-]{20,}/ },
   { name: "refresh token", re: /\b1\/\/[0-9A-Za-z_-]{20,}/ },
+  { name: "ABAP API token", re: /\babap_[A-Za-z0-9_-]{40,}/ },
   { name: "Drive/Sheets URL with ID", re: /(docs|drive)\.google\.com\/(spreadsheets\/d|document\/d|drive\/folders|file\/d)\/[A-Za-z0-9_-]{20,}/ },
 ];
