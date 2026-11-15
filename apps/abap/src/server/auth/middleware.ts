@@ -40,7 +40,7 @@ export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefin
 export const isGuest = (u: AppUser | null | undefined): u is AppUser & { access: { kind: "guest"; projects: readonly string[] } } => u?.access?.kind === "guest";
 
 /** Read-only endpoints the machine token may call (used by `npm run docs:pull`). */
-const MACHINE_ALLOWED = [/^\/api\/v1\/projects\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/drive\/(export|files)\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/models(\/[A-Z]+-\d{2})?\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/agent\/?$/];
+const MACHINE_ALLOWED = [/^\/api\/v1\/projects\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/drive\/(export|files)\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/models(\/[A-Z]+-\d{2})?\/?$/, /^\/api\/v1\/projects\/[a-z0-9-]+\/agent\/?$/, /^\/api\/v1\/studio\/[a-z0-9-]+\/?$/];
 export const machineMayCall = (method: string, path: string) => method === "GET" && MACHINE_ALLOWED.some((r) => r.test(path));
 
 async function digest(s: string) {

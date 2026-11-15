@@ -126,6 +126,19 @@ describe("Feature: shared studio with invited guests (ADR-011)", () => {
     expect(actions).toEqual(expect.arrayContaining(["studio.member.invited", "studio.member.accepted", "studio.member.revoked"]));
   });
 
+  it("GIVEN a personal API token WHEN reading the studio THEN artifacts are listed without members; writes stay closed", async () => {
+    const { TokenService } = await import("~/server/tokens");
+    const { token } = await new TokenService(proxy.env.DB, clock).create({ name: "ci", role: "write" }, "owner@example.com");
+    const auth = { headers: { authorization: `Bearer ${token}` } };
+    const r = await worker().request(`/api/v1/studio/${P}`, auth, { ...ENV, DB: proxy.env.DB });
+    expect(r.status).toBe(200);
+    const body = (await r.json()) as { artifacts: unknown[]; members?: unknown };
+    expect(body.artifacts).toHaveLength(1);
+    expect(body.members).toBeUndefined();
+    const w = await worker().request(`/api/v1/studio/${P}/members`, { method: "POST", headers: { ...auth.headers, "content-type": "application/json" }, body: JSON.stringify({ email: "x@y.com" }) }, { ...ENV, DB: proxy.env.DB });
+    expect(w.status).toBe(403);
+  });
+
   it("refuses to invite staff and deletes studio rows with the project", async () => {
     expect((await call(`/api/v1/studio/${P}/members`, "owner@example.com", { method: "POST", body: JSON.stringify({ email: "owner@example.com" }) })).status).toBe(409);
     const svc = new ProjectService(proxy.env.DB, clock);
