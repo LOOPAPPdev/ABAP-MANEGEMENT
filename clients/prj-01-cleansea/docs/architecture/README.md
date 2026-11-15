@@ -17,7 +17,7 @@ Stack board of the CleanSea app (PRJ-01, ACT-05). **Draft for owner review.** St
 | Web app | Next.js (React, shadcn/ui) | 🟡 Proposed | ADR-004 |
 | Mobile app | Expo (React Native) | 🟡 Proposed | ADR-004 |
 | Mobile UI reference | Design handoff: HTML prototype, screens M00 to M15, 5 roles. Rebuild it. Do not ship it | 🟡 Proposed | ADR-013 |
-| Prototype review with the client | ABAP Studio of the project: invited client logins, sandboxed prototype with a notice | 🟢 Accepted | ADR-014 |
+| Prototype review with the client | ABAP Studio of the project (`abap-manegement.adm-loop-app.workers.dev/studio/prj-01-cleansea`): invited client logins, sandboxed prototype with a notice | 🟢 Accepted | ADR-014 |
 | Database, auth, storage, realtime | Supabase (Postgres) `[ASSUMPTION]`. Alternative: Cloudflare Workers and D1 | 🟡 Proposed | ADR-004 |
 | Web hosting | Vercel `[ASSUMPTION]` | 🟡 Proposed | ADR-004 |
 | Mobile build and updates | EAS Build, Submit and Update `[ASSUMPTION]` | 🟡 Proposed | ADR-004 |

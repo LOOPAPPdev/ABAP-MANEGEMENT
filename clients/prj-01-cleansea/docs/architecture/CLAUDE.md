@@ -1284,7 +1284,7 @@ BRD, PRD and FRD IDs come from the NIST-Docs requirements register (zero-padded)
 | 16 | Place of the client code: `clients/prj-01-cleansea/src/` or `apps/<client-app>/`. Governance gate: code starts after ACT-03, ACT-05 and ACT-06 are approved | ADR-004, start of code |
 | 17 | Web (desktop) design does not exist. Is the web app in release 1? | ADR-004 |
 | 18 | CI does not run the ADR linter yet (ADR-010 is Proposed) | ADR-010 |
-| 19 | ABAP production runs in a Cloudflare account that this session cannot reach. Migration 0007, the deploy and the creation of the project `prj-01-cleansea` need the owner or access to that account | ADR-014 publication |
+| 19 | Done 2026-11-15 in the LOOP account (ABAP D-038): project `prj-01-cleansea` created, prototype r1 published at `abap-manegement.adm-loop-app.workers.dev`. Still open: the owner sets `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ALLOWED_EMAILS` and the OAuth redirect URI, then invites client people. The `governance-system` deployment (other account) does not have the Studio yet | Client access to the studio |
 
 ---
 
