@@ -38,6 +38,7 @@ Details: `docs/client-onboarding.md`.
 - **Deleting a project is human-only:** only in the app (Projects → Excluir projeto, typed confirmation). Never add a delete tool to the MCP or a token path. `default` is protected.
 - `plugins/vendor/*` is third-party code: do not edit; update by replacing the folder (`docs/plugins.md`).
 - Conventional Commits. Scope = workspace when useful: `feat(abap): …`, `docs(prj-01-cleansea): …`.
+- **Single branch `main`** (`docs/branch-policy.md`): commit and push directly to `main`, no draft PR and no merge question. Run the checks first. Each push to `main` deploys production (Workers Builds, Worker `abap-manegement`). Never force-push.
 
 ## Commands (run from the repository root)
 | Command | What |

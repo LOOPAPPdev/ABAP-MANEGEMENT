@@ -147,7 +147,7 @@ It uploads `build/client/assets/*` to the `STATIC` KV namespace and deploys the 
 
 ### LOOP environment (Workers Builds, account adm-loop-app)
 
-A second deployment of the same code, owner request 2026-11-15 (D-038). Cloudflare Workers Builds builds and deploys it from GitHub; nobody deploys it by hand.
+A second deployment of the same code, owner request 2026-11-15 (D-038). Cloudflare Workers Builds builds and deploys it from the `main` branch on each push (D-039); nobody deploys it by hand.
 
 | Item | Value |
 |---|---|
