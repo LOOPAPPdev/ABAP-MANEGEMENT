@@ -1405,7 +1405,7 @@ A real AIS contract exists, or the production app replaces the prototype.
 - arc42: 7, 9
 - ssdf: PW.1, PS.1
 - trace: BRD-003
-- evidence: OWNER:chat 2026-11-15 ; CODE:clients/prj-01-cleansea/deploy/prototipo/src/worker.js
+- evidence: OWNER:chat 2026-11-15 ; CODE:clients/prj-01-cleansea/deploy/prototipo/src/worker.js ; CODE:clients/prj-01-cleansea/wrangler.jsonc
 
 ### Context
 `[FACT]` The owner asks to publish the CleanSea app on Cloudflare as a new Worker, without login and password (chat, 2026-11-15).
@@ -1414,7 +1414,8 @@ A real AIS contract exists, or the production app replaces the prototype.
 `[FACT]` A scan of the prototype files found no e-mail address, phone number, CPF or CNPJ. Personas use first names only. The data includes agency names, terminals and planned volumes from the client spreadsheet "Controle Operacional de Navios" (not validated).
 
 ### Decision
-- The prototype SHALL be served by its own Worker, `cleansea-prototipo`, on workers.dev, with no login.
+- The prototype SHALL be served by its own Worker, `clema`, on workers.dev, with no login. Cloudflare Workers Builds deploys it from the root directory `/clients/prj-01-cleansea` (build `npm run build`, deploy `npx wrangler deploy`).
+- The Workers Builds connection `aba` (a duplicate of `apps/abap` with the development D1 placeholder) is removed. The ABAP app deploys only through `abap-manegement`.
 - The Worker SHALL serve the files of `reference/design-handoff-cleansea-app/` as static assets, open the prototype at `/`, and add a notice banner to every HTML page.
 - The Worker SHALL send `X-Robots-Tag: noindex, nofollow` and `Referrer-Policy: no-referrer`, and SHALL NOT serve Markdown files.
 - The Worker MUST NOT hold a secret, a binding to ABAP data, or a credential.

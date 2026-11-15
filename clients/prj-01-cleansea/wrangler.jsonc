@@ -1,0 +1,20 @@
+// Public static Worker "clema" for the CleanSea design prototype (ADR-018, Proposed).
+// No login. Simulated data only. No secrets and no bindings to ABAP data.
+// Cloudflare Workers Builds deploys it: root directory /clients/prj-01-cleansea,
+// build command `npm run build`, deploy command `npx wrangler deploy`.
+// Manual deploy from the repository root: npm run prototipo:deploy -w @clients/prj-01-cleansea
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "clema",
+  "main": "deploy/prototipo/src/worker.js",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "reference/design-handoff-cleansea-app",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "html_handling": "none",
+    "not_found_handling": "none"
+  }
+}

@@ -18,7 +18,7 @@ Stack board of the CleanSea app (PRJ-01, ACT-05). **Draft for owner review.** St
 | Mobile app | Expo (React Native) | 🟡 Proposed | ADR-004 |
 | Mobile UI reference | Design handoff: HTML prototype, screens M00 to M15, 5 roles. Rebuild it. Do not ship it | 🟡 Proposed | ADR-013 |
 | Prototype review with the client | ABAP Studio of the project (`abap-manegement.adm-loop-app.workers.dev/studio/prj-01-cleansea`): invited client logins, sandboxed prototype with a notice | 🟢 Accepted | ADR-014 |
-| Public prototype link | Static Worker `cleansea-prototipo` on workers.dev: no login, notice banner on every page, `noindex`. Simulated data only | 🟡 Proposed | ADR-018 |
+| Public prototype link | Static Worker `clema` on workers.dev (`clema.adm-loop-app.workers.dev`), deployed by Workers Builds from `/clients/prj-01-cleansea`: no login, notice banner on every page, `noindex`. Simulated data only | 🟡 Proposed | ADR-018 |
 | Vessel tracking in the prototype | Widget inside the prototype: Leaflet + OpenStreetMap map, proximity push (50 mn, 12 mn, berth), data crossing, Open-Meteo weather. AIS simulated | 🟢 Accepted | ADR-017 |
 | Vessel identity, positions, ETA | Internal IDs + IMO (identity) + MMSI (complement) + provider ID map; positions with source and two timestamps; ETA observations kept, priority and validity rule | 🟡 Proposed | ADR-015 |
 | WhatsApp | WhatsApp Business Platform, webhook, association to the operation (code, vessel, human confirmation), original message ID against duplicates | 🟡 Proposed | ADR-016 |
