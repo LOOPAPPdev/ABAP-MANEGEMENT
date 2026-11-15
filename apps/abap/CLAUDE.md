@@ -2,6 +2,8 @@
 
 Scope: this folder only. The repository root `CLAUDE.md` (monorepo, clients) also applies. Paths below are relative to `apps/abap/`.
 
+You are the owner and long-term maintainer of `apps/abap`; its design is up to you.
+
 ## Mission
 Build a web application that faithfully implements the governance workbook's 14 activities, evidence-based completion, dependencies, and dashboard. The workbook (`data/source/Full_Stack_Governance_Workbook.xlsx`) is the initial specification. Do not invent approvals, interviews, test results, or deployed URLs.
 
@@ -9,7 +11,7 @@ Build a web application that faithfully implements the governance workbook's 14 
 1. Read `README.md` and `docs/architecture/05_adr-001_stack.md`.
 2. Inspect existing files, git status, and package scripts. Do not overwrite existing user work.
 3. Identify the relevant activity ID (ACT-01 through ACT-14), dependency, deliverable, and acceptance criterion.
-4. Explain the smallest change and verification plan. Request approval for destructive operations, remote Cloudflare resources, deploys, or consequential architecture changes.
+4. Explain the smallest change and verification plan. Ask before: deleting data, creating or deleting remote Cloudflare resources (D1, KV, R2), production deploys, and changing an ADR decision. No approval is needed for local dev, build, test, local D1 migrations, or edits inside `apps/abap`.
 
 ## Architecture (ADR-001, PROPOSED)
 React Router v7 + Hono on Cloudflare Workers; Tailwind + shadcn/ui; D1 + Drizzle; Zod; Vitest + Playwright. Modular monolith.
@@ -37,7 +39,7 @@ Follow `../../docs/global-instructions.md` (repository root) (controlled languag
 - A dependency is satisfied only if the predecessor is effectively complete.
 - Flag precedence (from the workbook): `BLOCKED` > `NO EVIDENCE` (DONE/VERIFIED without evidence) > `DEP PENDING` (dependency not satisfied and status ≠ NOT STARTED) > `OVERDUE`.
 - Preserve all eight workbook statuses and stable `ACT-xx` IDs.
-- Never derive canonical progress from client state.
+- Compute canonical progress on the server from evidence records. Client state can be stale or tampered with.
 - Record auditable mutations (actor, timestamp, from, to).
 - Write a mutation and its audit row in one `db.batch()` (D1 has no interactive transactions).
 
