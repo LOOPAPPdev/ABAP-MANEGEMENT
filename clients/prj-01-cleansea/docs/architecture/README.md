@@ -1,6 +1,6 @@
 # CleanSea — Architecture and stack
 
-Stack board of the CleanSea app (PRJ-01, ACT-05). **Draft for owner review.** Status on 2026-11-15: 7 decisions 🟢 Accepted, 7 🟡 Proposed, no production code yet.
+Stack board of the CleanSea app (PRJ-01, ACT-05). **Draft for owner review.** Status on 2026-11-15: 8 decisions 🟢 Accepted, 9 🟡 Proposed, no production code yet.
 
 ## Stack
 
@@ -18,6 +18,10 @@ Stack board of the CleanSea app (PRJ-01, ACT-05). **Draft for owner review.** St
 | Mobile app | Expo (React Native) | 🟡 Proposed | ADR-004 |
 | Mobile UI reference | Design handoff: HTML prototype, screens M00 to M15, 5 roles. Rebuild it. Do not ship it | 🟡 Proposed | ADR-013 |
 | Prototype review with the client | ABAP Studio of the project (`abap-manegement.adm-loop-app.workers.dev/studio/prj-01-cleansea`): invited client logins, sandboxed prototype with a notice | 🟢 Accepted | ADR-014 |
+| Vessel tracking in the prototype | Widget inside the prototype: Leaflet + OpenStreetMap map, proximity push (50 mn, 12 mn, berth), data crossing, Open-Meteo weather. AIS simulated | 🟢 Accepted | ADR-017 |
+| Vessel identity, positions, ETA | Internal IDs + IMO (identity) + MMSI (complement) + provider ID map; positions with source and two timestamps; ETA observations kept, priority and validity rule | 🟡 Proposed | ADR-015 |
+| WhatsApp | WhatsApp Business Platform, webhook, association to the operation (code, vessel, human confirmation), original message ID against duplicates | 🟡 Proposed | ADR-016 |
+| AIS provider | ⚪ `[OPEN]` MarineTraffic (Kpler) or another AIS API: contract, limits, rights of use | ⚪ `[OPEN]` | — |
 | Database, auth, storage, realtime | Supabase (Postgres) `[ASSUMPTION]`. Alternative: Cloudflare Workers and D1 | 🟡 Proposed | ADR-004 |
 | Web hosting | Vercel `[ASSUMPTION]` | 🟡 Proposed | ADR-004 |
 | Mobile build and updates | EAS Build, Submit and Update `[ASSUMPTION]` | 🟡 Proposed | ADR-004 |
@@ -129,6 +133,9 @@ Full records: [`CLAUDE.md`, Act 3](./CLAUDE.md#act-3--adr-register-cleansea).
 | ADR-012 | Write documents visual-first without loss of content | 🟢 Accepted | N/A |
 | ADR-013 | Use the design handoff as the front-end reference for release 1 | 🟡 Proposed | UNVERIFIED |
 | ADR-014 | Review the prototype with the client in the ABAP project Studio | 🟢 Accepted | VERIFIED |
+| ADR-015 | Identify vessels by IMO with provider ID maps, and keep every position and ETA observation | 🟡 Proposed | UNVERIFIED |
+| ADR-016 | Mirror WhatsApp through the WhatsApp Business Platform and associate each message to one operation | 🟡 Proposed | UNVERIFIED |
+| ADR-017 | Put the vessel tracking widget inside the prototype with proximity push and data crossing | 🟢 Accepted | VERIFIED |
 
 ## Decision cards
 
@@ -150,6 +157,9 @@ One line for each ADR. The ADR text is the source (VS-07).
 | ADR-012 | Summary, then diagram, then tables, then details. No loss of content | Diagrams can drift from the text | A reader reports a hidden requirement |
 | ADR-013 | Rebuild the mobile screens from the handoff. No seed data or "SIMULADO" in production | The handoff has items the client did not confirm | The client answers the open items |
 | ADR-014 | Publish the prototype in the ABAP Studio of PRJ-01. Client people see it by invitation only | Guests need a Google account. Production needs migration 0007 + deploy | The client needs to comment or upload in the studio |
+| ADR-015 | Internal IDs + IMO + MMSI + provider map. Position = lat, lon, source, observed and collected time. ETA observations kept; manual > port > agency > AIS, each with a validity | Each provider needs an adapter and a contract | An AIS provider is contracted |
+| ADR-016 | WhatsApp Business webhook. Associate by `#OP-` code, then vessel name, then human confirmation. Keep the original message ID | Meta business verification and message costs | The client confirms the business number |
+| ADR-017 | Tracking widget inside the prototype (phone push banners, M06 card, full panel). AIS simulated, weather live when possible | Simulated positions may be read as real. Every simulated value carries SIMULADO | A real AIS contract exists, or the production app replaces the prototype |
 
 ## What blocks the stack
 
@@ -166,7 +176,7 @@ flowchart LR
   S --> C
 ```
 
-Full list: [`CLAUDE.md`, Act 5](./CLAUDE.md#act-5--open-items) (19 items).
+Full list: [`CLAUDE.md`, Act 5](./CLAUDE.md#act-5--open-items) (22 items).
 
 ## Files in this directory
 

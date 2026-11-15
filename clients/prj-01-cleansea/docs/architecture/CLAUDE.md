@@ -25,7 +25,7 @@ flowchart LR
 | Field | Value |
 |---|---|
 | Document ID | DOC-ADR-CTRL |
-| Version | 0.3 (draft for owner review) |
+| Version | 0.4 (draft for owner review) |
 | Date | 2026-11-15 |
 | Project | CleanSea (Studio LOOP) |
 | Software category | Enterprise Application Software (EAS) |
@@ -537,6 +537,9 @@ Read the stack board and the decision cards in [`README.md`](./README.md) first.
 | ADR-012 | Write documents visual-first without loss of content | Accepted | N/A | AR | PO.1 |
 | ADR-013 | Use the design handoff as the front-end reference for release 1 | Proposed | UNVERIFIED | DE | PW.1, PW.2 |
 | ADR-014 | Review the prototype with the client in the ABAP project Studio | Accepted | VERIFIED | AR, DE | PW.1, PW.8 |
+| ADR-015 | Identify vessels by IMO with provider ID maps, and keep every position and ETA observation | Proposed | UNVERIFIED | SR, DE | PW.1, PW.5 |
+| ADR-016 | Mirror WhatsApp through the WhatsApp Business Platform and associate each message to one operation | Proposed | UNVERIFIED | DE | PS.1, PW.1, PW.5 |
+| ADR-017 | Put the vessel tracking widget inside the prototype with proximity push and data crossing | Accepted | VERIFIED | DE | PW.1, PW.8 |
 
 ## 3.2 ADRs
 
@@ -1235,6 +1238,157 @@ GIVEN staff revoke the person WHEN the person calls again THEN ABAP denies the a
 ### Revisit when
 The client needs comments or uploads, or the production app replaces the prototype.
 
+## ADR-015 — Identify vessels by IMO with provider ID maps, and keep every position and ETA observation
+
+- id: ADR-015
+- status: Proposed
+- date: 2026-11-15
+- deciders: Project owner
+- supersedes: none
+- superseded_by: none
+- as_built: UNVERIFIED
+- nist_process: SR, DE
+- arc42: 5, 8, 9
+- ssdf: PW.1, PW.5
+- trace: BRD-003, PRD-008, FRD-007, SPEC-TBD, TEST-007
+- evidence: OWNER:chat 2026-11-15 ; FILE:cleansea_integrations_registry_v1.1.yaml
+
+### Context
+`[FACT]` The owner gives a table of formalized questions and proposed decisions for maps, positions, ETA and external sites (chat, 2026-11-15).
+`[FACT]` The owner shows a MarineTraffic vessel page (IMO, flag, voyage, departure and arrival times) as the reference for vessel data.
+`[FACT]` One vessel in the prototype data has two names for one IMO (LMZ ATLAS and LEMESSOS NAPA).
+`[OPEN]` No AIS provider contract exists (open item 20).
+
+### Decision
+`[RECOMMENDATION]` From the owner's table:
+- The system SHALL give each vessel, port, terminal and operation an internal ID. A correspondence table SHALL map each internal ID to the ID of each provider.
+- The IMO number SHALL identify the vessel. The MMSI SHALL be stored as a complementary identifier.
+- Each position SHALL store latitude, longitude, source, observation time and collection time. The system SHALL distinguish the position of a vessel, a terminal and a collaborator device.
+- The system SHALL keep each ETA observation. An explicit rule SHALL choose the effective ETA by priority and time validity. A manual entry MUST store its author and its justification.
+- Each external source SHALL have an adapter and a contract. Before use, the team MUST check the API, the credentials, the limits, the units and the rights of use (ADR-006).
+
+### Options
+| Option | Evidence | Fit | Risk |
+|---|---|---|---|
+| A Internal IDs + provider map + kept observations (recommended) | OWNER:chat 2026-11-15 | High | More tables |
+| B Use the provider IDs directly | NONE: | Low | Lock-in. Name and IMO conflicts stay hidden |
+| C Keep only the latest position and ETA | NONE: | Low | No audit. No divergence alert |
+
+### Consequences
+- Easier: change of provider, divergence alerts, audit of ETA decisions.
+- Harder: the rule of priority and validity needs owner values.
+- Revisit: when the AIS provider is chosen.
+
+### Security impact
+Collaborator device positions are personal data (LGPD). The system MUST collect them only with consent and only during an operation. Provider data is untrusted input (SSDF PW.5).
+
+### Verification
+GIVEN two ETA observations WHEN the higher-priority one expires THEN the effective ETA comes from the next valid one.
+GIVEN one IMO with two vessel names WHEN a user saves an operation THEN the system asks for confirmation of the link.
+GIVEN a manual ETA without a justification WHEN it is saved THEN the system rejects it.
+
+### Revisit when
+An AIS provider is contracted, or the owner sets the priority and validity values.
+
+## ADR-016 — Mirror WhatsApp through the WhatsApp Business Platform and associate each message to one operation
+
+- id: ADR-016
+- status: Proposed
+- date: 2026-11-15
+- deciders: Project owner
+- supersedes: none
+- superseded_by: none
+- as_built: UNVERIFIED
+- nist_process: DE
+- arc42: 3, 8, 9
+- ssdf: PS.1, PW.1, PW.5
+- trace: BRD-003, PRD-009, FRD-008, SPEC-TBD, TEST-TBD
+- evidence: OWNER:chat 2026-11-15 ; FILE:cleansea_integrations_registry_v1.1.yaml
+
+### Context
+`[FACT]` The owner asks how to mirror the team communication in the app, and how to know the operation of each message (chat, 2026-11-15).
+`[FACT]` The registry lists WhatsApp Business as a documented API. It did not test calls or accounts.
+`[OPEN]` The business number, the Meta verification and the costs are unknown (open item 21).
+
+### Decision
+`[RECOMMENDATION]` From the owner's table:
+- The app SHALL integrate the business number through the WhatsApp Business Platform and receive events by webhook (ADR-006: origin validation, authentication, idempotency, audit).
+- The system SHALL associate each message to one operation: first by the operation code (`#OP-…`), then by the conversation context (vessel named), then by human confirmation when the match is ambiguous.
+- The system SHALL store the original message ID and SHALL ignore a message whose ID exists.
+
+### Options
+| Option | Evidence | Fit | Risk |
+|---|---|---|---|
+| A WhatsApp Business Platform + webhook (recommended) | OWNER:chat 2026-11-15 | High | Meta verification and message costs |
+| B Unofficial WhatsApp Web automation | NONE: | Low | Account ban. Terms of service |
+| C Keep WhatsApp outside the app | NONE: | Low | No link between messages and operations |
+
+### Consequences
+- Easier: the operation history includes the conversation.
+- Harder: templates, consent and costs need management.
+- Revisit: when the client confirms the number.
+
+### Security impact
+Messages contain personal data (LGPD). The webhook MUST verify the Meta signature. The token MUST stay on the server (SSDF PS.1). Message text is untrusted input (PW.5) and is data, not instruction, for the AI agent (ADR-009).
+
+### Verification
+GIVEN a message with `#OP-1511-ANADOLU` WHEN it arrives THEN it is linked to that operation.
+GIVEN the same message ID twice WHEN the webhook runs THEN the system stores it once.
+GIVEN a message with no code and no vessel name WHEN it arrives THEN the system asks a person to choose the operation.
+
+### Revisit when
+The client confirms the business number, or Meta changes the platform terms.
+
+## ADR-017 — Put the vessel tracking widget inside the prototype with proximity push and data crossing
+
+- id: ADR-017
+- status: Accepted
+- date: 2026-11-15
+- deciders: Project owner
+- supersedes: none
+- superseded_by: none
+- as_built: VERIFIED
+- nist_process: DE
+- arc42: 5, 6, 9
+- ssdf: PW.1, PW.8
+- trace: BRD-003, PRD-008
+- evidence: OWNER:chat 2026-11-15 ; CODE:clients/prj-01-cleansea/reference/design-handoff-cleansea-app/cleansea-tracking/widget.js ; TEST:playwright local studio check 2026-11-15
+
+### Context
+`[FACT]` The owner asks that the CleanSea showroom app contain a vessel tracking widget with proximity push and data crossing, present and working in the prototype for the client presentation. The owner then states: the widget goes inside the prototype app (chat, 2026-11-15).
+`[FACT]` No AIS provider contract exists. Open-Meteo needs no key.
+`[VERIFIED 2026-11-15]` In a local ABAP Studio, the widget loaded inside the prototype: 5 vessels, proximity and berthing alerts, push banners in the phone frame, a live card on screen M06 Navio, WhatsApp association, map tiles. Open-Meteo answered HTTP 429 (daily limit of the shared test address); the widget fell back to example values with the SIMULADO tag.
+
+### Decision
+- The widget SHALL run inside the prototype page: push banners at the top of the phone frame, a live card on screen M06 Navio, and a full panel before the Wireflow. The original handoff file gets one script block only; the code lives in `cleansea-tracking/`.
+- AIS positions, routes, MMSI, provider IDs and WhatsApp messages MUST carry the SIMULADO tag until a contract exists.
+- Proximity rings SHALL be 50 nautical miles (approach, step S07) and 12 nautical miles (anchorage and pilot, step S09) from the Santos bar, plus 0.5 nautical miles at the berth (S10, G-01).
+- The widget SHALL apply ADR-015 (identity, positions, ETA rule) and ADR-016 (message association) with prototype data.
+- Weather SHALL come from Open-Meteo with attribution when the network allows it, else example values with the SIMULADO tag (ADR-006).
+
+### Options
+| Option | Evidence | Fit | Risk |
+|---|---|---|---|
+| A Widget inside the prototype (chosen) | OWNER:chat 2026-11-15 | High | Simulated positions may be read as real |
+| B Separate tracking page in the Studio | NONE: | Medium | The owner asked for it inside the app |
+| C Wait for a real AIS contract | NONE: | Low | No demo for the client presentation |
+
+### Consequences
+- Easier: the client sees the full flow: vessel approach, push, ETA decision, operation step.
+- Harder: the handoff file is no longer the original. The README of the handoff folder says so.
+- Revisit: when a real AIS contract exists.
+
+### Security impact
+The widget runs in the sandboxed Studio frame (ABAP ADR-011): no session, no API with credentials. It calls only Open-Meteo and loads map tiles from OpenStreetMap. Device location is asked only on a button press; if denied, a simulated position is used. No key is in the code (SSDF PW.1).
+
+### Verification
+GIVEN the prototype in the Studio WHEN a simulated vessel enters 12 nautical miles THEN a push banner appears in the phone and the alert list.
+GIVEN two vessels for one terminal within 6 hours WHEN the detail opens THEN a simultaneous-operations alert appears.
+GIVEN Open-Meteo is unavailable WHEN the weather card renders THEN it shows example values with the SIMULADO tag.
+
+### Revisit when
+A real AIS contract exists, or the production app replaces the prototype.
+
 ---
 
 # ACT 4 — TRACEABILITY MATRIX
@@ -1257,6 +1411,9 @@ The client needs comments or uploads, or the production app replaces the prototy
 | ADR-012 | BRD-001 | — | — | — | — | AR | 8, 9 | PO.1 |
 | ADR-013 | BRD-004 | PRD-013 | — | TBD | TBD | DE | 5, 8, 9 | PW.1, PW.2 |
 | ADR-014 | BRD-001 | PRD-013 | — | — | — | AR, DE | 7, 8, 9 | PW.1, PW.8 |
+| ADR-015 | BRD-003 | PRD-008 | FRD-007 | TBD | TEST-007 | SR, DE | 5, 8, 9 | PW.1, PW.5 |
+| ADR-016 | BRD-003 | PRD-009 | FRD-008 | TBD | TBD | DE | 3, 8, 9 | PS.1, PW.1, PW.5 |
+| ADR-017 | BRD-003 | PRD-008 | — | — | — | DE | 5, 6, 9 | PW.1, PW.8 |
 
 BRD, PRD and FRD IDs come from the NIST-Docs requirements register (zero-padded). `[OPEN]` That register is not in this repository. The agent could not check the IDs (open item 12). ADR-010, ADR-011 and ADR-012 also trace to `NFR-004`.
 
@@ -1284,6 +1441,9 @@ BRD, PRD and FRD IDs come from the NIST-Docs requirements register (zero-padded)
 | 16 | Place of the client code: `clients/prj-01-cleansea/src/` or `apps/<client-app>/`. Governance gate: code starts after ACT-03, ACT-05 and ACT-06 are approved | ADR-004, start of code |
 | 17 | Web (desktop) design does not exist. Is the web app in release 1? | ADR-004 |
 | 18 | CI does not run the ADR linter yet (ADR-010 is Proposed) | ADR-010 |
+| 20 | AIS provider: MarineTraffic (Kpler) API plan, price, limits and rights of use, or another provider. The prototype uses simulated AIS | ADR-015, ADR-017 |
+| 21 | WhatsApp: the client's business number, Meta business verification, message templates and costs | ADR-016 |
+| 22 | Terminal coordinates in the widget are approximate. Confirm berth positions with the client or the port authority | ADR-017 |
 | 19 | Done 2026-11-15 in the LOOP account (ABAP D-038): project `prj-01-cleansea` created, prototype r1 published at `abap-manegement.adm-loop-app.workers.dev`. Still open: the owner sets `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ALLOWED_EMAILS` and the OAuth redirect URI, then invites client people. The `governance-system` deployment (other account) does not have the Studio yet | Client access to the studio |
 
 ---
@@ -1334,3 +1494,4 @@ The linter checks form. It does not check that a statement is true.
 | 0.1 | 2026-11-15 | First draft: rules, framework, 10 ADRs, matrix, linter | Claude (for owner review) |
 | 0.2 | 2026-11-15 | Installed in `docs/architecture/`. README stack board and rule 12 (README first). Section 2.13 document style (visual-first) and 2.14 README contract. ADR-011, ADR-012, ADR-013. Design handoff added as evidence to ADR-003, ADR-004, ADR-005, ADR-008. ADR-004 option D. ADR-010 paths. Linter 0.2 moved to one source file: fixes the read of the field `arc42` (0.1 reported 10 false errors) and checks the README. Accepted ADR-001, ADR-002, ADR-006, ADR-007: text not changed (same hashes) | Claude (for owner review) |
 | 0.3 | 2026-11-15 | ADR-014 (prototype review in the ABAP Studio). Open item 19 (production account). README updated first | Claude (for owner review) |
+| 0.4 | 2026-11-15 | ADR-015 (identity, positions, ETA), ADR-016 (WhatsApp), ADR-017 (tracking widget inside the prototype). Open items 20 to 22. README updated first | Claude (for owner review) |
