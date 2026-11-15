@@ -25,6 +25,7 @@ import type { Fetch } from "../auth/google";
 import type { AppUser } from "../auth/middleware";
 import type { AppConfig } from "../config";
 import { getDb } from "../db/client";
+import { ClientAgentService } from "../client-agents";
 import { DriveService } from "../drive/service";
 import { GovernanceService, type Clock } from "../governance-service";
 import { ModelService } from "../models";
@@ -231,6 +232,24 @@ export function buildMcpServer(ctx: McpContext): McpServer {
       return { id: m.id, kind: m.kind, title: m.title, status: m.status };
     },
   );
+
+  // ---------- Agent factory ----------
+  tool(
+    "abap_generate_client_agent",
+    { title: "Gerar agente do cliente", description: "Fábrica de agentes: gera (ou atualiza) o plugin do cliente — skill de contexto, subagentes analista e processos, comando de status — a partir dos modelos e atividades atuais do projeto. Só cria nova revisão se o conteúdo mudou. Depois, no repositório: npm run plugin:pull -w @clients/<projeto>.", write: true },
+    { project },
+    async ({ project: id }) => {
+      const { agent, changed } = await new ClientAgentService(ctx.db, ctx.clock, await getProject(id)).generate(actor);
+      return { changed, name: agent.name, version: agent.version, revision: agent.revision, files: agent.files.map((f) => f.path) };
+    },
+  );
+
+  tool("abap_get_client_agent", { title: "Ver agente do cliente", description: "Última revisão do plugin gerado para o cliente, com o conteúdo dos arquivos, e o histórico de revisões." }, { project }, async ({ project: id }) => {
+    const svc = new ClientAgentService(ctx.db, ctx.clock, await getProject(id));
+    const agent = await svc.get();
+    if (!agent) throw new ToolError("Ainda não há agente gerado para este projeto. Use abap_generate_client_agent.");
+    return { ...agent, history: await svc.history() };
+  });
 
   // ---------- Google Drive ----------
   const DRIVE = { openWorldHint: true } as const;

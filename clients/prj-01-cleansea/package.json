@@ -6,6 +6,7 @@
   "scripts": {
     "docs:pull": "node ../../tools/pull-drive-docs.mjs prj-01-cleansea",
     "extract:legacy": "node tools/extract_cleansea.mjs reference/cleansea-operacao-integrada.html reference/cleansea.v1.json",
-    "models:pull": "node ../../tools/pull-models.mjs prj-01-cleansea"
+    "models:pull": "node ../../tools/pull-models.mjs prj-01-cleansea",
+    "plugin:pull": "node ../../tools/pull-plugin.mjs prj-01-cleansea"
   }
 }

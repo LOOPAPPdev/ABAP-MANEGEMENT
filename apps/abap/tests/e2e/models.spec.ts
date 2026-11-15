@@ -49,3 +49,15 @@ test.describe("Feature: interface template and project models (ADR-008)", () => 
     await expect(page.getByTestId("model-list")).toContainText("ORG-01");
   });
 });
+
+test("Agent factory: generating twice creates one revision; the plugin can be previewed and downloaded (ADR-010)", async ({ page }) => {
+  await page.goto("/agent");
+  await page.getByRole("button", { name: "Gerar agente" }).click();
+  await expect(page.getByRole("status")).toContainText("v1.1.0");
+  await expect(page.getByTestId("agent-files").locator("details")).toHaveCount(6);
+  await page.getByRole("button", { name: "Atualizar agente" }).click();
+  await expect(page.getByRole("status")).toContainText("Nada mudou");
+  const res = await page.request.get("/agent.zip");
+  expect(res.headers()["content-type"]).toBe("application/zip");
+  expect((await res.body()).subarray(0, 2).toString()).toBe("PK");
+});

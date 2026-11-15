@@ -2054,6 +2054,42 @@
         "state": "vazio, recém-criado, ativo, revogado.",
         "uxRule": "O token aparece uma vez com aviso; orientar variável de ambiente; nunca mostrar de novo."
       }
+    },
+    {
+      "id": "pattern-client-agent",
+      "family": "Patterns",
+      "name": "Client agent factory",
+      "function": "Generates, previews and downloads the client's Claude plugin built from the project's data.",
+      "variants": [],
+      "props": [
+        "agent",
+        "history",
+        "diff"
+      ],
+      "states": [
+        "not-generated",
+        "generated",
+        "unchanged",
+        "updated"
+      ],
+      "dependencies": [
+        "ds:card",
+        "ds:button"
+      ],
+      "usage": [
+        "/agent"
+      ],
+      "status": "adopted",
+      "source": "app/routes/agent.tsx",
+      "metanote": {
+        "name": "Agente do cliente",
+        "function": "Criar o agente (plugin do Claude) de um cliente a partir dos modelos e atividades do projeto.",
+        "whenToUse": "Depois de importar ou atualizar os modelos do cliente.",
+        "data": "Revisões geradas (versão, autor, data), arquivos do plugin e o que mudou desde a revisão anterior.",
+        "interaction": "Gerar/atualizar; abrir cada arquivo; baixar .zip.",
+        "state": "não gerado, gerado, sem mudanças, atualizado.",
+        "uxRule": "Geração é determinística e auditada; só cria revisão nova quando o conteúdo muda; avisar que os arquivos não são editados à mão."
+      }
     }
   ]
 }

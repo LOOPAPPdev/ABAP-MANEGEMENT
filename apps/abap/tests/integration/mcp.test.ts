@@ -98,7 +98,7 @@ describe("Feature: MCP endpoint /mcp (ADR-009)", () => {
   it("lists the tools with read/write annotations", async () => {
     const { body } = await rpc(READ, "tools/list");
     const tools = body.result.tools as { name: string; annotations: { readOnlyHint: boolean; destructiveHint?: boolean } }[];
-    expect(tools).toHaveLength(23);
+    expect(tools).toHaveLength(25);
     expect(tools.every((t) => t.name.startsWith("abap_"))).toBe(true);
     expect(tools.find((t) => t.name === "abap_list_projects")!.annotations.readOnlyHint).toBe(true);
     expect(tools.find((t) => t.name === "abap_drive_create_document")!.annotations).toMatchObject({ readOnlyHint: false, destructiveHint: true });
@@ -169,5 +169,26 @@ describe("Feature: MCP endpoint /mcp (ADR-009)", () => {
     expect(await new TokenService(proxy.env.DB, clock).revoke(writeId, "owner@example.com")).toBe(true);
     expect((await rpc(WRITE, "tools/list")).status).toBe(401);
     expect(await new TokenService(proxy.env.DB, clock).revoke(writeId, "owner@example.com")).toBe(false);
+  });
+});
+
+describe("Feature: agent factory through the API and MCP (ADR-010)", () => {
+  it("GIVEN a project WHEN the agent is generated twice THEN the second call creates no new revision", async () => {
+    // New write token (the earlier one was revoked above).
+    const t = (await new TokenService(proxy.env.DB, clock).create({ name: "fabrica", role: "write" }, "owner@example.com")).token;
+    const a = await call(t, "abap_generate_client_agent", { project: P });
+    expect(a.data).toMatchObject({ changed: true, name: `abap-${P}`, version: "1.1.0", revision: 1 });
+    const b = await call(t, "abap_generate_client_agent", { project: P });
+    expect(b.data).toMatchObject({ changed: false, revision: 1 });
+    const got = await call(READ, "abap_get_client_agent", { project: P });
+    expect((got.data as { files: { path: string }[] }).files.map((f) => f.path)).toContain("skills/exemplo-contexto/SKILL.md");
+    // A data change produces revision 2.
+    await call(t, "abap_change_status", { project: P, activity: "ACT-02", status: "IN PROGRESS" });
+    expect((await call(t, "abap_generate_client_agent", { project: P })).data).toMatchObject({ changed: true, version: "1.2.0" });
+    // REST read for plugin:pull (token allow-list).
+    const res = await app().request(`/api/v1/projects/${P}/agent`, { headers: { authorization: `Bearer ${READ}` } }, env());
+    expect(res.status).toBe(200);
+    const events = await new ProjectService(proxy.env.DB, clock).events(P);
+    expect(events[0]).toMatchObject({ action: "agent.generated", actor: "token:fabrica (owner@example.com)" });
   });
 });

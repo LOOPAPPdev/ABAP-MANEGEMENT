@@ -20,7 +20,7 @@ const client = JSON.parse(readFileSync(join(clientDir, "client.json"), "utf8"));
 
 const base = (process.env.ABAP_URL ?? "https://governance-system.contato-adulto-tdah.workers.dev").replace(/\/$/, "");
 const tokenFile = join(ROOT, ".abap-token");
-const token = process.env.ABAP_API_TOKEN ?? (existsSync(tokenFile) ? readFileSync(tokenFile, "utf8").trim() : "");
+const token = process.env.ABAP_API_TOKEN ?? process.env.ABAP_TOKEN ?? (existsSync(tokenFile) ? readFileSync(tokenFile, "utf8").trim() : "");
 if (!token) throw new Error("ABAP_API_TOKEN not set (env var or .abap-token at the repository root)");
 
 const get = async (path) => {

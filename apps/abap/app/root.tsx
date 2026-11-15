@@ -8,6 +8,7 @@ const NAV = [
   ["/dashboard", "Dashboard"],
   ["/activities", "Activities"],
   ["/models", "Modelos"],
+  ["/agent", "Agente"],
   ["/canvas", "Canvas"],
   ["/evidence", "Evidence"],
   ["/sheets", "Planilha"],

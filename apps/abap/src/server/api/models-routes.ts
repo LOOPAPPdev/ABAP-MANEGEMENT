@@ -5,6 +5,7 @@ import { getTemplate, modelIdSchema, TEMPLATES } from "~/domain/models";
 import { projectIdSchema } from "~/domain/projects";
 import type { AuthVariables } from "../auth/middleware";
 import type { Clock } from "../governance-service";
+import { ClientAgentService } from "../client-agents";
 import { ModelError, ModelService } from "../models";
 import { ProjectService } from "../projects";
 import { actorOf } from "./actor";
@@ -64,5 +65,20 @@ export function registerModelRoutes(api: Hono<Env, BlankSchema, "/api/v1">, cloc
       if (e instanceof ModelError) return c.json({ ok: false, error: e.code, message: e.message }, STATUS[e.code]);
       throw e;
     }
+  });
+
+  // Agent factory (ADR-010): GET latest generated plugin (machine token allowed) · POST generate.
+  api.get("/projects/:id/agent", async (c) => {
+    const s = await scope(c);
+    if (!s) return c.json({ ok: false, error: "not_found" }, 404);
+    const agent = await new ClientAgentService(c.env.DB, clock, s.project).get();
+    return agent ? c.json({ ok: true, agent }) : c.json({ ok: false, error: "not_generated", message: "Gere o agente em ABAP → Agente do cliente." }, 404);
+  });
+
+  api.post("/projects/:id/agent", async (c) => {
+    const s = await scope(c);
+    if (!s) return c.json({ ok: false, error: "not_found" }, 404);
+    const r = await new ClientAgentService(c.env.DB, clock, s.project).generate(actorOf(c));
+    return c.json({ ok: true, ...r }, r.changed ? 201 : 200);
   });
 }

@@ -63,6 +63,20 @@ Precisa de `ABAP_URL` e `ABAP_API_TOKEN` (token de máquina, só leitura; peça 
 
 Abra o Claude Code na raiz do repositório e peça o trabalho do cliente. O Claude lê `clients/<slug>/CLAUDE.md`, usa `docs/drive/` como fonte e produz os entregáveis em `docs/<área>/`. Código só depois de ACT-03, ACT-05 e ACT-06 aprovados.
 
+## 7. Conectar o Claude e gerar o agente do cliente
+
+1. Cada pessoa cria o seu token em **Settings → Tokens de API** e guarda em `ABAP_TOKEN` (ver `docs/plugins.md`).
+2. No ABAP, com o projeto do cliente aberto: **Agente → Gerar agente**. A fábrica monta o plugin do cliente a partir dos modelos e das atividades.
+3. No repositório:
+
+```bash
+npm run plugin:pull -w @clients/prj-01-cleansea
+```
+
+4. No Claude Code: `/plugin install abap-prj-01-cleansea@abap`. Use `/cleansea-status` e os agentes `cleansea-analista` e `cleansea-processos`.
+
+Depois de mudar os modelos do cliente, gere o agente de novo e repita o passo 3.
+
 ## Regras que valem para todos os clientes
 - Nada de segredos, IDs do Drive/Sheets ou dados pessoais no Git (`npm run check:clients` verifica).
 - Um cliente nunca acessa a pasta de outro.
