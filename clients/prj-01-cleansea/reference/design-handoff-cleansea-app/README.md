@@ -132,5 +132,5 @@ Divergence margin; formal arrival confirmation criteria (G-01) and the "Não" re
 - `_ds/` — design-system stylesheet and bundle referenced by the HTML (tokens above).
 
 ## CleanSea additions (not part of the original handoff)
-- `cleansea-tracking/` — vessel tracking widget (CleanSea ADR-017): proximity push banners in the phone (each banner has a pause button; paused messages go only to the alert list), live card on M06 Navio, "Acompanhamento ao vivo" map card in the column next to the phone, full panel before the Wireflow. AIS positions and WhatsApp messages are SIMULADO; weather from Open-Meteo when the network allows.
+- `cleansea-tracking/` — vessel tracking widget (CleanSea ADR-017): proximity push banners in the phone (at most 3 per page load; each banner has a pause button; the rest go only to the alert list), live card on M06 Navio, "Acompanhamento ao vivo" map card inside the app on M01 Painel in place of "Histórico de coletas · POS" (the table moves below it, collapsed, and opens on tap), full panel before the Wireflow. AIS positions and WhatsApp messages are SIMULADO; weather from Open-Meteo when the network allows.
 - `Cleansea App.dc.html` — one block added before `</body>` that loads Leaflet and the widget. Nothing else changed.
