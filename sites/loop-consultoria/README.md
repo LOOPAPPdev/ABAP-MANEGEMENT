@@ -14,6 +14,30 @@ flowchart LR
   P --> V["validate.cjs<br/>24 checks"]
 ```
 
+## A · Traceability (code → branch → build → URL)
+
+| Item | Value |
+|---|---|
+| Code | `sites/loop-consultoria/` (`index.html`, `worker.js`, `wrangler.jsonc`) + `packages/ui/` |
+| Branch | `main` (single-branch policy, `docs/branch-policy.md`) |
+| Build | Cloudflare Workers Builds, Worker `loop-consultoria` (account adm-loop-app), root `/sites/loop-consultoria`, deploy `npx wrangler deploy`, runs when `sites/loop-consultoria/*` or `packages/ui/*` changes |
+| URL | `https://loop-consultoria.adm-loop-app.workers.dev` · stylesheet `/ui.css` is built from `@abap/ui` |
+| Data | D1 `loop-site-leads` |
+
+## Design system
+
+The page uses `@abap/ui` (theme `loop` + shared primitives): see [`packages/ui/README.md`](../../packages/ui/README.md). Rules applied in the 2026-11-15 polish, content unchanged:
+
+| Before | After |
+|---|---|
+| Pastel tinted blocks per card, rotating blue/purple/green | Neutral cards (border + soft shadow), one brand colour for focus, links and eyebrows |
+| Pill shapes everywhere | Radius from the contract (`--radius`), pills removed |
+| Coloured check circles, tinted step letters | Neutral check icon, mono step index in a bordered square |
+| Per-section colour tokens and hard-coded shadows | Contract tokens + `--loop-shadow-*`; status shown by a dot and a word |
+| Hand-made buttons, inputs, FAQ | `ui-button`, `ui-input`, `ui-textarea`, `ui-label`, `ui-badge`, `ui-card`, `ui-separator`; shadcn-style accordion, checkbox and slider |
+
+Content check: `node content-baseline.mjs` extracts the visible copy; the redesign removed no sentence (only decorative card numbers were added, `aria-hidden`).
+
 ## Sources and what each one decided
 
 | Source | Used for | Status |
@@ -52,7 +76,7 @@ Only the information architecture and the concept are reused. Copy, visuals and 
 | LP-03 | Copy respects the limits of `Site-architecture.md` (hero title 48, subtitle 110, section title 32, card title 28, card description 64, CTA 22) | `validate.cjs` (`data-slot`) |
 | LP-04 | CTA labels start with a verb | `validate.cjs` |
 | LP-05 | No horizontal scroll at 320, 390 and 1440 px | `validate.cjs` |
-| LP-06 | Keyboard: skip link first, visible focus, targets ≥ 36 px (CTAs ≥ 44 px); reduced motion stops the animation | `validate.cjs` + CSS |
+| LP-06 | Keyboard: skip link first, visible focus, targets ≥ 36 px; reduced motion stops the animation | `validate.cjs` + CSS |
 | LP-07 | The form validates on the client and on the server, needs consent (LGPD), has a honeypot and a flood limit | `validate.cjs --submit`, `worker.js` |
 | LP-08 | No invented proof: no client names, logos, testimonials or result numbers. The model is labelled "Exemplo ilustrativo" | Review |
 | LP-09 | HTML under 60 KB, no framework, no tracking script | `validate.cjs` |

@@ -1,0 +1,5 @@
+{
+  "$comment": "Common token structure for every theme. Values are HSL channels (shadcn/ui convention), used as hsl(var(--name)). A theme MUST define every name. A theme MAY add names with its own prefix (--loop-*, ABAP bundle extensions).",
+  "colors": ["background", "foreground", "card", "card-foreground", "popover", "popover-foreground", "primary", "primary-foreground", "secondary", "secondary-foreground", "muted", "muted-foreground", "accent", "accent-foreground", "destructive", "destructive-foreground", "border", "input", "ring"],
+  "other": ["radius"]
+}

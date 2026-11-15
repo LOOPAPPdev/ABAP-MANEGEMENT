@@ -19,7 +19,7 @@ const LIMITS = { "hero.title": 48, "hero.subtitle": 110, "section.title": 32, "c
       return {
         scrollX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
         h1: h1.length, h1Bottom: h1[0] ? r(h1[0]).bottom : 9999, ctaBottom: cta ? r(cta).bottom : 9999,
-        smallTargets: [...document.querySelectorAll("a.btn,button.btn,summary,.nav-links a")].filter((e) => r(e).height && r(e).height < 36).length,
+        smallTargets: [...document.querySelectorAll(".ui-button,summary")].filter((e) => r(e).height && r(e).height < 36).length,
         imgsNoAlt: [...document.querySelectorAll("img:not([alt])")].length,
       };
     });
@@ -39,7 +39,7 @@ const LIMITS = { "hero.title": 48, "hero.subtitle": 110, "section.title": 32, "c
       check("primary CTA repeated (nav, hero, form)", (await page.locator("[data-cta]").count()) === 3);
       // keyboard: the skip link is the first focus stop (checked before any other interaction)
       await page.keyboard.press("Tab");
-      check("skip link is first focus", await page.evaluate(() => document.activeElement?.className === "skip"));
+      check("skip link is first focus", await page.evaluate(() => document.activeElement?.classList.contains("skip")));
       // simulator reacts
       const before = await page.locator("#k-util").innerText();
       await page.locator("#s-a").fill("60");

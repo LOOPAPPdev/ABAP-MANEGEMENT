@@ -1,0 +1,16 @@
+{
+  "name": "@abap/ui",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Shared UI contract: one token structure (shadcn HSL channels) with two themes (ABAP, LOOP) and framework-free CSS recipes for the primitives that both the ABAP app and the Loop landing use.",
+  "type": "module",
+  "exports": {
+    "./theme/contract.json": "./theme/contract.json",
+    "./theme/abap.css": "./theme/abap.css",
+    "./theme/loop.css": "./theme/loop.css",
+    "./components/*": "./components/*"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  }
+}

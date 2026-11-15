@@ -1,0 +1,72 @@
+/* LOOP-CONSULTORIA theme (Screens v2 · loop-theme.css palette) mapped onto the common contract.
+   Neutral slate surfaces, one brand blue for focus and links. Data hues (--loop-*) only for charts. */
+:root {
+  color-scheme: light;
+  --background: 0 0% 100%;
+  --foreground: 214 17.1% 8%;
+  --card: 0 0% 100%;
+  --card-foreground: 214 17.1% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 214 17.1% 8%;
+  --primary: 214 17.1% 8%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 14.3% 95.9%;
+  --secondary-foreground: 214 17.1% 8%;
+  --muted: 220 14.3% 95.9%;
+  --muted-foreground: 215 8.2% 40.6%;
+  --accent: 220 14.3% 95.9%;
+  --accent-foreground: 214 17.1% 8%;
+  --destructive: 3 72.4% 44.1%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 210 16% 90%;
+  --input: 208 18.3% 86.1%;
+  --ring: 220 66.9% 49.8%;
+  --radius: 0.625rem;
+  /* LOOP extensions */
+  --loop-brand: 220 66.9% 49.8%;
+  --loop-brand-soft: 220 100% 96.5%;
+  --loop-positive: 172 75.4% 23.9%;
+  --loop-positive-soft: 165 19% 91.8%;
+  --loop-caution: 19 71.4% 37.1%;
+  --loop-caution-soft: 22 89.2% 92.7%;
+  --loop-data-1: 222 85% 61.6%;
+  --loop-data-2: 172 75.4% 23.9%;
+  --loop-shadow-raised: 0 1px 2px rgb(17 20 24/.04), 0 8px 24px -8px rgb(17 20 24/.12);
+  --loop-shadow-thumb: 0 1px 2px rgb(17 20 24/.15);
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --background: 210 16.7% 7.1%;
+    --foreground: 210 21.4% 94.5%;
+    --card: 210 16.1% 9.5%;
+    --card-foreground: 210 21.4% 94.5%;
+    --popover: 210 16.1% 12.2%;
+    --popover-foreground: 210 21.4% 94.5%;
+    --primary: 210 21.4% 94.5%;
+    --primary-foreground: 210 16.7% 7.1%;
+    --secondary: 210 16.1% 12.2%;
+    --secondary-foreground: 210 21.4% 94.5%;
+    --muted: 210 16.1% 12.2%;
+    --muted-foreground: 212 10.4% 64.1%;
+    --accent: 210 16.7% 16.5%;
+    --accent-foreground: 210 21.4% 94.5%;
+    --destructive: 5 100% 68.4%;
+    --destructive-foreground: 210 16.7% 7.1%;
+    --border: 210 15.3% 18%;
+    --input: 210 15.3% 23.1%;
+    --ring: 221 100% 74.9%;
+    --loop-brand: 221 100% 74.9%;
+    --loop-brand-soft: 220 45% 15%;
+    --loop-positive: 158 50.4% 49.8%;
+    --loop-positive-soft: 158 30% 12%;
+    --loop-caution: 22 100% 77%;
+    --loop-caution-soft: 19 45% 14%;
+    --loop-data-1: 221 100% 74.9%;
+    --loop-data-2: 158 50.4% 49.8%;
+    --loop-shadow-raised: 0 1px 2px rgb(0 0 0/.4), 0 8px 24px -8px rgb(0 0 0/.5);
+    --loop-shadow-thumb: 0 1px 2px rgb(0 0 0/.5);
+  }
+}

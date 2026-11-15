@@ -33,6 +33,6 @@
     "client:new": "node tools/new-client.mjs",
     "docs:pull": "node tools/pull-drive-docs.mjs",
     "check:clients": "node tools/check-clients.mjs",
-    "test:tools": "node --test \"tools/test/*.test.mjs\""
+    "test:tools": "node --test \"tools/test/*.test.mjs\" \"packages/*/test/*.test.mjs\""
   }
 }
