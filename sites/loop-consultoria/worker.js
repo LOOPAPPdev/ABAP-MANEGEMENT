@@ -1,11 +1,14 @@
 // Loop Consultoria landing page: serves one HTML page and stores contact requests in D1.
 import page from "./index.html";
-// @loop/ui — the exclusive LOOP package (Screens v2 design system), imported at build time as text.
-import tokens from "../../packages/loop-ui/tokens.css";
-import screens from "../../packages/loop-ui/screens.css";
-import screensJs from "../../packages/loop-ui/screens.client.js";
+// @abap/ui — imported at build time from the monorepo package (single source for theme and shared primitives).
+import themeLoop from "../../packages/ui/theme/loop.css";
+import button from "../../packages/ui/components/button.css";
+import card from "../../packages/ui/components/card.css";
+import badge from "../../packages/ui/components/badge.css";
+import field from "../../packages/ui/components/field.css";
+import separator from "../../packages/ui/components/separator.css";
 
-const UI_CSS = ["/* @loop/ui · Screens v2 tokens + page patterns */", tokens, screens].join("\n");
+const UI_CSS = ["/* @abap/ui · theme loop + shared primitives */", themeLoop, button, card, badge, field, separator].join("\n");
 
 const CSP = [
   "default-src 'self'",
@@ -48,10 +51,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/api/lead") return request.method === "POST" ? lead(request, env) : json({ ok: false, error: "method_not_allowed" }, 405);
-    if (url.pathname === "/loop-ui.css" && (request.method === "GET" || request.method === "HEAD"))
+    if (url.pathname === "/ui.css" && (request.method === "GET" || request.method === "HEAD"))
       return new Response(UI_CSS, { headers: { "content-type": "text/css; charset=utf-8", "cache-control": "public, max-age=300", ...HEADERS } });
-    if (url.pathname === "/loop-ui.js" && (request.method === "GET" || request.method === "HEAD"))
-      return new Response(screensJs, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "public, max-age=300", ...HEADERS } });
     if (url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\n", { headers: { "content-type": "text/plain" } });
     if (url.pathname === "/" && (request.method === "GET" || request.method === "HEAD"))
       return new Response(page, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300", ...HEADERS } });

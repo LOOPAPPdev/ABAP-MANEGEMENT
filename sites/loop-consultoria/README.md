@@ -26,20 +26,18 @@ flowchart LR
 
 ## Design system
 
-Since 2026-11-15 (D-040) the page is rebuilt from scratch on **Screens v2** with the exclusive package [`@loop/ui`](../../packages/loop-ui/README.md). The layout follows `Main.dc.html` element by element; only the copy is Loop's.
+The page uses `@abap/ui` (theme `loop` + shared primitives): see [`packages/ui/README.md`](../../packages/ui/README.md). Since 2026-11-15 (second pass) the LOOP theme is the **Screens v2 design system**: the rc bundle scale (`_ds_bundle.css`) and the `loop-theme.css` palette, copied from the design artifact `a74ae02c` (`ds/rc/`). Content unchanged.
 
-| Screens v2 element | Loop content in it |
+| Element | Screens v2 rule applied |
 |---|---|
-| Header: logo, pill tab track, tonal + primary buttons | Método, Serviços, Plataforma, Perguntas (scroll spy) · Ver o método · Agendar diagnóstico ↗ |
-| Hero panel: endless feed (cards + chips) left, display title right, pause button | Problem and capability labels in the feed; h1 + the two CTAs |
-| Title + meta row | Hero subtitle; positioning line and first-call note |
-| Featured tiles (square media + title + text) | O custo que ninguém vê (4) |
-| News rows (tinted square + title + meta) | Três movimentos (3) |
-| Stories (tilt squares) | The three feature blocks, with their product sheets |
-| Feed chips | Traga seus sistemas (13) |
-| Article layout: TOC + 500 px column | Método (parts grid + 3D stage), simulator in a bordered panel, services (segmented control + panel with bubble and media grid), Como começamos (rail), FAQ, form |
+| Type | Inter; body 17px / 1.47 / -0.022em; lead 21px / 1.38; h1 700, clamp 36–72px, -0.04em; h2 500, clamp 30–50px, -0.03em; card titles 20px |
+| Grounds | White page; cards are flat slate-100 tiles (no border, no shadow); feature stages use the blue, purple and green tints; white sheets sit on tints |
+| Controls | Pill buttons (primary filled slate-900, outline 1px text colour); pill nav menu on slate-100; chips at 9% text mix |
+| Header | 72px, 85% ground + blur 18px, no border |
+| Radius, space, motion | Card 16px, controls pill, fields 12px; 4/8/12/16/24/32/48/64 spacing; `cubic-bezier(.25,.1,.25,1)` |
+| Shared recipes | Unchanged classes (`ui-button`, `ui-card`, `ui-badge`, `ui-input`…); the theme sets `--ui-*` hooks, ABAP keeps its defaults |
 
-Content check: `node content-baseline.mjs` extracts the visible copy. The rebuild removed no sentence; decorative marks only (`↗`, `● →`, `aria-hidden`).
+Content check: `node content-baseline.mjs` extracts the visible copy; the redesign removed no sentence (only decorative card numbers were added, `aria-hidden`).
 
 ## Sources and what each one decided
 
