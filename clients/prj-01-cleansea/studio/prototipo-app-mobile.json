@@ -2,7 +2,7 @@
   "slug": "prototipo-app-mobile",
   "title": "Protótipo do app operacional (mobile)",
   "notice": "Protótipo de design — dados simulados (SIMULADO), sem integrações reais. Não é o app de produção (ADR-013).",
-  "description": "Handoff de design recebido em 2026-11-15: 5 papéis, telas M00–M15, 17 etapas, fila offline. Use \"Ver como\" para trocar de papel e o roteiro de demonstração à direita.",
+  "description": "Handoff de design recebido em 2026-11-15: 5 papéis, telas M00–M15, 17 etapas, fila offline. Inclui o widget de rastreamento de navios (push de proximidade no celular, card na tela M06 Navio e painel completo abaixo). Use \"Ver como\" para trocar de papel.",
   "entry": "Cleansea App.dc.html",
   "dir": "reference/design-handoff-cleansea-app"
 }

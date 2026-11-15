@@ -111,10 +111,11 @@ export const ARTIFACT_CSP = [
   "sandbox allow-scripts allow-forms allow-popups allow-modals",
   "default-src 'self' data: blob:",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net",
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: blob: https:",
-  "connect-src 'self' https://unpkg.com https://cdn.jsdelivr.net",
+  // Open-Meteo (weather, no key) for the CleanSea tracking widget (CleanSea ADR-017). Map tiles are images (img-src https:).
+  "connect-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://api.open-meteo.com https://marine-api.open-meteo.com",
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'none'",

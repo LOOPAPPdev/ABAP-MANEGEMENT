@@ -130,3 +130,7 @@ Divergence margin; formal arrival confirmation criteria (G-01) and the "Não" re
 - `Cleansea App.dc.html` — the full prototype (template + logic class; seed data and rules are constants at the top of the logic class: `STEPS`, `PH`, `DOCDEF`, `VESSELS`, `HISTORY`, `MONTHS`, `AIQ`, `CAN`, `PERMS`).
 - `support.js` — runtime needed to open the HTML locally.
 - `_ds/` — design-system stylesheet and bundle referenced by the HTML (tokens above).
+
+## CleanSea additions (not part of the original handoff)
+- `cleansea-tracking/` — vessel tracking widget (CleanSea ADR-017): proximity push banners in the phone, live card on M06 Navio, full panel before the Wireflow. AIS positions and WhatsApp messages are SIMULADO; weather from Open-Meteo when the network allows.
+- `Cleansea App.dc.html` — one block added before `</body>` that loads Leaflet and the widget. Nothing else changed.
