@@ -161,6 +161,14 @@ describe("Feature: MCP endpoint /mcp (ADR-009)", () => {
     expect((await app().request(`/api/v1/projects/${P}/models`, { method: "POST", headers: { ...h, "content-type": "application/json" }, body: "{}" }, env())).status).toBe(403);
   });
 
+  it("there is no delete tool, and a write token cannot DELETE a project over REST", async () => {
+    const { body } = await rpc(READ, "tools/list");
+    expect((body.result.tools as { name: string }[]).filter((t) => /delet|remov|exclu/i.test(t.name))).toEqual([]);
+    const res = await app().request(`/api/v1/projects/${P}`, { method: "DELETE", headers: { authorization: `Bearer ${WRITE}`, "content-type": "application/json" }, body: JSON.stringify({ confirm: P }) }, env());
+    expect(res.status).toBe(403);
+    expect(await new ProjectService(proxy.env.DB, clock).get(P)).not.toBeNull();
+  });
+
   it("GET /mcp is not allowed (stateless)", async () => {
     expect((await app().request("/mcp", { headers: { authorization: `Bearer ${READ}` } }, env())).status).toBe(405);
   });

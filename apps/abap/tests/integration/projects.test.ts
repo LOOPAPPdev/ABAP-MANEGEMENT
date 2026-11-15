@@ -95,3 +95,56 @@ describe("Feature: multi-project (D-007)", () => {
     expect(d0.dashboard.byStatus["IN PROGRESS"]).toBe(0);
   });
 });
+
+describe("Feature: delete project (ADR-006 addendum)", () => {
+  const ID = "prj-31-apagar";
+  const OTHER = "prj-32-fica";
+  const count = async (table: string, id: string) =>
+    Number((await proxy.env.DB.prepare(`SELECT count(*) AS n FROM ${table} WHERE project_id = ?`).bind(id).first<{ n: number }>())!.n);
+  const del = (id: string, confirm: unknown) => req(`/projects/${id}`, { method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ confirm }) });
+
+  it("GIVEN two projects with data WHEN one is deleted THEN everything of it goes and nothing of the other", async () => {
+    for (const [code, id] of [["PRJ-31", ID], ["PRJ-32", OTHER]] as const) await req("/projects", json("POST", { code, name: id, id }));
+    const svc = new ProjectService(proxy.env.DB, clock);
+    await svc.setLinks(ID, { driveFolderId: FOLDER }, "owner@example.com");
+    const gov = new GovernanceService(getDb(proxy.env.DB), clock, ID);
+    await gov.changeStatus("ACT-01", "IN PROGRESS", "tester");
+    await proxy.env.DB.prepare("INSERT INTO app_settings (key, value, updated_at, updated_by) VALUES (?, 'manual', 'x', 'x')").bind(`sheets.syncMode:${ID}`).run();
+    expect((await svc.impact(ID)).activities).toBe(14);
+
+    const res = await del(ID, ID);
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as { counts: { activities: number } }).counts.activities).toBe(14);
+    for (const t of ["activities", "activity_events", "project_events", "project_models", "client_plugins", "sync_runs", "sheet_snapshots", "evidence"]) expect(await count(t, ID), t).toBe(0);
+    expect(await svc.get(ID)).toBeNull();
+    expect(await proxy.env.DB.prepare("SELECT 1 FROM app_settings WHERE key = ?").bind(`sheets.syncMode:${ID}`).first()).toBeNull();
+    // The other project is intact.
+    expect(await count("activities", OTHER)).toBe(14);
+    expect(await svc.get(OTHER)).not.toBeNull();
+  });
+
+  it("keeps a permanent record of who deleted what, without business data", async () => {
+    const [d] = await new ProjectService(proxy.env.DB, clock).deletions(1);
+    expect(d).toMatchObject({ projectId: ID, code: "PRJ-31", name: ID });
+    expect(JSON.parse(d!.countsJson)).toMatchObject({ activities: 14 });
+    expect(d!.deletedBy).toBeTruthy();
+  });
+
+  it("requires the typed project id; a wrong confirmation deletes nothing", async () => {
+    expect((await del(OTHER, "outro-id")).status).toBe(400);
+    expect((await del(OTHER, "")).status).toBe(400);
+    expect((await req(`/projects/${OTHER}`, { method: "DELETE" })).status).toBe(400);
+    expect(await count("activities", OTHER)).toBe(14);
+  });
+
+  it("protects the platform project and answers 404 for unknown ones", async () => {
+    expect((await del("default", "default")).status).toBe(403);
+    expect(await count("activities", "default")).toBe(14);
+    expect((await del("prj-99-nada", "prj-99-nada")).status).toBe(404);
+  });
+
+  it("falls back to the platform project when the current-project cookie points to a deleted one", async () => {
+    const viaCookie = await api().request("/api/v1/activities/ACT-01", { headers: { cookie: `gs_project=${ID}` } }, { DB: proxy.env.DB });
+    expect(viaCookie.status).toBe(200);
+  });
+});

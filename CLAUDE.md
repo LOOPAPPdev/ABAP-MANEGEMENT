@@ -35,6 +35,7 @@ Details: `docs/client-onboarding.md`.
 - Do not mark a governance activity DONE; the owner does it with evidence.
 - Writes to a client's Drive go only through ABAP, with explicit approval, and are audited.
 - **Claude ↔ ABAP goes through the MCP** (`/mcp`, plugin `abap`, personal token in `ABAP_TOKEN`). Tokens never enter Git or the chat. The MCP never sets DONE/VERIFIED; Drive writes need the user's explicit yes.
+- **Deleting a project is human-only:** only in the app (Projects → Excluir projeto, typed confirmation). Never add a delete tool to the MCP or a token path. `default` is protected.
 - `plugins/vendor/*` is third-party code: do not edit; update by replacing the folder (`docs/plugins.md`).
 - Conventional Commits. Scope = workspace when useful: `feat(abap): …`, `docs(prj-01-cleansea): …`.
 

@@ -77,6 +77,10 @@ npm run plugin:pull -w @clients/prj-01-cleansea
 
 Depois de mudar os modelos do cliente, gere o agente de novo e repita o passo 3.
 
+## Recomeçar um cliente
+
+Em **Projects**, com o projeto aberto, a seção **Excluir projeto** mostra o que será apagado (atividades, modelos, agente, histórico). Digite o identificador do projeto para confirmar. Não há como desfazer. O Drive, a planilha e a pasta `clients/<slug>` do repositório não são apagados, e fica um registro permanente de quem excluiu e quando. O projeto da plataforma (`default`) não pode ser excluído. O MCP e os tokens não têm essa função.
+
 ## Regras que valem para todos os clientes
 - Nada de segredos, IDs do Drive/Sheets ou dados pessoais no Git (`npm run check:clients` verifica).
 - Um cliente nunca acessa a pasta de outro.

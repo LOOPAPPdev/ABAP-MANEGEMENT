@@ -4,7 +4,7 @@ import { z } from "zod";
 import { newProjectSchema, parseDriveFolderId, parseSpreadsheetId, projectIdSchema } from "~/domain/projects";
 import type { AuthVariables } from "../auth/middleware";
 import type { Clock } from "../governance-service";
-import { ProjectExistsError, ProjectService } from "../projects";
+import { ProjectDeleteError, ProjectExistsError, ProjectService } from "../projects";
 import { actorOf } from "./actor";
 
 type Env = { Bindings: { DB: D1Database }; Variables: Partial<AuthVariables> };
@@ -58,5 +58,18 @@ export function registerProjectRoutes(api: Hono<Env, BlankSchema, "/api/v1">, cl
     const s = svc(c.env);
     if (!(await s.get(id.data))) return c.json({ ok: false, error: "not_found" }, 404);
     return c.json({ ok: true, project: await s.setLinks(id.data, links, actorOf(c)) });
+  });
+
+  // Session users only (token callers are limited to the read allow-list; there is no MCP delete tool).
+  api.delete("/projects/:id", async (c) => {
+    const id = projectIdSchema.safeParse(c.req.param("id"));
+    const body = z.object({ confirm: z.string().max(100) }).safeParse(await c.req.json().catch(() => null));
+    if (!id.success || !body.success) return c.json({ ok: false, error: "invalid_body", message: "Envie { confirm: <identificador do projeto> }." }, 400);
+    try {
+      return c.json({ ok: true, ...(await svc(c.env).delete(id.data, body.data.confirm, actorOf(c))) });
+    } catch (e) {
+      if (e instanceof ProjectDeleteError) return c.json({ ok: false, error: e.code, message: e.message }, e.code === "not_found" ? 404 : e.code === "protected" ? 403 : 400);
+      throw e;
+    }
   });
 }

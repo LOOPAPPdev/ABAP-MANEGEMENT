@@ -2090,6 +2090,45 @@
         "state": "não gerado, gerado, sem mudanças, atualizado.",
         "uxRule": "Geração é determinística e auditada; só cria revisão nova quando o conteúdo muda; avisar que os arquivos não são editados à mão."
       }
+    },
+    {
+      "id": "pattern-delete-project",
+      "family": "Patterns",
+      "name": "Delete project",
+      "function": "Permanently deletes a project after a typed confirmation, showing exactly what will be removed.",
+      "variants": [
+        "protected",
+        "enabled"
+      ],
+      "props": [
+        "impact",
+        "deletions"
+      ],
+      "states": [
+        "protected",
+        "enabled",
+        "confirm-mismatch",
+        "deleted"
+      ],
+      "dependencies": [
+        "ds:card",
+        "ds:input",
+        "ds:button"
+      ],
+      "usage": [
+        "/projects"
+      ],
+      "status": "adopted",
+      "source": "app/routes/projects.tsx",
+      "metanote": {
+        "name": "Excluir projeto",
+        "function": "Apagar um projeto e tudo que ele guarda no ABAP.",
+        "whenToUse": "Para recomeçar a personalização de um cliente. Nunca para o projeto da plataforma (default).",
+        "data": "Contagem de atividades, modelos, revisões do agente e evidências; registro de exclusões (quem, quando, quanto).",
+        "interaction": "Digitar o identificador do projeto; o botão destrutivo só funciona com o texto exato; o servidor confere de novo.",
+        "state": "protegido (default), habilitado, confirmação errada, excluído.",
+        "uxRule": "Dizer o que será apagado e o que não será (Drive, planilha, repositório); exigir confirmação digitada; deixar registro permanente."
+      }
     }
   ]
 }

@@ -5,7 +5,7 @@ import { Input, Label } from "~/components/ui/input";
 import { driveFolderUrl, newProjectSchema, parseDriveFolderId, parseSpreadsheetId, projectIdSchema, spreadsheetUrl } from "~/domain/projects";
 import { PROJECT_COOKIE } from "~/server/api/project-context";
 import { safeReturnTo } from "~/server/auth/session";
-import { ProjectExistsError } from "~/server/projects";
+import { ProjectDeleteError, ProjectExistsError } from "~/server/projects";
 import { getTemplate, TEMPLATES } from "~/domain/models";
 import { ModelService } from "~/server/models";
 import { systemClock } from "~/server/governance-service";
@@ -18,10 +18,12 @@ export function meta() {
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const svc = projectsFrom(context);
+  const justDeleted = new URL(request.url).searchParams.get("deleted");
   const current = await projectFrom(context, request);
   const list = await svc.list();
   return {
     current: current.id,
+    justDeleted: justDeleted && projectIdSchema.safeParse(justDeleted).success ? justDeleted : null,
     projects: list.map((p) => ({
       id: p.id,
       code: p.code,
@@ -32,6 +34,8 @@ export async function loader({ context, request }: Route.LoaderArgs) {
       usesSecretSheet: p.id === "default" && !p.spreadsheetId && Boolean(context.cfg.spreadsheetId),
     })),
     events: await svc.events(current.id, 10),
+    impact: current.id === "default" ? null : await svc.impact(current.id),
+    deletions: await svc.deletions(5),
     templates: TEMPLATES.map((t) => ({ id: t.id, name: t.name, version: t.templateVersion, stages: t.questionnaire.stages.length, fields: t.questionnaire.field_count })),
   };
 }
@@ -63,6 +67,18 @@ export async function action({ context, request }: Route.ActionArgs) {
     }
     throw redirect("/projects?created=1", { headers: { "Set-Cookie": cookie(parsed.data.id) } });
   }
+  if (form.intent === "delete") {
+    const id = projectIdSchema.safeParse(form.project);
+    if (!id.success) return data({ error: "Projeto inválido." }, { status: 400 });
+    try {
+      const { counts } = await svc.delete(id.data, form.confirm ?? "", actorFrom(context));
+      // The deleted project may be the current one: go back to the platform project.
+      throw redirect(`/projects?deleted=${encodeURIComponent(id.data)}&activities=${counts.activities}`, { headers: { "Set-Cookie": cookie("default") } });
+    } catch (e) {
+      if (e instanceof ProjectDeleteError) return data({ error: e.message }, { status: e.code === "not_found" ? 404 : e.code === "protected" ? 403 : 400 });
+      throw e;
+    }
+  }
   if (form.intent === "links") {
     const current = await projectFrom(context, request);
     const driveFolderId = form.driveFolder ? parseDriveFolderId(form.driveFolder) : null;
@@ -86,6 +102,7 @@ export default function Projects({ loaderData: d, actionData }: Route.ComponentP
       </header>
       {actionData && "error" in actionData && <p role="alert" className="rounded border border-destructive p-2 text-sm text-destructive-strong">{actionData.error}</p>}
       {actionData && "ok" in actionData && <p role="status" className="rounded border border-border bg-sel p-2 text-sm">{actionData.ok}</p>}
+      {d.justDeleted && <p role="status" className="rounded border border-border bg-sel p-2 text-sm" data-testid="deleted-notice">Projeto <code>{d.justDeleted}</code> excluído. Você voltou para o projeto da plataforma.</p>}
 
       <div className="overflow-x-auto rounded-md border border-border bg-card">
         <table className="w-full text-left text-sm">
@@ -181,6 +198,35 @@ export default function Projects({ loaderData: d, actionData }: Route.ComponentP
           </Form>
         </Card>
       </div>
+
+      <Card className="border-destructive" data-component-id="pattern-delete-project">
+        <CardTitle>Excluir projeto · {current.code ? `${current.code} ` : ""}{current.name}</CardTitle>
+        {d.impact === null ? (
+          <p className="mt-2 text-sm text-muted-foreground">O projeto da plataforma (<code>default</code>) não pode ser excluído: o app precisa dele como projeto de reserva. Abra um projeto de cliente no seletor do topo para excluí-lo.</p>
+        ) : (
+          <Form method="post" className="mt-2 space-y-3">
+            <input type="hidden" name="intent" value="delete" />
+            <input type="hidden" name="project" value={current.id} />
+            <p className="text-sm">
+              Exclui <strong>para sempre</strong>, sem como desfazer: {d.impact.activities} atividades, {d.impact.project_models} modelos, {d.impact.client_plugins} revisões do agente, {d.impact.evidence} evidências e todo o histórico e as sincronizações deste projeto.
+            </p>
+            <p className="text-xs text-muted-foreground">Não apaga nada no Google: a pasta do Drive e a planilha continuam como estão. No repositório, a pasta <code>clients/{current.id}</code> também fica. Fica um registro de quem excluiu e quando.</p>
+            <div className="space-y-1">
+              <Label htmlFor="confirm-delete">Para confirmar, digite o identificador: <code>{current.id}</code></Label>
+              <Input id="confirm-delete" name="confirm" autoComplete="off" required pattern={current.id} placeholder={current.id} />
+            </div>
+            <Button type="submit" variant="destructive" disabled={busy}>Excluir projeto para sempre</Button>
+          </Form>
+        )}
+        {d.deletions.length > 0 && (
+          <div className="mt-4 border-t border-border pt-2">
+            <p className="meta-label">Exclusões recentes</p>
+            <ul className="mt-1 space-y-1 text-sm" data-testid="deletions">
+              {d.deletions.map((x) => <li key={x.id}><span className="text-xs text-muted-foreground">{x.deletedAt.slice(0, 16).replace("T", " ")}</span> · {x.code ?? ""} {x.name} (<code>{x.projectId}</code>) · por {x.deletedBy}</li>)}
+            </ul>
+          </div>
+        )}
+      </Card>
 
       <Card>
         <CardTitle>Histórico do projeto atual</CardTitle>

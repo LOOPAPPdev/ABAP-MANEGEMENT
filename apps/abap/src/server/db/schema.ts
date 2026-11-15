@@ -187,3 +187,17 @@ export const clientPlugins = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.projectId, t.revision] })],
 );
+
+/**
+ * Permanent record of deleted projects (ADR-006 addendum). The project's own audit rows are deleted with it,
+ * so who deleted what, when, and how much it held is kept here. Append-only; no business data.
+ */
+export const deletedProjects = sqliteTable("deleted_projects", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  projectId: text("project_id").notNull(),
+  code: text("code"),
+  name: text("name").notNull(),
+  deletedBy: text("deleted_by").notNull(),
+  deletedAt: text("deleted_at").notNull(),
+  countsJson: text("counts_json").notNull(),
+});

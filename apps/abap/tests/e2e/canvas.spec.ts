@@ -84,7 +84,7 @@ test.describe("Feature: component showcase (ADR-004)", () => {
   test("lists every adopted component with an example area and a metanote", async ({ page }) => {
     await page.goto("/showcase");
     await expect(page.getByRole("heading", { level: 1, name: "Design system" })).toBeVisible();
-    await expect(page.getByTestId("showcase-entry")).toHaveCount(46);
+    await expect(page.getByTestId("showcase-entry")).toHaveCount(47);
     for (const fam of ["Foundations", "Primitives", "Composites", "Layouts", "Diagrams", "Patterns"])
       await expect(page.getByRole("heading", { level: 2, name: new RegExp(`^${fam}`) })).toBeVisible();
   });

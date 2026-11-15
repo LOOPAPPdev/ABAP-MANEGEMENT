@@ -38,3 +38,14 @@ flowchart LR
 
 ## Verification
 `tests/unit/projects.test.ts`, `tests/integration/projects.test.ts`, `tests/integration/drive.test.ts` (fake Google: tree, export, confirmed write + audit, spreadsheet detection, scope missing, machine token allow/deny), `tools/test/lib-drive.test.mjs` (mirror safety), `tests/e2e/projects.spec.ts`.
+
+
+## Addendum 2026-11-15 — Delete project
+Requested by the owner to restart a client's customisation.
+- **Where:** `Projects` page (current project) and `DELETE /api/v1/projects/:id` with `{ "confirm": "<project id>" }`. Session users only: personal and machine tokens are limited to the read allow-list, and the MCP has **no delete tool** (tested).
+- **Typed confirmation:** the id must be typed; the form validates it and the server checks again.
+- **Atomic:** one D1 batch deletes the project's rows (evidence, activity events, sheet snapshots, sync runs, client plugins, models, project events, activities), its `sheets.syncMode:<id>` setting and the project, then writes the record below. Everything or nothing.
+- **Permanent record:** table `deleted_projects` (migration 0006): project id, code, name, who, when and row counts. No business data. Shown in the Projects page.
+- **Protected:** the platform project `default` cannot be deleted: `ProjectService.resolve` needs it as the fallback project.
+- **Never touched:** Google Drive and Sheets (the app only holds the links), the Git folder `clients/<slug>`, the Google connection, tokens and secrets.
+- **Not reversible.** There is no soft delete or undo. Back up first if needed: `wrangler d1 export`.

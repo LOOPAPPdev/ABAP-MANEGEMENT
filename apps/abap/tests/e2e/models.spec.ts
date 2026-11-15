@@ -61,3 +61,29 @@ test("Agent factory: generating twice creates one revision; the plugin can be pr
   expect(res.headers()["content-type"]).toBe("application/zip");
   expect((await res.body()).subarray(0, 2).toString()).toBe("PK");
 });
+
+test("Delete project: needs the typed id, removes the project, keeps the record, protects default (ADR-006 addendum)", async ({ page }) => {
+  const select = async (id: string) => {
+    await page.getByTestId("project-switch").selectOption(id);
+    await Promise.all([
+      page.waitForResponse((r) => r.url().endsWith("/projects") && r.request().method() === "POST"),
+      page.getByRole("button", { name: "Abrir", exact: true }).first().click(),
+    ]);
+    await page.waitForLoadState("load");
+  };
+  await page.goto("/projects");
+  // Platform project: protected, no form.
+  await expect(page.getByText("não pode ser excluído")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Excluir projeto para sempre" })).toHaveCount(0);
+  await select("prj-08-modelo-e2e");
+  await expect(page.getByText(/Exclui para sempre/)).toContainText("atividades");
+  const box = page.getByLabel(/Para confirmar, digite o identificador/);
+  await box.fill("errado");
+  await expect(box).toHaveAttribute("pattern", "prj-08-modelo-e2e");
+  await box.fill("prj-08-modelo-e2e");
+  await page.getByRole("button", { name: "Excluir projeto para sempre" }).click();
+  await expect(page.getByTestId("deleted-notice")).toContainText("prj-08-modelo-e2e");
+  await expect(page.getByTestId("project-list")).not.toContainText("prj-08-modelo-e2e");
+  await expect(page.getByTestId("deletions")).toContainText("prj-08-modelo-e2e");
+  await expect(page.getByTestId("project-switch")).toHaveValue("default");
+});
