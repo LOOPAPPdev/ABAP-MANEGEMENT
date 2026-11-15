@@ -1,7 +1,9 @@
 /* CleanSea · widget de rastreamento de navios, montado DENTRO do protótipo (ADR-017).
  * 1) push de proximidade como banner no topo do celular do protótipo;
  * 2) card "Rastreamento ao vivo" na tela M06 Navio;
- * 3) painel completo na página do protótipo, antes do Wireflow.
+ * 3) painel completo na página do protótipo, antes do Wireflow;
+ * 4) card "Acompanhamento ao vivo" com o mapa, na coluna ao lado do celular.
+ * As mensagens de rastreamento têm botão de pausa: pausadas, ficam só na lista de alertas.
  * Posição AIS, rotas, ETAs e mensagens: SIMULADO. Clima: Open-Meteo quando a rede permitir, senão SIMULADO.
  * Sem dependência do runtime do protótipo: só lê o atributo data-screen-label do celular.
  */
@@ -103,19 +105,53 @@
   // ---------- Alertas e push ----------
   const alerts = [];
   let pushHost = null, systemNotify = false;
+  // Pausa das mensagens de rastreamento: os banners param de entrar e os visíveis ficam parados.
+  // O alerta continua registrado na lista "Alertas e push".
+  let msgPaused = false, msgHeld = 0;
+  function setMsgPaused(on) {
+    msgPaused = on;
+    if (pushHost) {
+      for (const b of pushHost.querySelectorAll(".cst-banner")) {
+        if (on) clearTimeout(b._t); else b.remove();
+      }
+    }
+    if (!on) msgHeld = 0;
+    renderPauseUi();
+  }
+  function renderPauseUi() {
+    const label = msgPaused ? "Retomar mensagens" : "Pausar mensagens";
+    for (const btn of document.querySelectorAll("[data-cst-msgpause]")) {
+      btn.textContent = btn.hasAttribute("data-short") ? (msgPaused ? "Retomar" : "Pausar") : label;
+      btn.setAttribute("aria-pressed", String(msgPaused));
+    }
+    if (!pushHost) return;
+    let chip = pushHost.querySelector(".cst-paused");
+    if (!msgPaused) { chip?.remove(); return; }
+    if (!chip) {
+      chip = document.createElement("div");
+      chip.className = "cst-paused";
+      chip.innerHTML = `<span></span><button type="button" class="cst-btn" data-cst-msgpause data-short aria-pressed="true">Retomar</button>`;
+      chip.querySelector("button").onclick = () => setMsgPaused(false);
+      pushHost.prepend(chip);
+    }
+    chip.querySelector("span").textContent = `Mensagens pausadas${msgHeld ? ` · ${msgHeld} nova${msgHeld > 1 ? "s" : ""} na lista` : ""}`;
+  }
   function push(title, text, level) {
     alerts.unshift({ at: simMs, title, text, level });
     if (alerts.length > 60) alerts.pop();
     renderAlerts();
-    if (pushHost) {
+    if (msgPaused) { msgHeld++; renderPauseUi(); }
+    else if (pushHost) {
       const b = document.createElement("div");
       b.className = "cst-banner";
       b.setAttribute("role", "status");
-      b.innerHTML = `<span class="ic" aria-hidden="true">C</span><span class="t"><b>CLEANSEA · ${esc(title)}</b><span>agora</span></span><span>${esc(text)}</span>`;
+      b.innerHTML = `<span class="ic" aria-hidden="true">C</span><span class="t"><b>CLEANSEA · ${esc(title)}</b><span>agora</span></span><span>${esc(text)}</span><button type="button" class="cst-banner-pause" data-cst-msgpause data-short aria-pressed="false" aria-label="Pausar mensagens de rastreamento">Pausar</button>`;
+      b.querySelector("button").onclick = () => setMsgPaused(!msgPaused);
       pushHost.prepend(b);
-      while (pushHost.children.length > 3) pushHost.lastChild.remove();
-      setTimeout(() => b.remove(), 6500);
+      for (const old of [...pushHost.querySelectorAll(".cst-banner")].slice(3)) old.remove();
+      b._t = setTimeout(() => b.remove(), 6500);
     }
+    if (msgPaused) return;
     if (systemNotify) try { new Notification(`CleanSea · ${title}`, { body: text }); } catch (e) { systemNotify = false; }
     if (navigator.vibrate && navigator.userActivation?.hasBeenActive) try { navigator.vibrate(120); } catch (e) { /* ignore */ }
   }
@@ -272,7 +308,8 @@
       <div class="cst-controls" role="group" aria-label="Controles da simulação">
         <label class="cst-label" for="cst-speed">Velocidade</label>
         <select id="cst-speed" class="cst-select"><option value="60">1 min = 1 h</option><option value="600" selected>6 s = 1 h</option><option value="3600">1 s = 1 h</option></select>
-        <button type="button" class="cst-btn" id="cst-pause" aria-pressed="false">Pausar</button>
+        <button type="button" class="cst-btn" id="cst-pause" aria-pressed="false">Pausar simulação</button>
+        <button type="button" class="cst-btn" data-cst-msgpause aria-pressed="false">Pausar mensagens</button>
         <button type="button" class="cst-btn" id="cst-locate">Minha posição</button>
         <button type="button" class="cst-btn" id="cst-notify">Alertas no aparelho</button>
         <span class="cst-label" id="cst-clock" aria-live="off"></span>
@@ -290,7 +327,8 @@
       </div>
       <p class="cst-muted">Fontes: posição <span class="cst-tag">SIMULADO</span> · operações e histórico do protótipo (planilha "Controle Operacional de Navios", não validada) · clima <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> · mapa © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>. Não usar para navegação.</p>`;
     s.querySelector("#cst-speed").onchange = (e) => (factor = Number(e.target.value));
-    s.querySelector("#cst-pause").onclick = (e) => { paused = !paused; e.target.textContent = paused ? "Continuar" : "Pausar"; e.target.setAttribute("aria-pressed", String(paused)); };
+    s.querySelector("#cst-pause").onclick = (e) => { paused = !paused; e.target.textContent = paused ? "Continuar simulação" : "Pausar simulação"; e.target.setAttribute("aria-pressed", String(paused)); };
+    s.querySelector("[data-cst-msgpause]").onclick = () => setMsgPaused(!msgPaused);
     s.querySelector("#cst-locate").onclick = locate;
     s.querySelector("#cst-clear").onclick = () => { alerts.length = 0; renderAlerts(); };
     s.querySelector("#cst-notify").onclick = async (e) => {
@@ -404,6 +442,48 @@
     phoneCard.querySelector(".cst-phone-info").innerHTML = `<b>${esc(v.name)}</b> · IMO ${v.imo}<br>${d.toFixed(1)} mn de Santos · ${v.obs.sog.toFixed(1)} kn<br>ETA ${e ? fmt(e.etaMs) : "—"} · <span style="color:var(--color-text-muted)">${e ? esc(e.src) : "sem fonte válida"}</span>`;
   }
 
+  // ---------- Acompanhamento ao vivo: mapa na coluna ao lado do celular ----------
+  let side = null, sideMap = null;
+  function mountSide() {
+    if (side && document.body.contains(side)) return;
+    const f = phoneFrame();
+    const row = f?.parentElement?.parentElement;
+    const col = row && [...row.children].find((c) => !c.contains(f));
+    if (!col) return;
+    if (sideMap) { sideMap.map.remove(); maps.splice(maps.indexOf(sideMap), 1); sideMap = null; }
+    side = document.createElement("div");
+    side.className = "cst-card cst-side";
+    side.id = "cst-side";
+    side.innerHTML = `<div class="cst-head"><span class="cst-label">Acompanhamento ao vivo</span><span class="cst-tag">AIS SIMULADO</span></div>
+      <div class="cst-map side" role="img" aria-label="Mapa de acompanhamento com navios, terminais e anéis de proximidade de Santos"></div>
+      <div class="cst-side-info" aria-live="off"></div>
+      <div class="cst-controls" role="group" aria-label="Navios e mensagens"><span class="cst-side-ships"></span></div>
+      <div class="cst-controls"><button type="button" class="cst-btn" data-cst-msgpause aria-pressed="false">Pausar mensagens</button><a class="cst-btn" href="#cleansea-tracking">Painel completo</a></div>`;
+    side.querySelector("[data-cst-msgpause]").onclick = () => setMsgPaused(!msgPaused);
+    col.insertBefore(side, col.children[1] || null);
+    sideMap = makeMap(side.querySelector(".cst-map"), { mini: false });
+    setTimeout(() => sideMap?.map.invalidateSize(), 50);
+    renderPauseUi();
+    renderSide();
+  }
+  function renderSide() {
+    if (!side || !document.body.contains(side)) return;
+    const v = selected, e = etaObservations(v).chosen, d = nm([v.obs.lat, v.obs.lon], PORT);
+    side.querySelector(".cst-side-info").innerHTML = `<b>${esc(v.name)}</b> · IMO ${v.imo} · ${esc(termById[v.terminal].name)}<br>${d.toFixed(1)} mn de Santos · ${v.obs.sog.toFixed(1)} kn · ETA ${e ? fmt(e.etaMs) : "—"} <span class="cst-muted">(${e ? esc(e.src) : "sem fonte válida"})</span>`;
+    const ships = side.querySelector(".cst-side-ships");
+    if (ships.childElementCount !== vessels.length) {
+      ships.innerHTML = "";
+      for (const x of vessels) {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "cst-btn"; b.textContent = x.name;
+        b.onclick = () => select(x);
+        b._v = x;
+        ships.append(b);
+      }
+    }
+    for (const b of ships.children) b.setAttribute("aria-pressed", String(b._v === selected));
+  }
+
   // ---------- Montagem ----------
   function mountPanel() {
     if (panel && document.body.contains(panel)) return;
@@ -418,7 +498,7 @@
   function renderAll() {
     const c = document.getElementById("cst-clock");
     if (c) c.textContent = `Relógio simulado · ${fmt(simMs)}`;
-    renderVessels(); renderDetail(); renderAlerts(); renderWa(); renderPhoneInfo(); drawMaps();
+    renderVessels(); renderDetail(); renderAlerts(); renderWa(); renderPhoneInfo(); renderSide(); drawMaps();
   }
 
   let last = performance.now(), acc = 0;
@@ -427,10 +507,10 @@
     last = now;
     step(dt);
     acc += dt;
-    if (acc > 500) { acc = 0; mountPanel(); syncPhone(); renderAll(); }
+    if (acc > 500) { acc = 0; mountPanel(); mountSide(); syncPhone(); renderAll(); }
     requestAnimationFrame(loop);
   }
-  const start = () => { mountPanel(); syncPhone(); loadWeather(); requestAnimationFrame(loop); };
+  const start = () => { mountPanel(); mountSide(); syncPhone(); loadWeather(); requestAnimationFrame(loop); };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
   window.addEventListener("hashchange", () => { if (location.hash === "#cleansea-tracking") panel?.scrollIntoView({ behavior: "smooth" }); });
 })();
