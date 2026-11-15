@@ -1,8 +1,61 @@
 # Full Stack Governance System
 
-Web application for planning, executing, and verifying software delivery against the 14 activities in `Full_Stack_Governance_Workbook.xlsx`.
+## Stack
+
+The table records the configured stack. The stack decision in [ADR-001](docs/architecture/05_adr-001_stack.md) is **PROPOSED** and awaits owner approval.
+
+| Layer | Current engineering baseline | Repository evidence |
+| --- | --- | --- |
+| Tooling | Node.js 22 LTS, npm workspaces | [Root manifest](../../package.json), [CI](../../.github/workflows/ci.yml) |
+| UI | React Router v7 (SSR on Workers), React 19, TypeScript | [App manifest](package.json), [Worker entry](workers/app.ts) |
+| Design system | Tailwind CSS v4, shadcn/ui conventions, ABAP bundle tokens | [ADR-007](docs/architecture/adr-007_single-design-system-bundle.md), [Token definitions](docs/design-system/DESIGN_TOKENS.json) |
+| Runtime and API | Cloudflare Workers, Hono REST API under `/api/v1` | [Worker configuration](wrangler.jsonc), [Worker entry](workers/app.ts) |
+| Data | Cloudflare D1 (SQLite), Drizzle ORM | [D1 configuration](wrangler.jsonc), [Database schema](src/server/db/schema.ts) |
+| Validation | Zod | [App manifest](package.json) |
+| Integrations | Google OAuth, Google Sheets sync, Google Drive API | [ADR-005](docs/architecture/adr-005_google-auth-sheets-sync.md), [ADR-006](docs/architecture/adr-006_monorepo-multi-project-drive.md) |
+| Agents | ABAP MCP via `/mcp`, Claude plugins, agent factory | [ADR-009](docs/architecture/adr-009_mcp-tokens-plugin-marketplace.md), [ADR-010](docs/architecture/adr-010_agent-factory.md) |
+| Tests and CI | Vitest (unit and integration on local D1), Playwright (end-to-end), GitHub Actions | [App scripts](package.json), [CI workflow](../../.github/workflows/ci.yml) |
+
+The earlier workbook-token decision D-013 was superseded by [ADR-007](docs/architecture/adr-007_single-design-system-bundle.md).
+
+## ADR index
+
+| ADR | Record status | Engineering impact |
+| --- | --- | --- |
+| [ADR-UIX-001](docs/architecture/adr-uix-001_gestalt-whitespace.md) | PROPOSED · v1.1 | README-first recording, visual-first documentation, and a questionnaire spacing proposal using the ABAP design system. |
+| [ADR-010](docs/architecture/adr-010_agent-factory.md) | ACCEPTED | Deterministic client agents packaged as Claude plugins. |
+| [ADR-009](docs/architecture/adr-009_mcp-tokens-plugin-marketplace.md) | ACCEPTED | MCP endpoint, personal tokens and team plugin marketplace. |
+| [ADR-008](docs/architecture/adr-008_interface-templates-project-models.md) | ACCEPTED | Versioned interface template and project models in D1. |
+| [ADR-007](docs/architecture/adr-007_single-design-system-bundle.md) | ACCEPTED | ABAP bundle as the design system. |
+| [ADR-006](docs/architecture/adr-006_monorepo-multi-project-drive.md) | ACCEPTED | npm monorepo, client workspaces and Drive integration. |
+| [ADR-005](docs/architecture/adr-005_google-auth-sheets-sync.md) | ACCEPTED | Google login, allow-list and Sheets sync. |
+| [ADR-004](docs/architecture/adr-004_component-audit.md) | PROPOSED · G5 partially verified | Component audit, registry and showcase. |
+| [ADR-003](docs/architecture/adr-003_canvas-multiview.md) | PROPOSED · implemented locally | Universal graph and five read-only views. |
+| [ADR-002](docs/architecture/adr-002_canvas-workspace.md) | PROPOSED · implemented locally | Canvas layout, panel controls and URL state. |
+| [ADR-001](docs/architecture/05_adr-001_stack.md) | PROPOSED · awaiting owner approval | Cloudflare-native modular monolith. |
+
+### Record an ADR
+
+```mermaid
+flowchart TD
+  accTitle: Record an ADR
+  accDescr: Update the README index first. Record the effect on the stack. Write the ADR and verify the links and decision status in both files.
+  A["Update the README index"] --> B["Decision · Stack change?"]
+  B -->|Yes| C["Record the layer and status"]
+  B -->|No| D["Record stack reuse"]
+  C --> E["Write the ADR"]
+  D --> E
+  E --> F["Verify the README and ADR"]
+```
+
+1. **Update this index first.** When creating or revising an ADR, the author MUST update its ID, link, status and impact here before writing or revising the ADR body. Keep the version in sync when the ADR uses one.
+2. **Record the stack effect.** When a decision affects the stack, link its evidence and identify the layer. Mark proposed changes explicitly. Update the configured baseline from the repository configuration. When the decision reuses the stack, record that in its index row.
+3. **Write the ADR.** Link back to this index above the description. Follow the [visual-first specification](docs/architecture/adr-uix-001_gestalt-whitespace.md#visual-first) and preserve all technical details.
+4. **Verify both documents.** Check the links, ID, status, version and stack impact. Submit the README and ADR in the same change.
 
 ## Status
+
+Web application for planning, executing, and verifying software delivery against the 14 activities in `Full_Stack_Governance_Workbook.xlsx`.
 
 **Deployed on Cloudflare Workers with Google login and Google Sheets sync.** Activities are not marked DONE automatically; governance gates still apply.
 
@@ -19,18 +72,6 @@ Web application for planning, executing, and verifying software delivery against
 | Deploy (ACT-12) | Cloudflare Worker `governance-system` + D1 `governance` (production env) |
 
 No workbook activity is marked DONE. See `docs/plan/implementation-plan_A-G.md` for the roadmap and `docs/governance/13_decision-log.md` for decisions.
-
-## Stack (ADR-001, proposed)
-
-| Layer | Technology |
-| --- | --- |
-| UI | React Router v7 (SSR on Workers), React 19, TypeScript |
-| UI kit | Tailwind CSS v4 + shadcn/ui conventions, tokens from the workbook |
-| API | Hono on Cloudflare Workers, versioned under `/api/v1` |
-| Database | Cloudflare D1 (SQLite) + Drizzle ORM |
-| Validation | Zod |
-| Tests | Vitest (unit + integration on local D1), Playwright (E2E) |
-| CI | GitHub Actions: lint, typecheck, test, build, E2E |
 
 ## Architecture
 
