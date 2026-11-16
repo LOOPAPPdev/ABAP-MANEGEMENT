@@ -3,7 +3,12 @@
 # Leave every Google value empty to run in the local bypass:
 #   no login, actor "local-dev", spreadsheet = local fixture (data/seed/activities.v1.json).
 #
-# To test Google login + Sheets locally, set ALL of them and add
+# To test password login without Google, set both values as secrets:
+# ABAP_ACCESS_PASSWORD=<at least 24 random characters: openssl rand -base64 32>
+# SESSION_SECRET=<at least 32 random characters: openssl rand -base64 48>
+# Never commit these values or put them in public Worker vars.
+#
+# To test optional Google login + Sheets locally, set Google values and add
 #   http://localhost:5173/auth/google/callback
 # to the OAuth client's "Authorized redirect URIs" in Google Cloud Console.
 
