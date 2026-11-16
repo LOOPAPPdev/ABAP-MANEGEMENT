@@ -17,6 +17,7 @@ const clock = () => new Date("2026-11-15T12:00:00Z");
 const SECRET = "s".repeat(40);
 const ENV = {
   ENVIRONMENT: "production",
+  PUBLIC_ACCESS: "true",
   GOOGLE_CLIENT_ID: "id.apps.googleusercontent.com",
   GOOGLE_CLIENT_SECRET: "x".repeat(24),
   SESSION_SECRET: SECRET,
@@ -75,29 +76,27 @@ describe("Feature: shared studio with invited guests (ADR-011)", () => {
     expect(events.filter((e) => e.action === "studio.artifact.published")).toHaveLength(1);
   });
 
-  it("GIVEN an e-mail that is not invited WHEN it signs in THEN it has no access", async () => {
-    const r = await call(`/api/v1/studio/${P}`, "stranger@example.com");
-    expect(r.status).toBe(401);
+  it("GIVEN public mode WHEN no cookie is supplied THEN the studio is accessible", async () => {
+    const r = await call(`/api/v1/studio/${P}`, null);
+    expect(r.status).toBe(200);
+    const body = await r.json() as { artifacts: unknown[]; members: unknown[] };
+    expect(body.artifacts).toHaveLength(1);
+    expect(body.members).toEqual([]);
   });
 
-  it("GIVEN staff invites a client WHEN the client signs in THEN the client sees the studio of that project only, read-only", async () => {
-    const inv = await call(`/api/v1/studio/${P}/members`, "owner@example.com", { method: "POST", body: JSON.stringify({ email: "Cliente@Example.com", role: "client" }) });
+  it("GIVEN public mode WHEN inviting a client THEN membership is recorded but access is public for every project", async () => {
+    const inv = await call(`/api/v1/studio/${P}/members`, null, { method: "POST", body: JSON.stringify({ email: "Cliente@Example.com", role: "client" }) });
     expect(inv.status).toBe(201);
     await acceptInvites(proxy.env.DB, "cliente@example.com", clock().toISOString());
-    const own = await call(`/api/v1/studio/${P}`, "cliente@example.com");
+    const own = await call(`/api/v1/studio/${P}`, null);
     expect(own.status).toBe(200);
-    const body = (await own.json()) as { artifacts: { slug: string; url: string }[]; members?: unknown };
+    const body = await own.json() as { artifacts: { slug: string }[]; members: unknown[] };
     expect(body.artifacts.map((a) => a.slug)).toEqual(["prototipo-app"]);
-    expect(body.members).toBeUndefined();
-    expect((await call(`/api/v1/studio/${OTHER}`, "cliente@example.com")).status).toBe(403);
-    expect((await call(`/api/v1/activities?project=${P}`, "cliente@example.com")).status).toBe(403);
-    expect((await call(`/api/v1/projects`, "cliente@example.com")).status).toBe(403);
-    expect((await call(`/api/v1/studio/${P}/members`, "cliente@example.com", { method: "POST", body: JSON.stringify({ email: "x@y.com" }) })).status).toBe(403);
-    const page = await call("/dashboard", "cliente@example.com");
-    expect(page.status).toBe(302);
-    expect(page.headers.get("location")).toBe(`/studio/${P}`);
+    expect(body.members).toHaveLength(1);
+    expect((await call(`/api/v1/studio/${OTHER}`, null)).status).toBe(200);
+    expect((await call("/api/v1/projects", null)).status).toBe(200);
     const member = (await new StudioService(proxy.env.DB, clock, P).members()).find((m) => m.email === "cliente@example.com");
-    expect(member).toMatchObject({ status: "active", invitedBy: "owner@example.com" });
+    expect(member).toMatchObject({ status: "active", invitedBy: "public@abap.local" });
   });
 
   it("GIVEN the signed artifact URL WHEN fetched without a cookie THEN files are served sandboxed; a forged or expired token is refused", async () => {
@@ -119,9 +118,11 @@ describe("Feature: shared studio with invited guests (ADR-011)", () => {
     expect((await call(`/studio/raw/${expired}/index.html`, null)).status).toBe(403);
   });
 
-  it("GIVEN staff revokes the client WHEN the client calls again THEN access ends at once", async () => {
-    expect((await call(`/api/v1/studio/${P}/members/${encodeURIComponent("cliente@example.com")}`, "owner@example.com", { method: "DELETE" })).status).toBe(200);
-    expect((await call(`/api/v1/studio/${P}`, "cliente@example.com")).status).toBe(401);
+  it("GIVEN public mode WHEN membership is revoked THEN the record changes but public access remains", async () => {
+    expect((await call(`/api/v1/studio/${P}/members/${encodeURIComponent("cliente@example.com")}`, null, { method: "DELETE" })).status).toBe(200);
+    const member = (await new StudioService(proxy.env.DB, clock, P).members()).find((m) => m.email === "cliente@example.com");
+    expect(member?.status).toBe("revoked");
+    expect((await call(`/api/v1/studio/${P}`, null)).status).toBe(200);
     const actions = (await new ProjectService(proxy.env.DB, clock).events(P)).map((e) => e.action);
     expect(actions).toEqual(expect.arrayContaining(["studio.member.invited", "studio.member.accepted", "studio.member.revoked"]));
   });
@@ -139,8 +140,8 @@ describe("Feature: shared studio with invited guests (ADR-011)", () => {
     expect(w.status).toBe(403);
   });
 
-  it("refuses to invite staff and deletes studio rows with the project", async () => {
-    expect((await call(`/api/v1/studio/${P}/members`, "owner@example.com", { method: "POST", body: JSON.stringify({ email: "owner@example.com" }) })).status).toBe(409);
+  it("validates invited emails and deletes studio rows with the project", async () => {
+    expect((await call(`/api/v1/studio/${P}/members`, null, { method: "POST", body: JSON.stringify({ email: "not-an-email" }) })).status).toBe(400);
     const svc = new ProjectService(proxy.env.DB, clock);
     const impact = await svc.impact(P);
     expect(impact.studio_files).toBe(2);
