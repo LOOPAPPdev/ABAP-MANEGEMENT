@@ -9,6 +9,9 @@ const raw = z.object({
   GOOGLE_CLIENT_ID: z.string().trim().min(1).optional().catch(undefined),
   GOOGLE_CLIENT_SECRET: z.string().trim().min(1).optional().catch(undefined),
   SESSION_SECRET: z.string().min(32).optional().catch(undefined),
+  // Optional Google-free owner login. The long random code MUST be a Cloudflare secret.
+  OWNER_ACCESS_EMAIL: z.string().trim().email().optional().catch(undefined),
+  OWNER_ACCESS_CODE: z.string().min(48).optional().catch(undefined),
   TOKEN_ENCRYPTION_KEY: z.string().trim().optional().catch(undefined),
   ALLOWED_EMAILS: z.string().optional().catch(undefined),
   SPREADSHEET_ID: z.string().trim().regex(/^[A-Za-z0-9_-]{20,}$/).optional().catch(undefined),
@@ -17,7 +20,7 @@ const raw = z.object({
   ABAP_API_TOKEN: z.string().min(32).optional().catch(undefined),
 });
 
-export type AuthMode = "google" | "dev-bypass" | "misconfigured";
+export type AuthMode = "google" | "owner-code" | "dev-bypass" | "misconfigured";
 
 export interface AppConfig {
   environment: "development" | "production";
@@ -25,6 +28,8 @@ export interface AppConfig {
   /** Why auth is misconfigured (names of missing settings only, never values). */
   missing: string[];
   google?: { clientId: string; clientSecret: string };
+  /** Server-only owner credential. Never return it in a loader or API response. */
+  owner?: { email: string; code: string };
   sessionSecret?: string;
   tokenKey?: string;
   allowedEmails: string[];
@@ -47,18 +52,31 @@ export function parseConfig(env: unknown): AppConfig {
     ["TOKEN_ENCRYPTION_KEY", keyOk],
     ["ALLOWED_EMAILS", allowedEmails.length > 0],
   ];
-  const missing = required.filter(([, ok]) => !ok).map(([n]) => n);
-  // Production fails closed. Development uses a local bypass only when Google is not configured at all.
-  const auth: AuthMode =
-    missing.length === 0 ? "google" : e.ENVIRONMENT === "production" || e.GOOGLE_CLIENT_ID ? "misconfigured" : "dev-bypass";
+  const googleMissing = required.filter(([, ok]) => !ok).map(([n]) => n);
+  const envRecord = (env ?? {}) as Record<string, unknown>;
+  const ownerRequested = Boolean(envRecord.OWNER_ACCESS_EMAIL || envRecord.OWNER_ACCESS_CODE);
+  const ownerReady = Boolean(e.OWNER_ACCESS_EMAIL && e.OWNER_ACCESS_CODE && e.SESSION_SECRET);
+  const ownerMissing = ([
+    ["OWNER_ACCESS_EMAIL", Boolean(e.OWNER_ACCESS_EMAIL)],
+    ["OWNER_ACCESS_CODE", Boolean(e.OWNER_ACCESS_CODE)],
+    ["SESSION_SECRET", Boolean(e.SESSION_SECRET)],
+  ] as const).filter(([, ok]) => !ok).map(([key]) => key);
+  const missing = ownerRequested ? ownerMissing : googleMissing;
+  // Production remains fail-closed. The owner code is an explicit alternative,
+  // not a public bypass. A partial owner setup never enables it.
+  const auth: AuthMode = ownerRequested
+    ? ownerReady ? "owner-code" : "misconfigured"
+    : googleMissing.length === 0 ? "google"
+    : e.ENVIRONMENT === "production" || e.GOOGLE_CLIENT_ID ? "misconfigured" : "dev-bypass";
   return {
     environment: e.ENVIRONMENT,
     auth,
     missing: auth === "misconfigured" ? missing : [],
     google: e.GOOGLE_CLIENT_ID && e.GOOGLE_CLIENT_SECRET ? { clientId: e.GOOGLE_CLIENT_ID, clientSecret: e.GOOGLE_CLIENT_SECRET } : undefined,
+    owner: ownerReady ? { email: e.OWNER_ACCESS_EMAIL!, code: e.OWNER_ACCESS_CODE! } : undefined,
     sessionSecret: e.SESSION_SECRET,
     tokenKey: keyOk ? e.TOKEN_ENCRYPTION_KEY : undefined,
-    allowedEmails,
+    allowedEmails: ownerReady ? [...new Set([...allowedEmails, e.OWNER_ACCESS_EMAIL!])] : allowedEmails,
     spreadsheetId: e.SPREADSHEET_ID,
     sheetRange: e.SHEET_RANGE,
     apiToken: e.ABAP_API_TOKEN,
