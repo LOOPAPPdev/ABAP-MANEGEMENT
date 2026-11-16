@@ -22,13 +22,14 @@
   "env": {
     // LOOP account (adm-loop-app): Worker "abap-manegement", built and deployed by Workers Builds.
     // Build: CLOUDFLARE_ENV=loop npm run build · Deploy: npm run deploy:loop:ci (migrations + seed + deploy).
-    // Fails closed like production until the secrets are set (see README → LOOP environment).
+    // Public demo: visitors can view and edit data without authentication.
     "loop": {
       "name": "abap-manegement",
       "workers_dev": true,
       "observability": { "enabled": true },
       "vars": {
         "ENVIRONMENT": "production",
+        "PUBLIC_ACCESS": "true",
         "SHEET_RANGE": "DATA_Activities!A1:R200"
       },
       "d1_databases": [
