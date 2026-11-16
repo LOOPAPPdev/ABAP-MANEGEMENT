@@ -34,6 +34,31 @@ describe("Feature: configuration fails closed", () => {
   it("GIVEN development with a partial Google setup THEN it is misconfigured, not bypassed", () => {
     expect(parseConfig({ GOOGLE_CLIENT_ID: "x" }).auth).toBe("misconfigured");
   });
+  it("accepts owner-only credentials without requiring Google OAuth", () => {
+    const c = parseConfig({
+      ENVIRONMENT: "production",
+      SESSION_SECRET: SECRET,
+      OWNER_ACCESS_EMAIL: "OWNER@EXAMPLE.COM",
+      OWNER_ACCESS_CODE: "A".repeat(64),
+    });
+    expect(c.auth).toBe("owner-code");
+    expect(c.owner).toEqual({ email: "owner@example.com", code: "A".repeat(64) });
+    expect(c.allowedEmails).toContain("owner@example.com");
+    expect(c.missing).toEqual([]);
+  });
+  it("never enables owner login when its code, e-mail or signing secret is incomplete", () => {
+    for (const env of [
+      { OWNER_ACCESS_EMAIL: "owner@example.com" },
+      { OWNER_ACCESS_EMAIL: "owner@example.com", OWNER_ACCESS_CODE: "weak" },
+      { OWNER_ACCESS_CODE: "A".repeat(64) },
+      { OWNER_ACCESS_EMAIL: "owner@example.com", OWNER_ACCESS_CODE: "A".repeat(64) },
+    ]) {
+      const c = parseConfig({ ENVIRONMENT: "production", ...env });
+      expect(c.auth).toBe("misconfigured");
+      expect(c.owner).toBeUndefined();
+      expect(c.missing.length).toBeGreaterThan(0);
+    }
+  });
   it("rejects a weak encryption key", () => {
     expect(parseConfig({ ...full, TOKEN_ENCRYPTION_KEY: "short" }).auth).toBe("misconfigured");
   });
