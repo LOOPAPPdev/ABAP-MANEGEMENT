@@ -11,31 +11,39 @@ const full = {
   GOOGLE_CLIENT_ID: "cid.apps.googleusercontent.com",
   GOOGLE_CLIENT_SECRET: "x",
   SESSION_SECRET: SECRET,
+  ABAP_ACCESS_PASSWORD: "p".repeat(32),
   TOKEN_ENCRYPTION_KEY: KEY,
   ALLOWED_EMAILS: "A@Example.com, b@example.com",
   SPREADSHEET_ID: "1TestSpreadsheetIdAbcdefghijklmnopqrstuvwx",
 };
 
 describe("Feature: configuration fails closed", () => {
-  it("GIVEN every secret WHEN parsed THEN Google auth is on and e-mails are normalized", () => {
+  it("GIVEN Google integration and an ABAP password WHEN parsed THEN password auth stays independent of Google", () => {
     const c = parseConfig(full);
-    expect(c.auth).toBe("google");
-    expect(c.allowedEmails).toEqual(["a@example.com", "b@example.com"]);
+    expect(c.auth).toBe("password");
+    expect(c.allowedEmails).toEqual([]);
+    expect(c.google?.clientId).toBe(full.GOOGLE_CLIENT_ID);
     expect(c.sheetRange).toBe("DATA_Activities!A1:R200");
   });
   it("GIVEN production without secrets THEN auth is misconfigured (never bypassed) and lists missing names only", () => {
     const c = parseConfig({ ENVIRONMENT: "production" });
     expect(c.auth).toBe("misconfigured");
-    expect(c.missing).toEqual(["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "SESSION_SECRET", "TOKEN_ENCRYPTION_KEY", "ALLOWED_EMAILS"]);
+    expect(c.missing).toEqual(["ABAP_ACCESS_PASSWORD", "SESSION_SECRET"]);
   });
   it("GIVEN development without Google THEN the local bypass is used", () => {
     expect(parseConfig({}).auth).toBe("dev-bypass");
   });
-  it("GIVEN development with a partial Google setup THEN it is misconfigured, not bypassed", () => {
-    expect(parseConfig({ GOOGLE_CLIENT_ID: "x" }).auth).toBe("misconfigured");
+  it("GIVEN development with partial Google settings THEN Google does not activate login", () => {
+    expect(parseConfig({ GOOGLE_CLIENT_ID: "x" }).auth).toBe("dev-bypass");
+  });
+  it("GIVEN explicit public mode THEN production can run without login secrets", () => {
+    expect(parseConfig({ ENVIRONMENT: "production", PUBLIC_ACCESS: "true" }).auth).toBe("public");
+    expect(parseConfig({ ENVIRONMENT: "production", PUBLIC_ACCESS: "false" }).auth).toBe("misconfigured");
   });
   it("rejects a weak encryption key", () => {
-    expect(parseConfig({ ...full, TOKEN_ENCRYPTION_KEY: "short" }).auth).toBe("misconfigured");
+    const cfg = parseConfig({ ...full, TOKEN_ENCRYPTION_KEY: "short" });
+    expect(cfg.auth).toBe("password");
+    expect(cfg.tokenKey).toBeUndefined();
   });
 });
 
