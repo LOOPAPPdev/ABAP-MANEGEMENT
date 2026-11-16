@@ -73,7 +73,7 @@ export function createAuthRoutes(deps: { fetch?: Fetch; now?: () => number } = {
         verifier: st.verifier,
         scope: purpose === "login" ? SCOPE_LOGIN : `${SCOPE_LOGIN} ${SCOPE_SHEETS} ${SCOPE_DRIVE}`,
         offline: purpose === "sheets",
-        loginHint: purpose === "sheets" ? c.get("user")?.email : undefined,
+        loginHint: purpose === "sheets" && c.get("user")?.mode === "google" ? c.get("user")?.email : undefined,
       });
       c.header("Set-Cookie", cookie(OAUTH_COOKIE, await signJson(st, cfg.sessionSecret), STATE_TTL_S));
       return c.redirect(url, 302);
