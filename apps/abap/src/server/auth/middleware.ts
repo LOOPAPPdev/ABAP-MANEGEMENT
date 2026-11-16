@@ -1,7 +1,6 @@
 import type { MiddlewareHandler } from "hono";
 import { parseConfig, type AppConfig } from "../config";
 import { guestMayAccess, homeFor, type Access } from "~/domain/studio";
-import { accessOf } from "../studio";
 import { TokenService, type TokenRole } from "../tokens";
 import { readCookie, readSession, SESSION_COOKIE } from "./session";
 import { sha256b64url } from "./crypto";
@@ -13,7 +12,7 @@ export interface AppUser {
    * "dev" = local bypass (development without Google configured); "machine" = ABAP_API_TOKEN (read-only automation);
    * "token" = personal API token (ADR-009), used by the MCP endpoint.
    */
-  mode: "google" | "password" | "dev" | "machine" | "token";
+  mode: "password" | "dev" | "machine" | "token";
   /** Permission for token callers (MCP tools check it). Sessions and the dev bypass act as "write". */
   role?: TokenRole;
   /** Studio access (ADR-011): staff (ALLOWED_EMAILS) or guest limited to the studio of invited projects. */
@@ -29,7 +28,7 @@ export const isPublicPath = (path: string) => PUBLIC.some((r) => r.test(path));
 
 export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefined | null, db?: D1Database): Promise<AppUser | null> {
   if (cfg.auth === "dev-bypass") return { email: "local-dev", mode: "dev", access: { kind: "staff" } };
-  if ((cfg.auth !== "google" && cfg.auth !== "password") || !cfg.sessionSecret) return null;
+  if (cfg.auth !== "password" || !cfg.sessionSecret) return null;
   const s = await readSession(readCookie(cookieHeader, SESSION_COOKIE), cfg.sessionSecret);
   if (!s) return null;
   if (cfg.auth === "password") {
@@ -39,12 +38,7 @@ export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefin
       ? { email: s.email, name: "Administrador", mode: "password", access: { kind: "staff" } }
       : null;
   }
-  // Signed password sessions cannot be reused if the deployment switches to Google authentication.
-  if (s.provider === "password") return null;
-  // Checked on every request: removing an e-mail from the allow-list, or revoking a studio invite, ends access at once.
-  if (cfg.allowedEmails.includes(s.email.toLowerCase())) return { ...s, mode: "google", access: { kind: "staff" } };
-  const access = db ? await accessOf(db, s.email, cfg.allowedEmails) : ({ kind: "none" } as const);
-  return access.kind === "guest" ? { ...s, mode: "google", access } : null;
+
 }
 
 export const isGuest = (u: AppUser | null | undefined): u is AppUser & { access: { kind: "guest"; projects: readonly string[] } } => u?.access?.kind === "guest";
