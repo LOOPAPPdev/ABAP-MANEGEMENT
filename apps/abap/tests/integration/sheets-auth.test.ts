@@ -214,6 +214,30 @@ describe("Feature: access control (production)", () => {
     expect(cb.headers.get("location")).toBe("/login?error=state");
   });
 
+  it("GIVEN a password session WHEN authorizing Sheets THEN keep password login without Google sign-in", async () => {
+    const env = { ...ENV, ABAP_ACCESS_PASSWORD: "p".repeat(32) };
+    const app = appWith(googleFake("connector@example.com"));
+    const submitted = await req(app, "/auth/password/login", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", origin: "https://gov.example.workers.dev" },
+      body: new URLSearchParams({ password: env.ABAP_ACCESS_PASSWORD, returnTo: "/dashboard" }).toString(),
+    }, env);
+    expect(submitted.status).toBe(303);
+    const session = cookiesOf(submitted).split("; ").find((c) => c.startsWith("gs_session="))!;
+    expect(session).toBeTruthy();
+
+    const begin = await req(app, "/auth/sheets/connect", { headers: { cookie: session } }, env);
+    expect(begin.status).toBe(302);
+    const googleUrl = new URL(begin.headers.get("location")!);
+    expect(googleUrl.origin).toBe("https://accounts.google.com");
+    const callback = await req(app, `/auth/google/callback?code=c&state=${googleUrl.searchParams.get("state")}`,
+      { headers: { cookie: `${session}; ${cookiesOf(begin)}` } }, env);
+    expect(callback.headers.get("location")).toBe("/sheets?connected=1");
+    expect(cookiesOf(callback)).not.toContain("gs_session=");
+    const me = await req(app, "/api/v1/me", { headers: { cookie: session } }, env);
+    expect(await me.json()).toMatchObject({ user: { email: "admin@abap.local", mode: "password" } });
+  });
+
   it("revokes access when an e-mail is removed from the list", async () => {
     const token = await createSession({ email: "owner@example.com" }, SECRET, t);
     const app = appWith(googleFake("x"));
