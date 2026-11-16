@@ -5,7 +5,7 @@ import { storeSheetsCredential } from "../sheets/sources";
 import { acceptInvites, accessOf } from "../studio";
 import { randomToken, signJson, verifyJson } from "./crypto";
 import { buildAuthUrl, exchangeCode, GoogleError, readIdToken, SCOPE_DRIVE, SCOPE_LOGIN, SCOPE_SHEETS, type Fetch } from "./google";
-import type { AuthVariables } from "./middleware";
+import { tokenMatches, type AuthVariables } from "./middleware";
 import { clearCookie, cookie, createSession, OAUTH_COOKIE, readCookie, safeReturnTo, SESSION_COOKIE, SESSION_TTL_S, type OAuthState } from "./session";
 
 const STATE_TTL_S = 600;
@@ -90,6 +90,32 @@ export function createAuthRoutes(deps: { fetch?: Fetch; now?: () => number } = {
       console.error("oauth callback failed", e instanceof GoogleError ? e.message : e);
       return fail("oauth");
     }
+  });
+
+  // Explicit owner-only login for deployments without Google OAuth.
+  // OWNER_ACCESS_CODE must be a high-entropy Cloudflare secret (48+ characters).
+  auth.post("/owner", async (c) => {
+    const cfg = c.get("cfg");
+    c.header("Cache-Control", "no-store");
+    if (cfg.auth !== "owner-code" || !cfg.owner || !cfg.sessionSecret) {
+      return c.redirect("/login?error=not_configured", 303);
+    }
+    // A same-origin form is mandatory. Tokens never enter URLs or logs.
+    const origin = c.req.header("origin");
+    if (origin !== new URL(c.req.url).origin) return c.text("Forbidden", 403);
+    if (!c.req.header("content-type")?.toLowerCase().startsWith("application/x-www-form-urlencoded")) {
+      return c.text("Unsupported Media Type", 415);
+    }
+    const form = await c.req.parseBody();
+    const code = form.code;
+    if (typeof code !== "string" || code.length < 48 || code.length > 1024 ||
+        !(await tokenMatches(code, cfg.owner.code))) {
+      return c.redirect("/login?error=invalid_code", 303);
+    }
+    const ttl = 12 * 60 * 60; // Shorter owner sessions; rotate SESSION_SECRET to revoke.
+    const session = await createSession({ email: cfg.owner.email }, cfg.sessionSecret, now(), ttl);
+    c.header("Set-Cookie", cookie(SESSION_COOKIE, session, ttl));
+    return c.redirect(safeReturnTo(typeof form.returnTo === "string" ? form.returnTo : null), 303);
   });
 
   auth.post("/logout", (c) => {
