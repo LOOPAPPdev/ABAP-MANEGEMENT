@@ -9,11 +9,7 @@ export function meta() {
 const ERRORS: Record<string, string> = {
   not_configured: "O login ainda não está configurado no servidor. Defina ABAP_ACCESS_PASSWORD e SESSION_SECRET no Worker.",
   invalid_credentials: "Senha incorreta. Verifique a senha e tente novamente.",
-  not_allowed: "Esta conta Google não está autorizada. Entre com uma conta da lista de acesso.",
   state: "A tentativa de login expirou ou foi alterada. Tente de novo.",
-  denied: "Login cancelado no Google.",
-  oauth: "Não foi possível concluir o login com o Google. Tente de novo.",
-  sheets_scope: "O Google não concedeu leitura da planilha. Repita e marque a permissão de acesso ao Google Sheets.",
 };
 
 export function loader({ context, request }: Route.LoaderArgs) {
@@ -25,7 +21,7 @@ export function loader({ context, request }: Route.LoaderArgs) {
   return {
     auth: context.cfg.auth,
     missing: context.cfg.auth === "misconfigured" ? context.cfg.missing : [],
-    error: ERRORS[code] ?? (code ? ERRORS.oauth : null),
+    error: ERRORS[code] ?? (code ? "Não foi possível entrar. Tente novamente." : null),
     loggedOut: url.searchParams.has("loggedOut"),
     returnTo,
   };
@@ -54,17 +50,9 @@ export default function Login({ loaderData: d }: Route.ComponentProps) {
           </button>
         </form>
       )}
-      {d.auth === "google" && (
-        <a
-          href={`/auth/login?returnTo=${encodeURIComponent(d.returnTo)}`}
-          className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-        >
-          Entrar com Google
-        </a>
-      )}
       {d.auth === "dev-bypass" && (
         <p className="mt-4 text-sm">
-          Modo local sem login (Google não configurado). <a className="text-primary underline" href="/dashboard">Abrir o dashboard</a>
+          Modo de desenvolvimento sem autenticação. <a className="text-primary underline" href="/dashboard">Abrir o dashboard</a>
         </p>
       )}
     </section>
