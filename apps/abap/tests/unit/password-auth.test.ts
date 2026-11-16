@@ -32,6 +32,23 @@ function submit(password: string, returnTo = "/dashboard", origin = ORIGIN): Req
 }
 
 describe("Feature: password authentication without Google", () => {
+  it("GIVEN PUBLIC_ACCESS=true WHEN production has no secrets THEN dashboard and API are accessible", async () => {
+    const env = { ENVIRONMENT: "production", PUBLIC_ACCESS: "true" };
+    expect(parseConfig(env).auth).toBe("public");
+    const page = await request("/dashboard", {}, env);
+    expect(page.status).toBe(200);
+    expect(await page.text()).toBe("public");
+    const api = await request("/api/v1/private", {}, env);
+    expect(api.status).toBe(200);
+    expect(await api.json()).toMatchObject({ email: "public@abap.local", mode: "public" });
+  });
+
+  it("GIVEN PUBLIC_ACCESS=false WHEN production has no password THEN access remains blocked", async () => {
+    const env = { ENVIRONMENT: "production", PUBLIC_ACCESS: "false" };
+    expect(parseConfig(env).auth).toBe("misconfigured");
+    expect((await request("/api/v1/private", {}, env)).status).toBe(503);
+  });
+
   it("GIVEN a strong password and a session secret WHEN configured THEN Google is not required", () => {
     const cfg = parseConfig(ENV);
     expect(cfg.auth).toBe("password");
