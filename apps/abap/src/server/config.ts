@@ -19,7 +19,7 @@ const raw = z.object({
   ABAP_API_TOKEN: z.string().min(32).optional().catch(undefined),
 });
 
-export type AuthMode = "google" | "password" | "dev-bypass" | "misconfigured";
+export type AuthMode = "password" | "dev-bypass" | "misconfigured";
 
 export interface AppConfig {
   environment: "development" | "production";
@@ -39,19 +39,8 @@ export interface AppConfig {
 
 export function parseConfig(env: unknown): AppConfig {
   const e = raw.parse(env ?? {});
-  const allowedEmails = (e.ALLOWED_EMAILS ?? "")
-    .split(/[,;\s]+/)
-    .map((s) => s.trim().toLowerCase())
-    .filter((s) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s));
+  const allowedEmails: string[] = [];
   const keyOk = !!e.TOKEN_ENCRYPTION_KEY && /^[A-Za-z0-9+/]{43}=$/.test(e.TOKEN_ENCRYPTION_KEY); // 32 bytes, base64
-  const required: [string, boolean][] = [
-    ["GOOGLE_CLIENT_ID", !!e.GOOGLE_CLIENT_ID],
-    ["GOOGLE_CLIENT_SECRET", !!e.GOOGLE_CLIENT_SECRET],
-    ["SESSION_SECRET", !!e.SESSION_SECRET],
-    ["TOKEN_ENCRYPTION_KEY", keyOk],
-    ["ALLOWED_EMAILS", allowedEmails.length > 0],
-  ];
-  const googleMissing = required.filter(([, ok]) => !ok).map(([n]) => n);
   const passwordSelected = !!e.ABAP_ACCESS_PASSWORD;
   const passwordMissing = [
     ...((e.ABAP_ACCESS_PASSWORD?.length ?? 0) < 24 ? ["ABAP_ACCESS_PASSWORD (mínimo 24 caracteres)"] : []),
@@ -60,8 +49,8 @@ export function parseConfig(env: unknown): AppConfig {
   // Password login takes precedence when configured. Production never falls back to the dev bypass.
   const auth: AuthMode = passwordSelected
     ? passwordMissing.length === 0 ? "password" : "misconfigured"
-    : googleMissing.length === 0 ? "google" : e.ENVIRONMENT === "production" || e.GOOGLE_CLIENT_ID ? "misconfigured" : "dev-bypass";
-  const missing = passwordSelected ? passwordMissing : googleMissing;
+    : e.ENVIRONMENT === "production" ? "misconfigured" : "dev-bypass";
+  const missing = passwordSelected ? passwordMissing : ["ABAP_ACCESS_PASSWORD", ...(!e.SESSION_SECRET ? ["SESSION_SECRET"] : [])];
   return {
     environment: e.ENVIRONMENT,
     auth,
