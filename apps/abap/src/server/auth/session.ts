@@ -36,8 +36,8 @@ export function cookie(name: string, value: string, maxAge: number): string {
 
 export const clearCookie = (name: string) => cookie(name, "", 0);
 
-export async function createSession(user: SessionUser, secret: string, now = Date.now()): Promise<string> {
-  return signJson({ ...user, exp: Math.floor(now / 1000) + SESSION_TTL_S } satisfies SessionPayload, secret);
+export async function createSession(user: SessionUser, secret: string, now = Date.now(), ttlSeconds = SESSION_TTL_S): Promise<string> {
+  return signJson({ ...user, exp: Math.floor(now / 1000) + ttlSeconds } satisfies SessionPayload, secret);
 }
 
 export async function readSession(token: string | undefined, secret: string, now = Date.now()): Promise<SessionUser | null> {
