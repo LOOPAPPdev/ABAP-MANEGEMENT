@@ -5,7 +5,7 @@ ABAP is the consultancy's **services platform**. This monorepo holds the platfor
 ## Map
 | Path | What | Instructions |
 |---|---|---|
-| `apps/abap/` | ABAP platform: React Router + Hono on Cloudflare Workers, D1, Google login, Google Sheets + Drive integration | `apps/abap/CLAUDE.md` |
+| `apps/abap/` | ABAP platform: React Router + Hono on Cloudflare Workers, D1, standalone password login (or Google login), Google Sheets + Drive integration | `apps/abap/CLAUDE.md` |
 | `clients/<slug>/` | One client project (e.g. `clients/prj-01-cleansea/`): Drive mirror, structured docs, later code | `clients/<slug>/CLAUDE.md` |
 | `packages/` | Shared code used by two or more workspaces (empty until needed) | — |
 | `plugins/` | Claude plugins: `plugins/abap` (ABAP MCP + skill + commands) and `plugins/vendor/*` (third-party, copied as received). The repository is the team marketplace (`.claude-plugin/marketplace.json`) | `docs/plugins.md` |
