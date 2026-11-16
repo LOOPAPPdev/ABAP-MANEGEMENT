@@ -25,7 +25,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const base = {
     mode,
     sourceKind: cfg.auth === "dev-bypass" ? ("fixture" as const) : ("google" as const),
-    canConnect: cfg.auth === "google",
+    canConnect: !!cfg.google && !!cfg.tokenKey && (cfg.auth === "google" || cfg.auth === "password"),
     spreadsheetUrl: sheetId ? `https://docs.google.com/spreadsheets/d/${sheetId}/edit` : null,
     project: { id: current.id, code: current.code, name: current.name },
     connection: await sheetsConnection(getDb(context.cloudflare.env.DB)),
