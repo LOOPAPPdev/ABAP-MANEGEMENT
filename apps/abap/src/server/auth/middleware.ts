@@ -4,6 +4,7 @@ import { guestMayAccess, homeFor, type Access } from "~/domain/studio";
 import { accessOf } from "../studio";
 import { TokenService, type TokenRole } from "../tokens";
 import { readCookie, readSession, SESSION_COOKIE } from "./session";
+import { sha256b64url } from "./crypto";
 
 export interface AppUser {
   email: string;
@@ -32,7 +33,9 @@ export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefin
   const s = await readSession(readCookie(cookieHeader, SESSION_COOKIE), cfg.sessionSecret);
   if (!s) return null;
   if (cfg.auth === "password") {
-    return s.provider === "password" && s.email === "admin@abap.local"
+    if (s.provider !== "password" || s.email !== "admin@abap.local" || !s.credentialVersion || !cfg.accessPassword) return null;
+    const currentVersion = await sha256b64url(`${cfg.sessionSecret}:${cfg.accessPassword}`);
+    return await tokenMatches(s.credentialVersion, currentVersion)
       ? { email: s.email, name: "Administrador", mode: "password", access: { kind: "staff" } }
       : null;
   }
