@@ -17,6 +17,7 @@ export function loader({ context, request }: Route.LoaderArgs) {
   const returnTo = safeReturnTo(url.searchParams.get("returnTo"));
   const code = url.searchParams.get("error") === "not_configured" && context.cfg.auth === "password"
     ? "" : url.searchParams.get("error") ?? "";
+  if (context.cfg.auth === "public") throw redirect(returnTo);
   if (context.user && !code) throw redirect(returnTo);
   return {
     auth: context.cfg.auth,
