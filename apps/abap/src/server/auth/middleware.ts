@@ -12,7 +12,7 @@ export interface AppUser {
    * "dev" = local bypass (development without Google configured); "machine" = ABAP_API_TOKEN (read-only automation);
    * "token" = personal API token (ADR-009), used by the MCP endpoint.
    */
-  mode: "google" | "dev" | "machine" | "token";
+  mode: "google" | "owner" | "dev" | "machine" | "token";
   /** Permission for token callers (MCP tools check it). Sessions and the dev bypass act as "write". */
   role?: TokenRole;
   /** Studio access (ADR-011): staff (ALLOWED_EMAILS) or guest limited to the studio of invited projects. */
@@ -28,9 +28,14 @@ export const isPublicPath = (path: string) => PUBLIC.some((r) => r.test(path));
 
 export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefined | null, db?: D1Database): Promise<AppUser | null> {
   if (cfg.auth === "dev-bypass") return { email: "local-dev", mode: "dev", access: { kind: "staff" } };
-  if (cfg.auth !== "google" || !cfg.sessionSecret) return null;
+  if ((cfg.auth !== "google" && cfg.auth !== "owner-code") || !cfg.sessionSecret) return null;
   const s = await readSession(readCookie(cookieHeader, SESSION_COOKIE), cfg.sessionSecret);
   if (!s) return null;
+  if (cfg.auth === "owner-code") {
+    return s.email.toLowerCase() === cfg.owner?.email.toLowerCase()
+      ? { ...s, mode: "owner", access: { kind: "staff" } }
+      : null;
+  }
   // Checked on every request: removing an e-mail from the allow-list, or revoking a studio invite, ends access at once.
   if (cfg.allowedEmails.includes(s.email.toLowerCase())) return { ...s, mode: "google", access: { kind: "staff" } };
   const access = db ? await accessOf(db, s.email, cfg.allowedEmails) : ({ kind: "none" } as const);
