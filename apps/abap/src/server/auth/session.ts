@@ -9,6 +9,8 @@ export interface SessionUser {
   name?: string;
   /** Distinguishes standalone password sessions from Google sessions. */
   provider?: "google" | "password";
+  /** Rotating the password revokes previous password sessions. */
+  credentialVersion?: string;
 }
 
 interface SessionPayload extends SessionUser {
@@ -45,7 +47,7 @@ export async function createSession(user: SessionUser, secret: string, now = Dat
 export async function readSession(token: string | undefined, secret: string, now = Date.now()): Promise<SessionUser | null> {
   const p = await verifyJson<SessionPayload>(token, secret);
   if (!p || typeof p.email !== "string" || typeof p.exp !== "number" || p.exp * 1000 < now) return null;
-  return { email: p.email, name: p.name, ...(p.provider ? { provider: p.provider } : {}) };
+  return { email: p.email, name: p.name, ...(p.provider ? { provider: p.provider } : {}), ...(p.credentialVersion ? { credentialVersion: p.credentialVersion } : {}) };
 }
 
 /** Only same-site relative paths are allowed as return targets (no open redirect). */
