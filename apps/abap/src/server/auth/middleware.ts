@@ -39,7 +39,7 @@ export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefin
       ? { email: s.email, name: "Administrador", mode: "password", access: { kind: "staff" } }
       : null;
   }
-
+  return null;
 }
 
 export const isGuest = (u: AppUser | null | undefined): u is AppUser & { access: { kind: "guest"; projects: readonly string[] } } => u?.access?.kind === "guest";
