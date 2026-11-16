@@ -51,3 +51,13 @@ flowchart LR
 
 ## Verification
 `tests/unit/sheet-sync.test.ts`, `tests/unit/auth.test.ts`, `tests/integration/sheets-auth.test.ts` (OAuth callback with fake Google, allow-list, forged state, revocation, encrypted token, three-way sync, conflicts, invalid cells), `tests/e2e/sheets.spec.ts` (criterion G in both modes).
+
+## Amendment — 2026-11-16: standalone access without Google (owner request)
+
+- **Decision:** The ABAP Worker MAY authenticate a staff administrator with a separate password. Google OAuth is no longer mandatory for entry.
+- **Configuration:** Set `ABAP_ACCESS_PASSWORD` (minimum 24 characters) and `SESSION_SECRET` (minimum 32 characters) in Cloudflare Secrets. The password selects password auth mode, even if Google credentials are configured. Production still fails closed when no valid login mode is available.
+- **Session:** HMAC-signed, Secure, HttpOnly, SameSite=Lax, 7-day cookie. The session carries a provider marker. Google and password sessions cannot be interchanged.
+- **Identity:** Password mode uses the shared staff actor `admin@abap.local`. It does not provide per-user audit attribution.
+- **Integration:** Google Sheets and Drive remain optional. Their OAuth flow still needs Google client credentials and `TOKEN_ENCRYPTION_KEY`; Sheets authorization does not replace the password session.
+- **Safety:** There is no anonymous production bypass. Configure rate limiting for `/auth/password/login` at the Cloudflare edge. Use individual account authentication if multiple operators need separate access and accountability.
+- **Verification:** `tests/unit/password-auth.test.ts` covers production config, access gate, credentials, provider isolation and redirects.
