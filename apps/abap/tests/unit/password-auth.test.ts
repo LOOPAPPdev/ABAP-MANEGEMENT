@@ -91,6 +91,14 @@ describe("Feature: password authentication without Google", () => {
     expect(res.status).toBe(401);
   });
 
+  it("GIVEN a signed session WHEN the administrator rotates the password THEN the old session is revoked", async () => {
+    const login = await request("/auth/password/login", submit(PASSWORD));
+    const cookie = login.headers.get("set-cookie")!.split(";")[0]!;
+    const rotated = { ...ENV, ABAP_ACCESS_PASSWORD: "n".repeat(32) };
+    const res = await request("/api/v1/private", { headers: { cookie } }, rotated);
+    expect(res.status).toBe(401);
+  });
+
   it("GIVEN the password is removed from production WHEN a signed password session exists THEN access is revoked", async () => {
     const login = await request("/auth/password/login", submit(PASSWORD));
     const cookie = login.headers.get("set-cookie")!.split(";")[0]!;
