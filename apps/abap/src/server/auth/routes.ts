@@ -4,6 +4,7 @@ import { homeFor } from "~/domain/studio";
 import { storeSheetsCredential } from "../sheets/sources";
 import { acceptInvites, accessOf } from "../studio";
 import { randomToken, signJson, verifyJson } from "./crypto";
+import { tokenMatches } from "./middleware";
 import { buildAuthUrl, exchangeCode, GoogleError, readIdToken, SCOPE_DRIVE, SCOPE_LOGIN, SCOPE_SHEETS, type Fetch } from "./google";
 import type { AuthVariables } from "./middleware";
 import { clearCookie, cookie, createSession, OAUTH_COOKIE, readCookie, safeReturnTo, SESSION_COOKIE, SESSION_TTL_S, type OAuthState } from "./session";
@@ -12,7 +13,8 @@ const STATE_TTL_S = 600;
 
 /**
  * OAuth routes:
- *  GET  /auth/login           → Google sign-in (openid email profile)
+ *  POST /auth/password/login → password-only sign-in (no Google dependency)
+ *  GET  /auth/login           → Google sign-in (openid email profile; optional)
  *  GET  /auth/sheets/connect  → incremental consent for Sheets (read) + Drive (read/write), offline refresh token
  *  GET  /auth/google/callback → verifies state + PKCE, checks the allow-list, sets the session
  *  POST /auth/logout
@@ -23,11 +25,40 @@ export function createAuthRoutes(deps: { fetch?: Fetch; now?: () => number } = {
   const auth = new Hono<{ Bindings: { DB: D1Database }; Variables: AuthVariables }>().basePath("/auth");
   const redirectUri = (url: string) => `${new URL(url).origin}/auth/google/callback`;
 
+  auth.post("/password/login", async (c) => {
+    const cfg = c.get("cfg");
+    if (cfg.auth !== "password" || !cfg.accessPassword || !cfg.sessionSecret) return c.text("Not found", 404);
+    const expectedOrigin = new URL(c.req.url).origin;
+    const origin = c.req.header("origin");
+    if ((origin && origin !== expectedOrigin) || c.req.header("sec-fetch-site") === "cross-site") {
+      return c.text("Forbidden", 403);
+    }
+    if (!(c.req.header("content-type") ?? "").startsWith("application/x-www-form-urlencoded")) {
+      return c.text("Unsupported Media Type", 415);
+    }
+    const form = await c.req.raw.formData().catch(() => null);
+    const value = form?.get("password");
+    const password = typeof value === "string" ? value : "";
+    const returnTo = safeReturnTo(typeof form?.get("returnTo") === "string" ? String(form.get("returnTo")) : null);
+    if (password.length > 4096 || !(await tokenMatches(password, cfg.accessPassword))) {
+      return c.redirect(`/login?error=invalid_credentials&returnTo=${encodeURIComponent(returnTo)}`, 303);
+    }
+    const session = await createSession(
+      { email: "admin@abap.local", name: "Administrador", provider: "password" },
+      cfg.sessionSecret, now(),
+    );
+    c.header("Set-Cookie", cookie(SESSION_COOKIE, session, SESSION_TTL_S));
+    c.header("Cache-Control", "no-store");
+    return c.redirect(returnTo, 303);
+  });
+
   const start = (purpose: OAuthState["purpose"]) =>
     auth.get(purpose === "login" ? "/login" : "/sheets/connect", async (c) => {
       const cfg = c.get("cfg");
-      if (cfg.auth !== "google" || !cfg.google || !cfg.sessionSecret) return c.redirect("/login?error=not_configured", 302);
-      if (purpose === "sheets" && !c.get("user")) return c.redirect("/login?returnTo=%2Fsettings", 302);
+      if (!cfg.google || !cfg.sessionSecret || (purpose === "login" && cfg.auth !== "google")
+        || (purpose === "sheets" && !cfg.tokenKey)) return c.redirect("/login?error=not_configured", 302);
+      if (purpose === "sheets" && (!c.get("user") || c.get("user")?.access?.kind === "guest"))
+        return c.redirect("/login?returnTo=%2Fsettings", 302);
       const st: OAuthState = {
         state: randomToken(),
         verifier: randomToken(48),
@@ -56,10 +87,12 @@ export function createAuthRoutes(deps: { fetch?: Fetch; now?: () => number } = {
       c.header("Set-Cookie", clearCookie(OAUTH_COOKIE), { append: true });
       return c.redirect(`/login?error=${code}`, 302);
     };
-    if (cfg.auth !== "google" || !cfg.google || !cfg.sessionSecret) return fail("not_configured");
+    if (!cfg.google || !cfg.sessionSecret || (cfg.auth !== "google" && cfg.auth !== "password")) return fail("not_configured");
     if (c.req.query("error")) return fail("denied");
     const st = await verifyJson<OAuthState>(readCookie(c.req.header("cookie"), OAUTH_COOKIE), cfg.sessionSecret);
     if (!st || st.exp * 1000 < now() || st.state !== c.req.query("state")) return fail("state");
+    if (st.purpose === "login" && cfg.auth !== "google") return fail("not_configured");
+    if (st.purpose === "sheets" && (!c.get("user") || c.get("user")?.access?.kind === "guest")) return fail("not_allowed");
     const code = c.req.query("code");
     if (!code) return fail("denied");
     try {
@@ -68,7 +101,9 @@ export function createAuthRoutes(deps: { fetch?: Fetch; now?: () => number } = {
       const id = readIdToken(tokens.id_token, cfg.google.clientId, now());
       if (!id.emailVerified) return fail("not_allowed");
       // Staff (allow-list) or a guest invited to a project studio (ADR-011).
-      const access = await accessOf(c.env.DB, id.email, cfg.allowedEmails);
+      const access = cfg.auth === "password" && st.purpose === "sheets"
+        ? ({ kind: "staff" } as const)
+        : await accessOf(c.env.DB, id.email, cfg.allowedEmails);
       if (access.kind === "none") return fail("not_allowed");
       if (access.kind === "guest" && st.purpose !== "login") return fail("not_allowed");
       if (access.kind === "guest") await acceptInvites(c.env.DB, id.email, new Date(now()).toISOString());
@@ -78,7 +113,10 @@ export function createAuthRoutes(deps: { fetch?: Fetch; now?: () => number } = {
         await storeSheetsCredential(getDb(c.env.DB), cfg, { email: id.email, scope: tokens.scope, refreshToken: tokens.refresh_token }, new Date(now()).toISOString());
       }
       c.header("Set-Cookie", clearCookie(OAUTH_COOKIE), { append: true });
-      c.header("Set-Cookie", cookie(SESSION_COOKIE, await createSession({ email: id.email, name: id.name }, cfg.sessionSecret, now()), SESSION_TTL_S), { append: true });
+      // Connecting a Google Sheet MUST NOT replace a password-authenticated session.
+      if (cfg.auth === "google") {
+        c.header("Set-Cookie", cookie(SESSION_COOKIE, await createSession({ email: id.email, name: id.name, provider: "google" }, cfg.sessionSecret, now()), SESSION_TTL_S), { append: true });
+      }
       const target =
         st.purpose === "sheets"
           ? `${st.returnTo}${st.returnTo.includes("?") ? "&" : "?"}connected=1`
