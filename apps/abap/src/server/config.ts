@@ -6,6 +6,7 @@ import { z } from "zod";
  */
 const raw = z.object({
   ENVIRONMENT: z.enum(["development", "production"]).catch("development"),
+  PUBLIC_ACCESS: z.enum(["true", "false"]).optional().catch(undefined),
   /** Optional standalone login; configure as a Cloudflare secret (at least 24 characters). */
   ABAP_ACCESS_PASSWORD: z.string().optional().catch(undefined),
   GOOGLE_CLIENT_ID: z.string().trim().min(1).optional().catch(undefined),
@@ -19,7 +20,7 @@ const raw = z.object({
   ABAP_API_TOKEN: z.string().min(32).optional().catch(undefined),
 });
 
-export type AuthMode = "password" | "dev-bypass" | "misconfigured";
+export type AuthMode = "public" | "password" | "dev-bypass" | "misconfigured";
 
 export interface AppConfig {
   environment: "development" | "production";
@@ -47,7 +48,7 @@ export function parseConfig(env: unknown): AppConfig {
     ...(!e.SESSION_SECRET ? ["SESSION_SECRET"] : []),
   ];
   // Password login takes precedence when configured. Production never falls back to the dev bypass.
-  const auth: AuthMode = passwordSelected
+  const auth: AuthMode = e.PUBLIC_ACCESS === "true" ? "public" : passwordSelected
     ? passwordMissing.length === 0 ? "password" : "misconfigured"
     : e.ENVIRONMENT === "production" ? "misconfigured" : "dev-bypass";
   const missing = passwordSelected ? passwordMissing : ["ABAP_ACCESS_PASSWORD", ...(!e.SESSION_SECRET ? ["SESSION_SECRET"] : [])];
