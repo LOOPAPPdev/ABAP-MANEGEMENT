@@ -7,6 +7,8 @@ export const SESSION_TTL_S = 7 * 24 * 3600;
 export interface SessionUser {
   email: string;
   name?: string;
+  /** Distinguishes standalone password sessions from Google sessions. */
+  provider?: "google" | "password";
 }
 
 interface SessionPayload extends SessionUser {
@@ -43,7 +45,7 @@ export async function createSession(user: SessionUser, secret: string, now = Dat
 export async function readSession(token: string | undefined, secret: string, now = Date.now()): Promise<SessionUser | null> {
   const p = await verifyJson<SessionPayload>(token, secret);
   if (!p || typeof p.email !== "string" || typeof p.exp !== "number" || p.exp * 1000 < now) return null;
-  return { email: p.email, name: p.name };
+  return { email: p.email, name: p.name, ...(p.provider ? { provider: p.provider } : {}) };
 }
 
 /** Only same-site relative paths are allowed as return targets (no open redirect). */
