@@ -15,7 +15,6 @@ export function meta() {
 }
 
 const AUTH: Record<string, string> = {
-  google: "Login com Google (lista de e-mails autorizados)",
   password: "Login com senha própria (sem Google)",
   "dev-bypass": "Modo local sem login (desenvolvimento)",
   misconfigured: "Login não configurado: acesso bloqueado",
@@ -43,7 +42,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 /** Personal API tokens (ADR-009). Only interactive users (Google session or local dev) manage tokens. */
 export async function action({ context, request }: Route.ActionArgs) {
-  if (!context.user || (context.user.mode !== "google" && context.user.mode !== "password" && context.user.mode !== "dev")) return data({ error: "Apenas usuários com login gerenciam tokens." }, { status: 403 });
+  if (!context.user || (context.user.mode !== "password" && context.user.mode !== "dev")) return data({ error: "Apenas usuários com login gerenciam tokens." }, { status: 403 });
   const svc = new TokenService(context.cloudflare.env.DB, systemClock);
   const form = Object.fromEntries(await request.formData()) as Record<string, string>;
   if (form.intent === "token.create") {
@@ -80,8 +79,8 @@ export default function Settings({ loaderData: d, actionData }: Route.ComponentP
         <dl className="mt-2 space-y-2">
           <Row k="Ambiente">{d.environment}</Row>
           <Row k="Autenticação">{AUTH[d.auth]}</Row>
-          <Row k="Usuário">{d.user?.mode === "google" || d.user?.mode === "password" ? d.user.email : "—"}</Row>
-          <Row k="Contas autorizadas">{d.auth === "google" ? `${d.allowedCount} (lista no segredo ALLOWED_EMAILS da Cloudflare)` : "—"}</Row>
+          <Row k="Usuário">{d.user?.mode === "password" ? d.user.email : "—"}</Row>
+          <Row k="Contas autorizadas">{"—"}</Row>
         </dl>
       </Card>
       <Card>
@@ -100,7 +99,7 @@ export default function Settings({ loaderData: d, actionData }: Route.ComponentP
             {d.mode === "auto" ? "Automático ao abrir" : "Prévia + Aplicar"} · <Link className="text-primary underline" to="/sheets">alterar na página Planilha</Link>
           </Row>
         </dl>
-        {(d.auth === "google" || (d.auth === "password" && d.googleConfigured)) && (
+        {(d.auth === "password" && d.googleConfigured) && (
           <a href="/auth/sheets/connect?returnTo=%2Fsheets" className="mt-3 inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90">
             {d.connection ? "Reconectar Google (Sheets + Drive)" : "Conectar Google (Sheets + Drive)"}
           </a>
