@@ -57,7 +57,7 @@ flowchart TD
 
 Web application for planning, executing, and verifying software delivery against the 14 activities in `Full_Stack_Governance_Workbook.xlsx`.
 
-**Deployed on Cloudflare Workers with Google login and Google Sheets sync.** Activities are not marked DONE automatically; governance gates still apply.
+**Deployed on Cloudflare Workers with standalone password or optional Google login, plus Google Sheets sync.** Activities are not marked DONE automatically; governance gates still apply.
 
 | Item | State |
 | --- | --- |
@@ -67,7 +67,8 @@ Web application for planning, executing, and verifying software delivery against
 | Canvas Multiview `/canvas` (ADR-002/003) | Implemented locally: 5 views × 2 datasets (Governance live, Clean Sea **não validado**) |
 | Design system audit (ADR-004) | G1–G4 done; showcase at `/showcase`; G5 partially verified |
 | Data-viz quality audit (33 criteria) | 0 MUST failing — `docs/quality/dv-audit_v0.1.md` |
-| Google login + allow-list (ADR-005) | Implemented; production fails closed without secrets |
+| Password login without Google (ADR-005 amendment) | Implemented; requires Cloudflare secrets `ABAP_ACCESS_PASSWORD` and `SESSION_SECRET` |
+| Google login + allow-list (ADR-005) | Optional alternative when password login is not selected |
 | Google Sheets → app sync (ADR-005) | Implemented: automatic on open (default) or preview + apply; read-only scope |
 | Deploy (ACT-12) | Cloudflare Worker `governance-system` + D1 `governance` (production env) |
 
@@ -112,12 +113,21 @@ flowchart LR
 
 ## Production setup (one time)
 
-1. Google Cloud Console → APIs & Services → Credentials → the OAuth client (type *Web*) → **Authorized redirect URIs**: add `https://governance-system.<your-workers-subdomain>.workers.dev/auth/google/callback` (and `http://localhost:5173/auth/google/callback` for local tests).
-2. Enable the **Google Sheets API** in the same project. On the OAuth consent screen, add the scope `.../auth/spreadsheets.readonly`; if the app is in *Testing*, add the allowed accounts as test users (refresh tokens then expire after 7 days).
-3. Cloudflare secrets (`--env production`): `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET`, `TOKEN_ENCRYPTION_KEY`, `ALLOWED_EMAILS`, `SPREADSHEET_ID` — e.g. `npx wrangler secret put ALLOWED_EMAILS --env production`.
-4. Open the app → **Entrar com Google** → Settings → **Conectar Google (Sheets + Drive)**.
-5. **Drive** (ADR-006): enable the **Google Drive API** in the same Google Cloud project and add the scope `https://www.googleapis.com/auth/drive` on the consent screen (*Data access*). It is a restricted scope: fine in *Testing*; publishing requires Google verification.
-6. Optional machine token for `docs:pull`: `npx wrangler secret put ABAP_API_TOKEN --env production` (≥ 32 random characters).
+### Login without Google
+
+1. Cloudflare Dashboard → Workers & Pages → ABAP Worker → Settings → Variables and Secrets.
+2. Add **Secret** `ABAP_ACCESS_PASSWORD` (at least 24 random characters). Generate locally with `openssl rand -base64 32`. Never add the value to Git or chat.
+3. Add **Secret** `SESSION_SECRET` (at least 32 random characters). The LOOP Worker already has this secret according to the deployment record.
+4. Deploy the configured Worker. The LOOP Worker uses automatic Workers Builds from the connected GitHub branch.
+5. Open `/login`, enter the password, and access Dashboard and other protected pages.
+
+Password login takes precedence over Google OAuth if `ABAP_ACCESS_PASSWORD` is configured. No anonymous production bypass is permitted. For multiple independent staff accounts, use an identity provider rather than sharing this password. Configure rate limiting on `/auth/password/login` at the Cloudflare edge.
+
+### Optional Google Sheets and Drive connection
+
+Google is not required to sign in. To use Sheets and Drive later, configure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and `TOKEN_ENCRYPTION_KEY` as Cloudflare secrets. Enable the Google Sheets and Drive APIs and add the callback URI of the deployed Worker to Google Cloud OAuth. Sign in with the ABAP password, then use Settings → **Conectar Google (Sheets + Drive)** to grant access. This does not replace your ABAP password session.
+
+If Google login is preferred instead, omit `ABAP_ACCESS_PASSWORD` and configure Google OAuth and `ALLOWED_EMAILS`. Optional machine token for `docs:pull`: `ABAP_API_TOKEN`, at least 32 characters.
 
 ## Deploy
 
@@ -157,8 +167,8 @@ A second deployment of the same code, owner request 2026-11-15 (D-038). Cloudfla
 | Deploy | `cd apps/abap && npm run deploy:loop:ci` (migrations → seed → deploy) |
 | Non-production branches | `cd apps/abap && npx wrangler deploy --dry-run` (build check only) |
 | Secrets set | `SESSION_SECRET`, `TOKEN_ENCRYPTION_KEY` (random, set once, never shown) |
-| Secrets the owner sets | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ALLOWED_EMAILS` (dashboard → Worker → Settings → Variables and Secrets). Until then the app fails closed: only `/api/v1/health`, MCP with a token and signed studio links answer |
-| Google OAuth | Add `https://abap-manegement.adm-loop-app.workers.dev/auth/google/callback` to the OAuth client's redirect URIs |
+| Secrets the owner sets | `ABAP_ACCESS_PASSWORD` (Secret, minimum 24 characters). Google OAuth secrets are optional for Sheets and Drive. Without a configured authentication mode, access fails closed |
+| Google OAuth (optional) | Sheets/Drive connect needs `https://abap-manegement.adm-loop-app.workers.dev/auth/google/callback` as redirect URI |
 
 ## Canvas Multiview and design system
 
@@ -246,7 +256,7 @@ Reset local data: `npm run db:reset:local`.
 | POST | `/api/v1/projects/:id/drive/documents` | `{ title, markdown, confirm: true }` create a Google Doc |
 | POST | `/api/v1/projects/:id/drive/detect-spreadsheet` | Link the spreadsheet found in the folder |
 
-Every route except `/api/v1/health`, `/login` and `/auth/*` requires a session (or, for the read-only endpoints marked above, the machine token). Governance endpoints accept `?project=<id>`. Actor = signed-in e-mail (`X-Actor` is accepted only in the local development bypass).
+Every route except `/api/v1/health`, `/login` and `/auth/*` requires a valid session (or, for the read-only endpoints marked above, the machine token). Governance endpoints accept `?project=<id>`. Actor = signed-in e-mail (`X-Actor` is accepted only in the local development bypass).
 
 ## Repository structure
 
@@ -273,7 +283,7 @@ data/quality/            # Data-viz criteria fixture
 
 ## Security and quality
 
-Never commit credentials (`.dev.vars` is git-ignored; production values are Cloudflare secrets). All inputs are validated with Zod. Access requires Google login with an allowed e-mail; the Sheets refresh token is stored encrypted (AES-GCM). Do not report a task as complete without evidence.
+Never commit credentials (`.dev.vars` is git-ignored; production values are Cloudflare secrets). All inputs are validated with Zod. Access requires a valid password session or an authorized Google account; the Sheets refresh token is stored encrypted (AES-GCM). Do not report a task as complete without evidence.
 
 ## Next action
 
