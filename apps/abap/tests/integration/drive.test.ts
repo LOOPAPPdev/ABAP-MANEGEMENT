@@ -18,6 +18,7 @@ const KEY = btoa(String.fromCharCode(...new Uint8Array(32).fill(5)));
 const API_TOKEN = "t".repeat(48);
 const ENV = {
   ENVIRONMENT: "production",
+  PUBLIC_ACCESS: "true",
   GOOGLE_CLIENT_ID: "cid.apps.googleusercontent.com",
   GOOGLE_CLIENT_SECRET: "client-secret",
   SESSION_SECRET: "s".repeat(40),
@@ -110,7 +111,7 @@ describe("Feature: client Drive folder in ABAP", () => {
     expect(String(upload.init?.body)).toContain("application/vnd.google-apps.document");
     expect(String(upload.init?.body)).toContain("Content-Type: text/markdown");
     const events = await new ProjectService(proxy.env.DB, clock).events("prj-01-cleansea");
-    expect(events[0]).toMatchObject({ action: "drive.document.created", actor: "owner@example.com" });
+    expect(events[0]).toMatchObject({ action: "drive.document.created", actor: "public@abap.local" });
   });
 
   it("detects and links the governance spreadsheet found in the folder", async () => {
