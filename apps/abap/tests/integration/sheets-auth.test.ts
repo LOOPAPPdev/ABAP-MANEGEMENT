@@ -206,7 +206,8 @@ describe("Feature: access control (production)", () => {
     const app = appWith(googleFake("owner@example.com"));
     const env = { ...ENV, ABAP_ACCESS_PASSWORD: undefined };
     const start = await req(app, "/auth/login", {}, env);
-    expect(start.status).toBe(404);
+    expect(start.status).toBe(200); // Unregistered /auth/login falls through to the test app page, not Google OAuth.
+    expect(start.headers.get("location")).toBeNull();
     const protectedApi = await req(app, "/api/v1/activities", {}, env);
     expect(protectedApi.status).toBe(503);
   });
