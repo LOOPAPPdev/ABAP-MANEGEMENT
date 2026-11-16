@@ -79,7 +79,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <span className="text-muted-foreground" data-testid="current-user">
                   {root.user.mode === "dev" ? "modo local (sem login)" : root.user.email}
                 </span>
-                {(root.user.mode === "google" || root.user.mode === "password") && (
+                {(root.user.mode === "password") && (
                   <form method="post" action="/auth/logout">
                     <button type="submit" className="rounded-md px-2 py-1 underline hover:bg-accent">Sair</button>
                   </form>
