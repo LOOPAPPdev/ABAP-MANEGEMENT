@@ -12,7 +12,7 @@ export interface AppUser {
    * "dev" = local bypass (development without Google configured); "machine" = ABAP_API_TOKEN (read-only automation);
    * "token" = personal API token (ADR-009), used by the MCP endpoint.
    */
-  mode: "password" | "dev" | "machine" | "token";
+  mode: "public" | "password" | "dev" | "machine" | "token";
   /** Permission for token callers (MCP tools check it). Sessions and the dev bypass act as "write". */
   role?: TokenRole;
   /** Studio access (ADR-011): staff (ALLOWED_EMAILS) or guest limited to the studio of invited projects. */
@@ -27,6 +27,7 @@ const PUBLIC = [/^\/studio\/raw\//, /^\/login\/?$/, /^\/auth\//, /^\/api\/v1\/he
 export const isPublicPath = (path: string) => PUBLIC.some((r) => r.test(path));
 
 export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefined | null, db?: D1Database): Promise<AppUser | null> {
+  if (cfg.auth === "public") return { email: "public@abap.local", name: "Acesso público", mode: "public", access: { kind: "staff" } };
   if (cfg.auth === "dev-bypass") return { email: "local-dev", mode: "dev", access: { kind: "staff" } };
   if (cfg.auth !== "password" || !cfg.sessionSecret) return null;
   const s = await readSession(readCookie(cookieHeader, SESSION_COOKIE), cfg.sessionSecret);
@@ -80,7 +81,7 @@ export function authGate(): MiddlewareHandler<{ Bindings: object; Variables: Aut
       c.set("user", user);
       return next();
     }
-    if (isMcp && cfg.auth !== "dev-bypass")
+    if (isMcp && cfg.auth !== "dev-bypass" && cfg.auth !== "public")
       return c.json({ ok: false, error: "token_required", message: "Crie um token pessoal em Settings → Tokens de API" }, 401, { "WWW-Authenticate": 'Bearer realm="abap"' });
     const user = await resolveUser(cfg, c.req.header("cookie"), (c.env as { DB?: D1Database }).DB);
     c.set("user", user);
