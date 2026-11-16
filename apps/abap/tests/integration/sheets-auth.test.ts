@@ -25,6 +25,7 @@ const ENV = {
   GOOGLE_CLIENT_ID: "cid.apps.googleusercontent.com",
   GOOGLE_CLIENT_SECRET: "client-secret",
   SESSION_SECRET: SECRET,
+  ABAP_ACCESS_PASSWORD: "p".repeat(32),
   TOKEN_ENCRYPTION_KEY: KEY,
   ALLOWED_EMAILS: "owner@example.com",
   SPREADSHEET_ID: "1TestSpreadsheetIdAbcdefghijklmnopqrstuvwx",
@@ -175,22 +176,22 @@ describe("Feature: access control (production)", () => {
     expect(await res.json()).toMatchObject({ error: "auth_not_configured" });
   });
 
-  async function login(app: ReturnType<typeof appWith>, path = "/auth/login") {
-    const start = await req(app, path);
-    expect(start.status).toBe(302);
-    const google = new URL(start.headers.get("location")!);
-    expect(google.origin).toBe("https://accounts.google.com");
-    expect(google.searchParams.get("redirect_uri")).toBe("https://gov.example.workers.dev/auth/google/callback");
-    const state = google.searchParams.get("state")!;
-    return req(app, `/auth/google/callback?code=abc&state=${state}`, { headers: { cookie: cookiesOf(start) } });
+  async function login(app: ReturnType<typeof appWith>) {
+    return req(app, "/auth/password/login", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", origin: "https://gov.example.workers.dev" },
+      body: new URLSearchParams({ password: ENV.ABAP_ACCESS_PASSWORD, returnTo: "/dashboard" }).toString(),
+    });
   }
 
-  it("GIVEN an allowed account WHEN it signs in THEN it gets a session and mutations record its e-mail", async () => {
+  it("GIVEN the correct password WHEN signing in THEN protected mutations use the ABAP actor", async () => {
     const app = appWith(googleFake("owner@example.com"));
     const cb = await login(app);
+    expect(cb.status).toBe(303);
     expect(cb.headers.get("location")).toBe("/dashboard");
     const session = cookiesOf(cb).split("; ").find((c) => c.startsWith("gs_session="))!;
-    expect(await (await req(app, "/api/v1/me", { headers: { cookie: session } })).json()).toMatchObject({ user: { email: "owner@example.com" } });
+    expect(await (await req(app, "/api/v1/me", { headers: { cookie: session } })).json())
+      .toMatchObject({ user: { email: "admin@abap.local", mode: "password" } });
     const patch = await req(app, "/api/v1/activities/ACT-04/status", {
       method: "PATCH",
       headers: { cookie: session, "content-type": "application/json", "x-actor": "spoofed" },
@@ -198,20 +199,16 @@ describe("Feature: access control (production)", () => {
     });
     expect(patch.status).toBe(200);
     const body = (await patch.json()) as { events: { actor: string }[] };
-    expect(body.events[0]!.actor).toBe("owner@example.com"); // X-Actor is ignored when logged in
+    expect(body.events[0]!.actor).toBe("admin@abap.local");
   });
 
-  it("GIVEN an account outside the list WHEN it signs in THEN access is refused", async () => {
-    const cb = await login(appWith(googleFake("intruder@example.com")));
-    expect(cb.headers.get("location")).toBe("/login?error=not_allowed");
-    expect(cookiesOf(cb)).not.toContain("gs_session=e");
-  });
-
-  it("rejects a callback with a forged state", async () => {
+  it("GIVEN Google credentials but no ABAP password WHEN in production THEN Google login is not enabled", async () => {
     const app = appWith(googleFake("owner@example.com"));
-    const start = await req(app, "/auth/login");
-    const cb = await req(app, "/auth/google/callback?code=abc&state=forged", { headers: { cookie: cookiesOf(start) } });
-    expect(cb.headers.get("location")).toBe("/login?error=state");
+    const env = { ...ENV, ABAP_ACCESS_PASSWORD: undefined };
+    const start = await req(app, "/auth/login", {}, env);
+    expect(start.status).toBe(404);
+    const protectedApi = await req(app, "/api/v1/activities", {}, env);
+    expect(protectedApi.status).toBe(503);
   });
 
   it("GIVEN a password session WHEN authorizing Sheets THEN keep password login without Google sign-in", async () => {
