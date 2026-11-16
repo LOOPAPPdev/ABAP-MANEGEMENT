@@ -6,6 +6,8 @@ import { z } from "zod";
  */
 const raw = z.object({
   ENVIRONMENT: z.enum(["development", "production"]).catch("development"),
+  /** Optional standalone login; configure as a Cloudflare secret (at least 24 characters). */
+  ABAP_ACCESS_PASSWORD: z.string().optional().catch(undefined),
   GOOGLE_CLIENT_ID: z.string().trim().min(1).optional().catch(undefined),
   GOOGLE_CLIENT_SECRET: z.string().trim().min(1).optional().catch(undefined),
   SESSION_SECRET: z.string().min(32).optional().catch(undefined),
@@ -17,7 +19,7 @@ const raw = z.object({
   ABAP_API_TOKEN: z.string().min(32).optional().catch(undefined),
 });
 
-export type AuthMode = "google" | "dev-bypass" | "misconfigured";
+export type AuthMode = "google" | "password" | "dev-bypass" | "misconfigured";
 
 export interface AppConfig {
   environment: "development" | "production";
@@ -25,6 +27,8 @@ export interface AppConfig {
   /** Why auth is misconfigured (names of missing settings only, never values). */
   missing: string[];
   google?: { clientId: string; clientSecret: string };
+  /** Password is only supplied through a Worker secret; never exposed to loaders or the browser. */
+  accessPassword?: string;
   sessionSecret?: string;
   tokenKey?: string;
   allowedEmails: string[];
@@ -47,15 +51,23 @@ export function parseConfig(env: unknown): AppConfig {
     ["TOKEN_ENCRYPTION_KEY", keyOk],
     ["ALLOWED_EMAILS", allowedEmails.length > 0],
   ];
-  const missing = required.filter(([, ok]) => !ok).map(([n]) => n);
-  // Production fails closed. Development uses a local bypass only when Google is not configured at all.
-  const auth: AuthMode =
-    missing.length === 0 ? "google" : e.ENVIRONMENT === "production" || e.GOOGLE_CLIENT_ID ? "misconfigured" : "dev-bypass";
+  const googleMissing = required.filter(([, ok]) => !ok).map(([n]) => n);
+  const passwordSelected = !!e.ABAP_ACCESS_PASSWORD;
+  const passwordMissing = [
+    ...((e.ABAP_ACCESS_PASSWORD?.length ?? 0) < 24 ? ["ABAP_ACCESS_PASSWORD (mínimo 24 caracteres)"] : []),
+    ...(!e.SESSION_SECRET ? ["SESSION_SECRET"] : []),
+  ];
+  // Password login takes precedence when configured. Production never falls back to the dev bypass.
+  const auth: AuthMode = passwordSelected
+    ? passwordMissing.length === 0 ? "password" : "misconfigured"
+    : googleMissing.length === 0 ? "google" : e.ENVIRONMENT === "production" || e.GOOGLE_CLIENT_ID ? "misconfigured" : "dev-bypass";
+  const missing = passwordSelected ? passwordMissing : googleMissing;
   return {
     environment: e.ENVIRONMENT,
     auth,
     missing: auth === "misconfigured" ? missing : [],
     google: e.GOOGLE_CLIENT_ID && e.GOOGLE_CLIENT_SECRET ? { clientId: e.GOOGLE_CLIENT_ID, clientSecret: e.GOOGLE_CLIENT_SECRET } : undefined,
+    accessPassword: auth === "password" ? e.ABAP_ACCESS_PASSWORD : undefined,
     sessionSecret: e.SESSION_SECRET,
     tokenKey: keyOk ? e.TOKEN_ENCRYPTION_KEY : undefined,
     allowedEmails,
