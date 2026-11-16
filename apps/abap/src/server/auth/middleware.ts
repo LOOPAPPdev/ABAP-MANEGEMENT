@@ -26,7 +26,7 @@ export const MCP_PATH = "/mcp";
 const PUBLIC = [/^\/studio\/raw\//, /^\/login\/?$/, /^\/auth\//, /^\/api\/v1\/health$/, /^\/assets\//, /^\/favicon\.ico$/, /^\/__manifest/];
 export const isPublicPath = (path: string) => PUBLIC.some((r) => r.test(path));
 
-export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefined | null, db?: D1Database): Promise<AppUser | null> {
+export async function resolveUser(cfg: AppConfig, cookieHeader: string | undefined | null, _db?: D1Database): Promise<AppUser | null> {
   if (cfg.auth === "public") return { email: "public@abap.local", name: "Acesso público", mode: "public", access: { kind: "staff" } };
   if (cfg.auth === "dev-bypass") return { email: "local-dev", mode: "dev", access: { kind: "staff" } };
   if (cfg.auth !== "password" || !cfg.sessionSecret) return null;
