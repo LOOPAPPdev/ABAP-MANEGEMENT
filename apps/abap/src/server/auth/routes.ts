@@ -3,7 +3,7 @@ import { getDb } from "../db/client";
 import { homeFor } from "~/domain/studio";
 import { storeSheetsCredential } from "../sheets/sources";
 import { acceptInvites, accessOf } from "../studio";
-import { randomToken, signJson, verifyJson } from "./crypto";
+import { randomToken, sha256b64url, signJson, verifyJson } from "./crypto";
 import { tokenMatches } from "./middleware";
 import { buildAuthUrl, exchangeCode, GoogleError, readIdToken, SCOPE_DRIVE, SCOPE_LOGIN, SCOPE_SHEETS, type Fetch } from "./google";
 import type { AuthVariables } from "./middleware";
@@ -44,7 +44,7 @@ export function createAuthRoutes(deps: { fetch?: Fetch; now?: () => number } = {
       return c.redirect(`/login?error=invalid_credentials&returnTo=${encodeURIComponent(returnTo)}`, 303);
     }
     const session = await createSession(
-      { email: "admin@abap.local", name: "Administrador", provider: "password" },
+      { email: "admin@abap.local", name: "Administrador", provider: "password", credentialVersion: await sha256b64url(`${cfg.sessionSecret}:${cfg.accessPassword}`) },
       cfg.sessionSecret, now(),
     );
     c.header("Set-Cookie", cookie(SESSION_COOKIE, session, SESSION_TTL_S));
