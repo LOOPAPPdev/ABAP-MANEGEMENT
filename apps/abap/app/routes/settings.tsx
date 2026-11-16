@@ -16,6 +16,7 @@ export function meta() {
 
 const AUTH: Record<string, string> = {
   google: "Login com Google (lista de e-mails autorizados)",
+  "owner-code": "Login do proprietário com código seguro (sem Google)",
   "dev-bypass": "Modo local sem login (desenvolvimento)",
   misconfigured: "Login não configurado: acesso bloqueado",
 };
@@ -41,7 +42,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 /** Personal API tokens (ADR-009). Only interactive users (Google session or local dev) manage tokens. */
 export async function action({ context, request }: Route.ActionArgs) {
-  if (!context.user || (context.user.mode !== "google" && context.user.mode !== "dev")) return data({ error: "Apenas usuários com login gerenciam tokens." }, { status: 403 });
+  if (!context.user || (context.user.mode !== "google" && context.user.mode !== "owner" && context.user.mode !== "dev")) return data({ error: "Apenas usuários com login gerenciam tokens." }, { status: 403 });
   const svc = new TokenService(context.cloudflare.env.DB, systemClock);
   const form = Object.fromEntries(await request.formData()) as Record<string, string>;
   if (form.intent === "token.create") {
@@ -78,7 +79,7 @@ export default function Settings({ loaderData: d, actionData }: Route.ComponentP
         <dl className="mt-2 space-y-2">
           <Row k="Ambiente">{d.environment}</Row>
           <Row k="Autenticação">{AUTH[d.auth]}</Row>
-          <Row k="Usuário">{d.user?.mode === "google" ? d.user.email : "—"}</Row>
+          <Row k="Usuário">{(d.user?.mode === "google" || d.user?.mode === "owner") ? d.user.email : "—"}</Row>
           <Row k="Contas autorizadas">{d.auth === "google" ? `${d.allowedCount} (lista no segredo ALLOWED_EMAILS da Cloudflare)` : "—"}</Row>
         </dl>
       </Card>
