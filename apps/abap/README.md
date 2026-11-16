@@ -160,6 +160,20 @@ A second deployment of the same code, owner request 2026-11-15 (D-038). Cloudfla
 | Secrets the owner sets | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ALLOWED_EMAILS` (dashboard → Worker → Settings → Variables and Secrets). Until then the app fails closed: only `/api/v1/health`, MCP with a token and signed studio links answer |
 | Google OAuth | Add `https://abap-manegement.adm-loop-app.workers.dev/auth/google/callback` to the OAuth client's redirect URIs |
 
+## Acesso do proprietário sem Google (opcional)
+
+Para entrar na aplicação sem configurar o OAuth Google, use a autenticação do proprietário com código forte. O Worker **não** abre acesso público e continua bloqueado caso falte qualquer segredo necessário.
+
+No painel da Cloudflare, aceda a **Workers & Pages → abap-manegement → Settings → Variables and Secrets**, no ambiente `loop`. Configure como *secrets*, e não como variáveis públicas:
+
+- `OWNER_ACCESS_EMAIL`: o seu e-mail de proprietário (identificador para auditoria).
+- `OWNER_ACCESS_CODE`: código aleatório com pelo menos 48 caracteres. Gere-o no seu dispositivo com `openssl rand -base64 48`; não o coloque no Git, nos logs, no URL nem numa conversa.
+- `SESSION_SECRET`: já previsto na implantação. Se estiver ausente, gere outro valor com `openssl rand -base64 48` e guarde-o como segredo.
+
+Depois da publicação do código no Worker, abra `https://abap-manegement.adm-loop-app.workers.dev/login`, introduza o código e selecione **Entrar sem Google**. O servidor aceita somente o código configurado, verifica a origem do formulário e cria uma sessão assinada, Secure, HttpOnly e válida por 12 horas. Para revogar sessões ativas, substitua `SESSION_SECRET`.
+
+O código não depende do Google para entrar e utilizar os dados D1. As funções de sincronização com Google Sheets e Drive continuam a exigir uma conexão Google separada. Esta alternativa não deve ser confundida com o bypass de desenvolvimento: este permanece desativado em produção.
+
 ## Canvas Multiview and design system
 
 - `/canvas` — one graph (`src/domain/diagram`), five views: Infográfico, Tutorial, BPMN, Organograma, Diagrama complexo. Collapsible/resizable sidebars, Inspector with metanotes, state in the URL (`?dataset=&view=&node=`). Read-only: edit on `/activities/:id`.
