@@ -77,7 +77,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             {root?.user && (
               <div className="ml-auto flex items-center gap-2 text-sm">
                 <span className="text-muted-foreground" data-testid="current-user">
-                  {root.user.mode === "dev" ? "modo local (sem login)" : root.user.email}
+                  {root.user.mode === "public" ? "Acesso público · sem login" : root.user.mode === "dev" ? "modo local (sem login)" : root.user.email}
                 </span>
                 {(root.user.mode === "password") && (
                   <form method="post" action="/auth/logout">
