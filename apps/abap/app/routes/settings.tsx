@@ -15,6 +15,7 @@ export function meta() {
 }
 
 const AUTH: Record<string, string> = {
+  public: "Acesso público sem login (qualquer visitante pode alterar dados)",
   password: "Login com senha própria (sem Google)",
   "dev-bypass": "Modo local sem login (desenvolvimento)",
   misconfigured: "Login não configurado: acesso bloqueado",
@@ -42,7 +43,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 /** Personal API tokens (ADR-009). Only interactive users (Google session or local dev) manage tokens. */
 export async function action({ context, request }: Route.ActionArgs) {
-  if (!context.user || (context.user.mode !== "password" && context.user.mode !== "dev")) return data({ error: "Apenas usuários com login gerenciam tokens." }, { status: 403 });
+  if (!context.user || (context.user.mode !== "public" && context.user.mode !== "password" && context.user.mode !== "dev")) return data({ error: "Apenas usuários com login gerenciam tokens." }, { status: 403 });
   const svc = new TokenService(context.cloudflare.env.DB, systemClock);
   const form = Object.fromEntries(await request.formData()) as Record<string, string>;
   if (form.intent === "token.create") {
